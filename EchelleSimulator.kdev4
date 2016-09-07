@@ -1,0 +1,4 @@
+[Project]
+Name=EchelleSimulator
+Manager=KDevCMakeManager
+VersionControl=kdevgit
