@@ -19,7 +19,7 @@ void slit::set_slit(double w, double h, int slit_sampling){
     // cv::Mat ones =  cv::Mat::ones(round(this->h_px), this->w_px, CV_32FC1);
     //this->slit_image = cv::gpu::GpuMat();
     //this->slit_image.upload(ones); 
-    this->slit_image = cv::Mat::ones(round(this->h_px), this->w_px, CV_32FC1);
+    this->slit_image = cv::Mat::ones(round(this->h_px), this->w_px, CV_64F );
 }
 
 void slit::show(){

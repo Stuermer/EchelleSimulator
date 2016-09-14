@@ -20,6 +20,8 @@
 
 #include "efficiency.h"
 #include <cmath>
+#include <iostream>
+
 
 inline double deg2rad(double deg)
 {
@@ -36,7 +38,7 @@ Efficiency::~Efficiency()
 
 }
 
-std::vector< double > Efficiency::efficiency(int order, std::vector< double > wavelength)
+std::vector< double > Efficiency::get_efficieny(int order, std::vector<double> wavelength)
 {
     std::vector<double> res(wavelength.size(), 1.0);
     
@@ -45,7 +47,7 @@ std::vector< double > Efficiency::efficiency(int order, std::vector< double > wa
 }
 
 
-std::vector< double > GratingEfficiency::efficiency(int order, std::vector< double > wavelength)
+std::vector< double > GratingEfficiency::get_efficieny(int order, std::vector<double> wavelength)
 {
   std::vector<double> res;  
   for(auto& w : wavelength)
@@ -61,3 +63,6 @@ double GratingEfficiency::calc_eff(double scalingfactor, int order, double alpha
   return scalingfactor * sinc*sinc;
                                        
 }
+
+GratingEfficiency::GratingEfficiency(double scalingfactor, double alpha, double blaze, double gpmm)
+        : scalingfactor(scalingfactor), alpha(alpha), blaze(blaze), gpmm(gpmm) {}
