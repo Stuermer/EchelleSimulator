@@ -4,12 +4,12 @@
 #include "matrixsimulator.h"
 #include "slit.h"
 #include "efficiency.h"
-// #include "cvmatandqimage.h"
 #include <chrono>
 #include "helper.h"
 #include "noise.h"
 #include "source.h"
 #include "PSF.h"
+
 using namespace std::chrono;
 
 int main(int argc, char *argv[])
