@@ -1,5 +1,6 @@
 #include "slit.h"
 #include <opencv2/highgui.hpp>
+#include <iostream>
 
 slit::slit()
 {
@@ -16,10 +17,19 @@ void slit::set_slit(double w, double h, int slit_sampling){
     this->slit_sampling = slit_sampling;
     this->w_px = slit_sampling;
     this->h_px = slit_sampling * this->ratio;
-    // cv::Mat ones =  cv::Mat::ones(round(this->h_px), this->w_px, CV_32FC1);
-    //this->slit_image = cv::gpu::GpuMat();
-    //this->slit_image.upload(ones); 
-    this->slit_image = cv::Mat::ones(round(this->h_px), this->w_px, CV_64F );
+    std::cout << (this->slit_image.type()) << std::endl ;
+
+    #ifdef USE_GPU
+    {
+        cv::Mat ones =  cv::Mat::ones(round(this->h_px), this->w_px, CV_32FC1);
+        this->slit_image = cv::gpu::GpuMat();
+        this->slit_image.upload(ones);
+    }
+    #else
+    {
+        this->slit_image = cv::Mat::ones(round(this->h_px), this->w_px, CV_64F);
+    }
+    #endif
 }
 
 void slit::show(){

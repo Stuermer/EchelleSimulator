@@ -1,7 +1,7 @@
 #ifndef SLIT_H
 #define SLIT_H
 #include <opencv2/core.hpp>
-//#include "opencv2/gpu/gpu.hpp"
+#include "opencv2/gpu/gpu.hpp"
 
 class slit
 {
@@ -19,8 +19,14 @@ public:
     double ratio;
 
     int slit_sampling;
-    // cv::gpu::GpuMat slit_image;
-    cv::Mat slit_image;
+
+    #ifdef USE_GPU
+        cv::gpu::GpuMat slit_image;
+        bool use_gpu = true;
+    #else
+        cv::Mat slit_image;
+        bool use_gpu = false;
+    #endif
 };
 
 #endif // SLIT_H

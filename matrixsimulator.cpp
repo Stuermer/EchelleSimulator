@@ -10,7 +10,7 @@
 // using namespace std
 #include "helper.h"
 #include <opencv2/imgproc.hpp>
-//#include "opencv2/gpu/gpu.hpp"
+#include "opencv2/gpu/gpu.hpp"
 
 void print_transformation_matrix(cv::Mat tm){
   std::cout << tm.at<double>(0,0) << "\t" << tm.at<double>(0,1) << "\t" << tm.at<double>(0,2) << "\n";
@@ -116,35 +116,6 @@ void MatrixSimulator::read_transformations(std::string path)
     for(auto imap: this->raw_transformations)
         this->orders.push_back(imap.first);
 }
-
-/*QwtPlot * MatrixSimulator::plot_transformations(){
-
-    QwtPlot * plot = new QwtPlot();
-    QwtPlotCurve * curve = new QwtPlotCurve();
-
-    std::vector<double> x;
-    std::vector<double> y;
-
-    for(auto const& a: this->raw_transformations)
-    {
-        std::cout << a.first;
-        if (a.first==88){
-            for (auto rt: a.second)
-            {
-                y.push_back(rt.wavelength);
-                x.push_back(rt.decomposed_matrix[0]);
-            }
-        }
-    }
-
-    curve->setSamples(x.data(), y.data(), x.size());
-    curve->attach(plot);
-    // plot.show();
-
-    return plot;
-
-}*/
-
 void MatrixSimulator::calc_splines(){
     for(auto o: this->orders)
     {
@@ -239,7 +210,7 @@ cv::Mat MatrixSimulator::get_transformation_matrix(int o, double wavelength){
     return compose_matrix(parameters);
 }
 
-/*
+
 cv::gpu::GpuMat MatrixSimulator::transform_slit(cv::gpu::GpuMat& slit_image, cv::Mat& transformation_matrix, double weight){
     int n_rows = abs(round(slit_image.rows * 1.5 * transformation_matrix.at<double>(1,1))); 
     int n_cols = abs(round(slit_image.cols * 4. * transformation_matrix.at<double>(0,0)));
@@ -250,14 +221,14 @@ cv::gpu::GpuMat MatrixSimulator::transform_slit(cv::gpu::GpuMat& slit_image, cv:
     tm.at<double>(0,2) += -tx_int + n_rows/2.;
     tm.at<double>(1,2) += -ty_int + n_cols * 0.9;
     
-    cv::Mat warp_dst_cpu = cv::Mat::zeros( n_rows, n_cols, slit_image.type() );
-    cv::gpu::GpuMat warp_dst=cv::gpu::GpuMat();
-    warp_dst.upload(warp_dst_cpu);
+    // cv::Mat warp_dst_cpu = cv::Mat::zeros( n_rows, n_cols, slit_image.type() );
+    cv::gpu::GpuMat warp_dst=cv::gpu::GpuMat(n_rows, n_cols, slit_image.type() );
+    //warp_dst.upload(warp_dst_cpu);
 
     cv::gpu::warpAffine(slit_image.clone(), warp_dst, tm, warp_dst.size() );
     return warp_dst;
 }
-*/
+
 
 cv::Mat MatrixSimulator::transform_slit(cv::Mat& slit_image, cv::Mat& transformation_matrix, double& weight){
     double sx, sy, a,b,c,d;
@@ -277,47 +248,57 @@ cv::Mat MatrixSimulator::transform_slit(cv::Mat& slit_image, cv::Mat& transforma
     tm.at<double>(1,2) += -ty_int + n_cols * 0.9;
     double det = cv::determinant(transformation_matrix.colRange(0,2));
     cv::Mat warp_dst;
+    weight /= det;
     warp_dst = cv::Mat::zeros( n_rows, n_cols, slit_image.type() );
-    cv::warpAffine(slit_image.clone()*weight*10./det , warp_dst, tm, warp_dst.size() );
+    cv::warpAffine(slit_image.clone(), warp_dst, tm, warp_dst.size() );
     return warp_dst;
 }
 
-/*
-int MatrixSimulator::simulate_order(int order, cv::gpu::GpuMat& slit_image, cv::Mat& output_image)
+
+int MatrixSimulator::simulate_order(int order, cv::gpu::GpuMat& slit_image, cv::gpu::GpuMat& output_image, bool aberrations)
 {
   // cv::Mat img = cv::Mat::zeros(4096*3, 4096*3, CV_64FC1);
   int n = this->sim_matrices[order].size();
+
+
   for(int i=0; i<this->sim_matrices[order].size(); ++i){
     cv::Mat tr=this->sim_matrices[order][i];
+      double weight = this->sim_efficiencies[order][i];
+      double wavelength = this->sim_wavelength[order][i];
     cv::gpu::GpuMat tmp = cv::gpu::GpuMat();
     cv::Mat tmp2;
     tmp = transform_slit(slit_image, tr, this->sim_efficiencies[order][i]);
-    tmp.download(tmp2);
-    int tx_int = floor(tr.at<double>(0,2));
-    int ty_int = floor(tr.at<double>(1,2));   
-    
-    int n_rows = abs(round(slit_image.rows * 1.5 * tr.at<double>(1,1))); 
-    int n_cols = abs(round(slit_image.cols * 4. * tr.at<double>(0,0)));
-    
 
-    //int TSX = -tx_int + n_rows/2.;
-    //tm.at<double>(1,2) += -ty_int + n_cols * 0.9;
-    
+      if (aberrations){
+          cv::Mat psf = this->psfs->get_PSF(order, wavelength);
+          cv::flip(psf, psf, -1);
+//          cv::gpu::GpuMat psf_gpu =  cv::gpu::GpuMat(psf);
+          cv::gpu::filter2D(tmp, tmp, -1, psf, cvPoint(psf.cols/2, psf.rows/2));
+//          cv::filter2D(tmp, tmp, -1, psf, cvPoint(psf.cols/2, psf.rows/2));
+      }
+
+    int tx_int = floor(tr.at<double>(0,2));
+    int ty_int = floor(tr.at<double>(1,2));
+
+    int n_rows = abs(round(slit_image.rows * 1.5 * tr.at<double>(1,1)));
+    int n_cols = abs(round(slit_image.cols * 4. * tr.at<double>(0,0)));
+
+
     int left_margin = std::max(0, tx_int);
     int right_margin = std::min(output_image.cols, tx_int+n_cols);
     int width = right_margin - left_margin;
 
+      cv::gpu::multiply(tmp, weight, tmp);
+
     if (width>0 && width>=n_cols && (ty_int>0) && (ty_int+n_rows<output_image.rows) && tx_int>0 && tx_int+n_cols<output_image.cols)
     {
-      // std::cout<<i <<"\t" << tx_int <<"\t" << ty_int <<"\t" << width <<"\t" << n_rows <<"\t" << n_cols << std::endl;
-      //print_transformation_matrix(tr);
-      output_image.rowRange(ty_int, ty_int + n_rows).colRange(tx_int, tx_int+n_cols) += tmp2;
-      // tmp.copyTo(img.rowRange(ty_int, ty_int + n_rows).colRange(tx_int, tx_int+n_cols));  
+        cv::gpu::GpuMat roi = output_image.rowRange(ty_int, ty_int + n_rows).colRange(tx_int, tx_int+n_cols);
+        cv::gpu::add(roi, tmp, roi );
     }
   }
   return 0;
 }
-*/
+
 
 int MatrixSimulator::simulate_order(int order, cv::Mat& slit_image, cv::Mat& output_image, bool aberrations)
 {
@@ -372,18 +353,20 @@ int MatrixSimulator::simulate_order(int order, cv::Mat& slit_image, cv::Mat& out
   return 0;
 }
 
-/*
+
 cv::Mat MatrixSimulator::simulate_spectrum(cv::gpu::GpuMat& slit_image)
 {
-  cv::Mat img = cv::Mat::zeros(4096*3, 4096*3, slit_image.type());
+    cv::Mat img_cpu = cv::Mat::zeros(4096*3, 4096*3, slit_image.type());
+    cv::gpu::GpuMat img = cv::gpu::GpuMat(img_cpu);
 #pragma omp parallel for
   for(int o=this->orders.front(); o<this->orders.back()+1; ++o){
     std::cout << o << std::endl;
-    this->simulate_order(o, slit_image, img);
+    this->simulate_order(o, slit_image, img, true);
   }
-  return img;
+    img.download(img_cpu);
+  return img_cpu;
 }
-*/
+
 cv::Mat MatrixSimulator::simulate_spectrum(cv::Mat& slit_image)
 {
   cv::Mat img = cv::Mat::zeros(4096*3, 4096*3, slit_image.type());

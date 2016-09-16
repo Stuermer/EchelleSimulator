@@ -14,18 +14,13 @@ using namespace std::chrono;
 
 int main(int argc, char *argv[])
 {
-//    MainWindow w;
-//    w.show();
-    
     high_resolution_clock::time_point t1 = high_resolution_clock::now();
-    // QApplication app(argc, argv);
-
-    PSF psfs = PSF("/home/julian/Repos/Python_projects/PyEchelle-github/PyEchelleSimulator/psf1.hdf5");
+    PSF psfs = PSF(argv[1]);
 
     MatrixSimulator m;
     m.psfs = &psfs;
-    m.read_transformations("/home/julian/Repos/Python_projects/PyEchelle-github/PyEchelleSimulator/test2.csv");
-
+    m.read_transformations(argv[2]);
+    m.set_order_range(89,95);
     m.calc_splines();
     m.set_wavelength(10000);
     m.calc_sim_matrices();
@@ -35,9 +30,6 @@ int main(int argc, char *argv[])
     std::vector<Efficiency*> efficiencies;
     efficiencies.push_back(&ge);
     m.prepare_efficiencies(efficiencies);
-    //std::vector<double> eff = ge.get_efficieny(90, m.sim_wavelength.at(90));
-    vectorToFile(m.sim_efficiencies[90], "../test.dat");
-
 
     IdealEtalon cs = IdealEtalon(10., 1., 0., 0.9);
     std::vector<Source*> sources;
@@ -45,9 +37,7 @@ int main(int argc, char *argv[])
     m.prepare_sources(sources);
 
     cv::Mat img = m.simulate_spectrum(s.slit_image);
-    
-    // cv::Mat img = cv::Mat::zeros(4096*3, 4096*3, s.slit_image.type());
-    // int i = m.simulate_order(119, s.slit_image, img);
+
     high_resolution_clock::time_point t2 = high_resolution_clock::now();
     auto duration = duration_cast<microseconds>( t2 - t1 ).count()/1000000.;
     std::cout << "Duration: "  << duration << std::endl;
@@ -57,7 +47,7 @@ int main(int argc, char *argv[])
 
     cv::resize(img, img_ccd, img_ccd.size(), cv::INTER_NEAREST);
 
-    
+
     double minVal, maxVal;
     cv::minMaxLoc(img_ccd, &minVal, &maxVal); //find minimum and maximum intensities
 
