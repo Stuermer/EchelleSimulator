@@ -20,7 +20,6 @@
 #include <cmath>
 #include <algorithm>
 #include "source.h"
-#include "quad.cpp"
 
 Source::Source()
 {
