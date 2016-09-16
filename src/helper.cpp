@@ -65,7 +65,6 @@ std::vector<double> decompose_matrix(cv::Mat mat){
     result.push_back(tx);
     result.push_back(ty);
     // return <sx, sy, shear, rot, tx ,ty>
-    // return <p,r,q,phi, tx, ty>
     return result;
 }
 
@@ -87,7 +86,7 @@ cv::Mat compose_matrix(std::vector<double> parameters){
   return result;
 }
 
-std::vector<std::size_t> compute_order(const std::vector<double> &v) {
+std::vector<std::size_t> compute_sort_order(const std::vector<double> &v) {
     std::vector<std::size_t> indices(v.size());
     std::iota(indices.begin(), indices.end(), 0u);
     std::sort(indices.begin(), indices.end(), [&](int lhs, int rhs) {

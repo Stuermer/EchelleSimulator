@@ -156,7 +156,7 @@ cv::Mat PSF::get_PSF(int order, double wavelength) {
         distance.push_back(psf.wavelength -wavelength );
     }
     std::vector<size_t > idx;
-    idx = compute_order(distance);
+    idx = compute_sort_order(distance);
     return this->interpolate_PSF(this->psfs[order][idx[0]].psf, this->psfs[order][idx[1]].psf,
                                  this->psfs[order][idx[0]].wavelength, this->psfs[order][idx[1]].wavelength, wavelength);
 }

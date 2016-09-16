@@ -67,10 +67,6 @@ double Source::integral_s(double a, double b, int n) {
 }
 
 
-std::vector<double> Constant::get_spectral_density(std::vector<double> wavelength) {
-    return std::vector<double>(wavelength.size(), this->value);
-}
-
 double Constant::get_spectral_density(double wavelength) {
     return this->value;
 }
@@ -85,10 +81,10 @@ Constant::Constant() {
 }
 
 IdealEtalon::IdealEtalon(double d, double n, double theta, double R) : d(d/1000.), n(n), theta(theta), R(R) {
-    this->cF = this->coefficient_of_finesse();
+    this->cF = this->coefficient_of_finesse(R);
 }
 
-double IdealEtalon::coefficient_of_finesse() {
+double IdealEtalon::coefficient_of_finesse(double R) {
     return 4.*R / ((1.-R)*(1.-R));
 }
 
@@ -103,15 +99,6 @@ double IdealEtalon::T(double wl, double theta, double d, double n, double cF) {
     double delta = (2. * M_PI * n * cos(theta) * d) / wl ;
     double sind = sin(delta);
     return 1. / (1. + cF * sind*sind);
-}
-
-std::vector<double> IdealEtalon::get_spectral_density(const std::vector<double> wavelength) {
-    std::vector<double> result;
-    for(auto& w: wavelength)
-    {
-        result.push_back(this->T(w/1E6, theta,d,n,cF));
-    }
-    return result;
 }
 
 double IdealEtalon::get_spectral_density(double wavelength) {
