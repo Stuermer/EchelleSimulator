@@ -48,12 +48,12 @@ public:
 
 private:
     /*!
-     * Integrates the \See Source::spectral_density() function between limits a and b.
+     * Integrates the \see{Source::spectral_density()} function between limits a and b.
      *
-     * This is a simple integrator, which integrates the \see Source::spectral_density function between a and b.
+     * This is a simple integrator, which integrates the \see{Source::spectral_density} function between a and b.
      * It uses a simple aproximation by deviding the interval [a,b] in n parts and sum
      * \f[
-     * I = \int_{a}^{b}(s(\lambda) d\lambda \approx \sum_{i=0}^{n} s(a + i*\frac{b-a}{n} * \frac{(b-a)}{n}
+     * I = \int_{a}^{b}(s(\lambda) d\lambda \approx \sum_{i=0}^{n} s(a + (i+0.5)frac{b-a}{n}) * \frac{(b-a)}{n}
      * \f]
      * @param a lower wavelength limit
      * @param b upper wavelength limit
@@ -68,9 +68,13 @@ private:
 };
 
 /*!
- * Constant spectral density
+ * \class Constant
+ * \brief Implements constant spectral density.
  *
- * This class implements a constant spectral density
+ * This class implements a constant spectral density.
+ * \f[
+ * s(\lambda) = const.
+ * \f]
  */
 class Constant : public Source{
 public:
@@ -99,6 +103,9 @@ private:
  *
  * An ideal Fabry-Perot etalon has a transmission function that only depends on the distance of the mirrors,
  * the angle of incidence, the reflectivity of the mirrors and the refractive index of the medium between the mirrors.
+ * \f[
+ * s(\lambda) = \frac{1}{cF sin(\frac{\delta} {2})^2}
+ * \f]
  * (\see IdealEtalon::T())
  *
  * It produces a comb-like spectrum that is has equidistant peaks in frequency.
@@ -166,5 +173,59 @@ private:
     double theta;
     double R;
     double cF;
+};
+
+
+/*!
+ * \class Blackbody
+ * \brief Implements a *blackbody spectrum.*
+ *
+ * This class implements the spectrum of a blackbody of a certain Temperature.
+ * \see{Blackbody::get_spectral_density()}
+ *
+ *
+ *  \f[
+ *  \fbox{
+ *  \begin{tikzpicture}
+ *  \begin{axis}[domain=300E-9:4000E-9, samples=100]
+ *  \addplot[color=red]{2.0 *6.62606896E-34* 2.9979E8 * 2.9979E8 / (x^5)*1./(exp(6.62606896E-34*2.997E8/(x*1.3806504E-23*3500))-1)};
+ *  \end{axis}
+ *  \end{tikzpicture}
+ *  }
+ *  \f]
+ *
+ */
+class Blackbody : public Source{
+public:
+    /*!
+     * Constructor
+     * @param T Temperature [K]
+     */
+    Blackbody(double T);
+    /*!
+     * Planck function for spectral density of a blackbody with Temperature T
+     * @param T Temperature [K]
+     * @param wavelength wavelength [m]
+     * @return spectral density
+     */
+    static double planck(const double& T, const double& wavelength);
+    /*!
+     * spectral density of a blackbody
+     * \f[
+     * s(\lambda) = \frac{2hc^2}{\lambda^5}\frac{1}{\exp{\frac{hc}{\lambda k_B T}}-1}
+     * \f]
+     * @param wavelength wavelength [micron]
+     * @return spectral density of a blackbody at given wavelength
+     */
+    double get_spectral_density(double wavelength);
+private:
+    double T; ///< Temperature [K]
+};
+
+class PhoenixSpectrum : public Source{
+public:
+    PhoenixSpectrum(std::string spectrum_file, std::string wavelength_file, const double& min_wavelength, const double& max_wavelength);
+
+
 };
 #endif // SOURCE_H

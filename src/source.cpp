@@ -106,3 +106,25 @@ double IdealEtalon::get_spectral_density(double wavelength) {
     return res;
 }
 
+
+Blackbody::Blackbody(double T): T(T){};
+
+double Blackbody::planck(const double& T, const double& wavelength) {
+    const double 	hPlanck = 6.62606896e-34;
+    const double 	speedOfLight = 2.99792458e8;
+    const double 	kBoltzmann = 1.3806504e-23;
+    double a = 2.0 * hPlanck * speedOfLight*speedOfLight;
+    double b = hPlanck * speedOfLight / (wavelength * kBoltzmann * T);
+    double intensity = a / (pow(wavelength,5) * (exp(b) - 1.0));
+    return intensity;
+}
+
+double Blackbody::get_spectral_density(double wavelength) {
+    return this->planck(this->T, wavelength/1E6);
+}
+
+
+PhoenixSpectrum::PhoenixSpectrum(std::string spectrum_file, std::string wavelength_file, const double &min_wavelength,
+                                 const double &max_wavelength) {
+
+}
