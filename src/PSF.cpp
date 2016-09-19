@@ -69,7 +69,15 @@ herr_t read_psfs(hid_t loc_id, const char *name, const H5L_info_t *linfo, void *
     return 0;
 }
 
-PSF::PSF(const std::string filename) {
+PSF::PSF() {
+
+}
+
+PSF::~PSF() {
+
+}
+
+PSF_ZEMAX::PSF_ZEMAX(const std::string filename) {
 
     H5::H5File * file = new H5::H5File(filename, H5F_ACC_RDONLY);
     std::cout << std::endl << "Iterating over elements in the file" << std::endl;
@@ -127,20 +135,6 @@ PSF::PSF(const std::string filename) {
                 this->psfs[order].push_back(p);
                 // found
             }
-
-//
-//            this.psfs.
-//            std::map<double, cv::Mat> inner;
-
-//            double maxVal, minVal;
-//            cv::minMaxLoc(psf, &minVal, &maxVal); //find minimum and maximum intensities
-//            psf.convertTo(psf, CV_8UC1, 255/(maxVal - minVal), -minVal * 255/(maxVal - minVal));
-//            cv::namedWindow("testwindow", CV_WINDOW_NORMAL);
-//            cv::imshow("testwindow", psf);
-//            cv::waitKey(0);
-//
-//            inner.insert(std::make_pair(wavelength, psf.clone()));
-//            this->psfs.insert(std::make_pair(order, inner));
             psf.release();
 
         }
@@ -149,7 +143,7 @@ PSF::PSF(const std::string filename) {
     }
 }
 
-cv::Mat PSF::get_PSF(int order, double wavelength) {
+cv::Mat PSF_ZEMAX::get_PSF(int order, double wavelength) {
     std::vector<double> distance;
     for(auto& psf : this->psfs[order])
     {
@@ -161,7 +155,7 @@ cv::Mat PSF::get_PSF(int order, double wavelength) {
                                  this->psfs[order][idx[0]].wavelength, this->psfs[order][idx[1]].wavelength, wavelength);
 }
 
-cv::Mat PSF::interpolate_PSF(cv::Mat psf1, cv::Mat psf2, double w1, double w2, double w) {
+cv::Mat PSF_ZEMAX::interpolate_PSF(cv::Mat psf1, cv::Mat psf2, double w1, double w2, double w) {
     double p1 = fabs((w-w1)/(w2-w1));
     double p2 = fabs((w-w2)/(w2-w1));
     double p_sum = p1+p2;
@@ -200,4 +194,16 @@ cv::Mat PSF::interpolate_PSF(cv::Mat psf1, cv::Mat psf2, double w1, double w2, d
 
     return comb_psf.rowRange(cenY-size_y, cenY+size_y).colRange(cenX-size_x, cenX+size_x);
 
+}
+
+PSF_gaussian::PSF_gaussian(double sigma, double aperture): sigma(sigma) {
+    this->ksize = ceil(sigma*3.)*2+1;
+
+    //this->ksize = ksize%2==0 ? ksize+1 : ksize;
+
+}
+
+
+cv::Mat PSF_gaussian::get_PSF(int order, double wavelength) {
+    return cv::getGaussianKernel(this->ksize, this->sigma, CV_32F);
 }

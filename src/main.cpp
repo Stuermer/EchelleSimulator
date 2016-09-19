@@ -15,10 +15,13 @@ using namespace std::chrono;
 int main(int argc, char *argv[])
 {
     high_resolution_clock::time_point t1 = high_resolution_clock::now();
-    PSF psfs = PSF(argv[1]);
+    // PSF psfs = PSF(argv[1]);
+    PSF_gaussian psfs = PSF_gaussian(5., 3.);
+    cv::Mat r = psfs.get_PSF(10,3.);
+    print_cv_matrix_info(r, "psf info");
 
     MatrixSimulator m;
-    m.psfs = &psfs;
+    m.psfpys = &psfs;
     m.read_transformations(argv[2]);
     m.set_order_range(89,95);
     m.calc_splines();

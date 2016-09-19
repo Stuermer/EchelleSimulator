@@ -270,7 +270,8 @@ int MatrixSimulator::simulate_order(int order, cv::gpu::GpuMat& slit_image, cv::
     tmp = transform_slit(slit_image, tr, this->sim_efficiencies[order][i]);
 
       if (aberrations){
-          cv::Mat psf = this->psfs->get_PSF(order, wavelength);
+          PSF * psf_p = dynamic_cast<PSF*> (this->psfs);
+          cv::Mat psf = psf_p->get_PSF(order, wavelength);
           cv::flip(psf, psf, -1);
 //          cv::gpu::GpuMat psf_gpu =  cv::gpu::GpuMat(psf);
           cv::gpu::filter2D(tmp, tmp, -1, psf, cvPoint(psf.cols/2, psf.rows/2));
@@ -315,7 +316,8 @@ int MatrixSimulator::simulate_order(int order, cv::Mat& slit_image, cv::Mat& out
       cv::Mat tmp = transform_slit(slit_image, tr, weight);
 
       if (aberrations){
-          cv::Mat psf = this->psfs->get_PSF(order, wavelength);
+          PSF * psf_p = dynamic_cast<PSF *> (this->psfs);
+          cv::Mat psf = psf_p->get_PSF(order, wavelength);
           cv::flip(psf, psf, -1);
           cv::filter2D(tmp, tmp, -1, psf, cvPoint(psf.cols/2, psf.rows/2));
       }
