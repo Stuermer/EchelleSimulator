@@ -1,5 +1,7 @@
 doc/html/
 doc/latex/
 *.dat
-*.png
 data/
+build/
+release/
+
