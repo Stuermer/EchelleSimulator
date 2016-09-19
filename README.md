@@ -13,10 +13,32 @@ Second, a wavelength-dependent **point spread functions (PSFs)** is applied on t
 #### Concept:
 ---
 ![Echelle simulation](https://github.com/Stuermer/EchelleSimulator/blob/master/doc/intro.png "Echelle simulation")
+
 ---
 
 **Both, the matrices and the PSFs have to be extracted from ZEMAX only once. It is therefore possible to simulate spectra without access to ZEMAX**
 
+---
+
+#### Output:
+
+---
+![Echelle spectrum](https://github.com/Stuermer/EchelleSimulator/blob/master/doc/flat.png "Simulated Echelle")
+
+---
+Part of a simulated flat spectrum for the MAROON-X spectrograph.
+
+#### Features:
+
+---
+ * **parallelized** C++ code for fast simulations
+ * CUDA support (not fully functional yet)
+ * arbitrary 1D spectra
+ * arbitrary PSFs
+ * arbitrary efficiency modells can be applied
+ * works with any spectrograph (needs access to ZEMAX modell only once)
+
+---
 
 ## Prerequisites
  * GCC > 4.6 (or equivalent MSVC), capable of handling C++11 syntax
