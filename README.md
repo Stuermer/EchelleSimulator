@@ -1,5 +1,6 @@
 ![EchelleSimulator](https://github.com/Stuermer/EchelleSimulator/blob/master/doc/logo.png "Echelle Simulator")
 
+
 EchelleSimulator is a tool to simulate realistic arbitrary 2D Echelle spectra. 
 
 
@@ -9,7 +10,10 @@ First, wavelength-dependent **affine transformation matrices** are extracted fro
 
 Second, a wavelength-dependent **point spread functions (PSFs)** is applied on the transformed slit images to properly account for optical aberrations. Again, the PSF is only slowly varying across an echelle order, allowing for interpolation at intermediate wavelength.
 
+#### Concept:
+---
 ![Echelle simulation](https://github.com/Stuermer/EchelleSimulator/blob/master/doc/intro.png "Echelle simulation")
+---
 
 **Both, the matrices and the PSFs have to be extracted from ZEMAX only once. It is therefore possible to simulate spectra without access to ZEMAX**
 
