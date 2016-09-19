@@ -48,3 +48,6 @@ Part of a simulated flat spectrum for the MAROON-X spectrograph.
 ## Example usage
   todo
  
+## Documentation
+The documentation can be found [here](https://stuermer.github.io/EchelleSimulator).
+The documentation is automatically produced by **doxygen**, using [this](https://github.com/Velron/doxygen-bootstrapped) template.
