@@ -21,7 +21,7 @@ int main(int argc, char *argv[])
     print_cv_matrix_info(r, "psf info");
 
     MatrixSimulator m;
-    m.psfpys = &psfs;
+    m.psfs = &psfs;
     m.read_transformations(argv[2]);
     m.set_order_range(89,95);
     m.calc_splines();
