@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['noise',['noise',['../classnoise.html',1,'']]]
+  ['matrixsimulator',['MatrixSimulator',['../class_matrix_simulator.html',1,'']]]
 ];

@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['gratingefficiency',['GratingEfficiency',['../class_grating_efficiency.html',1,'']]]
+  ['efficiency',['Efficiency',['../class_efficiency.html',1,'']]]
 ];

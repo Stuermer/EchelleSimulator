@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['matrixsimulator',['MatrixSimulator',['../class_matrix_simulator.html',1,'']]]
+  ['idealetalon',['IdealEtalon',['../class_ideal_etalon.html',1,'']]]
 ];

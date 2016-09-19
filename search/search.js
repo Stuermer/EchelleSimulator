@@ -7,16 +7,28 @@
 
 var indexSectionsWithContent =
 {
-  0: "cegimnprs",
-  1: "cegimnprs",
-  2: "e"
+  0: "_abcdefghimnoprstuvw~",
+  1: "bcegimnprs",
+  2: "st",
+  3: "cehmnprs",
+  4: "abcdefgimoprstv~",
+  5: "abcdghimnoprstuvw",
+  6: "diprv",
+  7: "_acdhp",
+  8: "et"
 };
 
 var indexSectionNames =
 {
   0: "all",
   1: "classes",
-  2: "pages"
+  2: "namespaces",
+  3: "files",
+  4: "functions",
+  5: "variables",
+  6: "typedefs",
+  7: "defines",
+  8: "pages"
 };
 
 function convertToId(search)

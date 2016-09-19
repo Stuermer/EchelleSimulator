@@ -1,0 +1,47 @@
+\form#0:$ \left( \begin{array}{ccc} a & b & c \ d & e & f \end{array} \right) $
+\form#1:$ \left( \begin{bmatrix} a & b & c \ d & e & f \end{bmatrix} \right) $
+\form#2:$ \left( \begin{bmatrix} a & b & c \\ d & e & f \end{bmatrix} \right) $
+\form#3:$ \begin{bmatrix} a & b & c \\ d & e & f \end{bmatrix} $
+\form#4:$ \phi $
+\form#5:$ sx, sy $
+\form#6:$ s $
+\form#7:$ tx, ty $
+\form#8:$ \pm 2\pi $
+\form#9:$ 2 \pi $
+\form#10:$ -\pi $
+\form#11:$ \begin{pmatrix} a & b & c \\ d & e & f \end{pmatrix} $
+\form#12:\[ I = \int_{a}^{b}(s(\lambda) \approx \sum_{i=0}^{n} s(a + i*(b-a)/n) * (b-a)*n \]
+\form#13:\[ I = \int_{a}^{b}(s(\lambda) d\lambda \approx \sum_{i=0}^{n} s(a + i*\frac{b-a}{n} * \frac(b-a){n} \]
+\form#14:\[ I = \int_{a}^{b}(s(\lambda) d\lambda \approx \sum_{i=0}^{n} s(a + i*\frac{b-a}{n} * \frac{(b-a)}{n} \]
+\form#15:\[ cF = \frac{4 R}{(1-R)^2} \]
+\form#16:\[ T(\lambda) = \frac{1}{F sin(\frac{\delta} {2})^2} \]
+\form#17:\[ \delta \left( \frac{2\pi}{\lambda} \right) 2nlcos(\Theta) \]
+\form#18:$ F $
+\form#19:\[ F = \frac{4R}{(1-R)^2} \]
+\form#20:\[ T(\lambda) = \frac{1}{cF sin(\frac{\delta} {2})^2} \]
+\form#21:\[ cF = \frac{4R}{(1-R)^2} \]
+\form#22:\[ s(\lambda) = const. \]
+\form#23:\[ s(\lambda) = \frac{1}{cF sin(\frac{\delta} {2})^2} \]
+\form#24:\[ I = \int_{a}^{b}(s(\lambda) d\lambda \approx \sum_{i=0}^{n} s(a + (i+0.5)frac{b-a}{n}) * \frac{(b-a)}{n} \]
+\form#25:\[ s(\lambda) = \frac{2hc^2}{\lambda^5}|frac{1}{\exp{\frac{hc}{\lambda k_B T}}-1} \]
+\form#26:\[ s(\lambda) = \frac{2hc^2}{\lambda^5}\frac{1}{\exp{\frac{hc}{\lambda k_B T}}-1} \]
+\form#27:\begin{tikzpicture*} \f{axis} \addplot[color=red]{exp(x)} \end{tikzpicture*}
+\form#28:\[ \fbox{ \begin{tikztimingtable} clock & 10{HL} \\ signal1 & 5{LLHH} \\ signal2 & 5{LHHL} \\ \end{tikztimingtable} } \]
+\form#29:\[ \fbox{ \begin{tikzpicture} |begin{axis} \addplot[color=red]{exp(x)}; \end{axis} \end{tikzpicture} } \]
+\form#30:\begin{tikzpicture} \f{axis} \addplot[color=red]{exp(x)}; \end{tikzpicture}
+\form#31:\begin{tikzpicture} \begin{axis} \addplot[color=red]{exp(x)}; \end{axis} \end{tikzpicture}
+\form#32:\[ \begin{tikzpicture} \begin{axis} \addplot[color=red]{exp(x)}; \end{axis} \end{tikzpicture} \]
+\form#33:\[ \begin{tikzpicture} \begin{axis}[width=5cm] \addplot[color=red]{exp(x)}; \end{axis} \end{tikzpicture} \]
+\form#34:\[ \begin{tikzpicture} \begin{axis}[width=5cm] \addplot[color=blue]{exp(x)}; \end{axis} \end{tikzpicture} \]
+\form#35:\[ \fbox{ \begin{tikzpicture} \begin{axis} \addplot[color=blue]{exp(x)}; \end{axis} \end{tikzpicture} } \]
+\form#36:\[ \fbox{ \begin{tikzpicture} \begin{axis} \addplot[color=red]{exp(x)}; \end{axis} \end{tikzpicture} } \]
+\form#37:\[ \fbox{ \begin{tikzpicture} \begin{axis} \addplot[color=green]{exp(x)}; \end{axis} \end{tikzpicture} } \]
+\form#38:\[ \fbox{ \begin{tikzpicture} \begin{axis} \addplot{x}; \end{axis} \end{tikzpicture} } \]
+\form#39:\[ \fbox{ \begin{tikzpicture} \begin{axis} \addplot{2.0 * 2.9979E8 * 2.9979E8 / (exp(x^5)}; \end{axis} \end{tikzpicture} } \]
+\form#40:\[ \fbox{ \begin{tikzpicture} \begin{axis} \addplot{2.0 * 2.9979E8 * 2.9979E8 / (exp(x^5)*exp(6.62606896E-34*2.997E8/(x*1.3806504E-23*3500)-1)}; \end{axis} \end{tikzpicture} } \]
+\form#41:\[ \fbox{ \begin{tikzpicture} \begin{axis} \addplot{2.0 *6.62606896E-34* 2.9979E8 * 2.9979E8 / (x^5)*1./(exp(6.62606896E-34*2.997E8/(x*1.3806504E-23*3500))-1)}; \end{axis} \end{tikzpicture} } \]
+\form#42:\[ \fbox{ \begin{tikzpicture} \begin{axis}[domain=300E-9:4000E-9, samples=100] \addplot{2.0 *6.62606896E-34* 2.9979E8 * 2.9979E8 / (x^5)*1./(exp(6.62606896E-34*2.997E8/(x*1.3806504E-23*3500))-1)}; \end{axis} \end{tikzpicture} } \]
+\form#43:\[ \fbox{ \begin{tikzpicture} \begin{axis}[domain=300E-9:4000E-9, samples=100] \addplot[color=red]{2.0 *6.62606896E-34* 2.9979E8 * 2.9979E8 / (x^5)*1./(exp(6.62606896E-34*2.997E8/(x*1.3806504E-23*3500))-1)}; \end{axis} \end{tikzpicture} } \]
+\form#44:\begin{tikzpicture} \begin{axis}[domain=300E-9:4000E-9, samples=100] \addplot[color=red]{2.0 *6.62606896E-34* 2.9979E8 * 2.9979E8 / (x^5)*1./(exp(6.62606896E-34*2.997E8/(x*1.3806504E-23*3500))-1)}; \end{axis} \end{tikzpicture}
+\form#45:\[ \fbox{ \begin{tikzpicture} \begin{axis} \addplot[color=green]{2.0 * 2.9979e8 * 2.9979e8 / (exp(x^5)*exp(6.62606896e-34*2.997e8/(x*1.3806504e-23*3500)-1)}; \end{axis} \end{tikzpicture} } \]
+\form#46:\[ \fbox{ \begin{tikzpicture} \begin{axis}[domain=300E-9:4000E-9, samples=100) \addplot[color=blue]{2.0 * 2.9979e8 * 2.9979e8 / (exp(x^5)*exp(6.62606896e-34*2.997e8/(x*1.3806504e-23*3500)-1)}; \end{axis} \end{tikzpicture} } \]

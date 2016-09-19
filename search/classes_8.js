@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['slit',['slit',['../classslit.html',1,'']]],
-  ['source',['Source',['../class_source.html',1,'']]]
+  ['raw_5ftransformation',['raw_transformation',['../structraw__transformation.html',1,'']]]
 ];
