@@ -88,4 +88,9 @@ void show_cv_matrix(cv::Mat img, std::string windowname);
  * @param imagename Name of the matrix
  */
 void print_cv_matrix_info(cv::Mat img, std::string imagename);
-#endif // HELPER_H
+
+
+double interpolate(const std::map<double,double> &data,
+                    double x);
+
+#endif

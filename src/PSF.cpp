@@ -12,10 +12,9 @@
 
 
 herr_t
-file_info(hid_t loc_id, const char *name, const H5L_info_t *linfo, void *opdata)
-{
+file_info(hid_t loc_id, const char *name, const H5L_info_t *linfo, void *opdata) {
     hid_t group;
-    auto group_names=reinterpret_cast< std::vector<std::string>* >(opdata);
+    auto group_names = reinterpret_cast< std::vector<std::string> * >(opdata);
     group = H5Gopen2(loc_id, name, H5P_DEFAULT);
 
     group_names->push_back(name);
@@ -25,10 +24,9 @@ file_info(hid_t loc_id, const char *name, const H5L_info_t *linfo, void *opdata)
 }
 
 herr_t
-dataset_info(hid_t loc_id, const char *name, const H5L_info_t *linfo, void *opdata)
-{
+dataset_info(hid_t loc_id, const char *name, const H5L_info_t *linfo, void *opdata) {
     hid_t ds;
-    auto dataset_names=reinterpret_cast< std::vector<std::string>* >(opdata);
+    auto dataset_names = reinterpret_cast< std::vector<std::string> * >(opdata);
     ds = H5Dopen2(loc_id, name, H5P_DEFAULT);
 
     dataset_names->push_back(name);
@@ -37,8 +35,7 @@ dataset_info(hid_t loc_id, const char *name, const H5L_info_t *linfo, void *opda
     return 0;
 }
 
-herr_t read_psfs(hid_t loc_id, const char *name, const H5L_info_t *linfo, void *opdata)
-{
+herr_t read_psfs(hid_t loc_id, const char *name, const H5L_info_t *linfo, void *opdata) {
     hid_t ds;
     ds = H5Dopen2(loc_id, name, H5P_DEFAULT);
     hid_t dspace = H5Dget_space(ds);
@@ -47,17 +44,17 @@ herr_t read_psfs(hid_t loc_id, const char *name, const H5L_info_t *linfo, void *
     hsize_t dims[ndims];
     H5Sget_simple_extent_dims(dspace, dims, NULL);
 
-    double * buffer = new double[dims[0] * dims[1]];
+    double *buffer = new double[dims[0] * dims[1]];
 
     H5::DataSpace mspace1 = H5::DataSpace(2, dims);
     H5::DataSet dataset = H5::DataSet(ds);
-    dataset.read( buffer, H5::PredType::NATIVE_INT, mspace1, dspace );
+    dataset.read(buffer, H5::PredType::NATIVE_INT, mspace1, dspace);
 
-    auto psfs=reinterpret_cast< std::vector<cv::Mat>* >(opdata);
+    auto psfs = reinterpret_cast< std::vector<cv::Mat> * >(opdata);
     cv::Mat psf(dims[0], dims[1], CV_32FC1);
-    for(int i=0; i<dims[0]; ++i){
-        for(int j=0; j<dims[1]; ++j){
-            psf.at<double>(i,j) = buffer[i*dims[1]+j];
+    for (int i = 0; i < dims[0]; ++i) {
+        for (int j = 0; j < dims[1]; ++j) {
+            psf.at<double>(i, j) = buffer[i * dims[1] + j];
         }
     }
 

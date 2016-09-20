@@ -225,7 +225,10 @@ private:
 class PhoenixSpectrum : public Source{
 public:
     PhoenixSpectrum(std::string spectrum_file, std::string wavelength_file, const double& min_wavelength, const double& max_wavelength);
-
+    void read_spectrum(std::string spectrum_file, std::string wavelength_file, const double& min_wavelength, const double& max_wavelength);
+    double get_spectral_density(double wavelength);
+private:
+    std::map<double, double> data;
 
 };
 #endif // SOURCE_H

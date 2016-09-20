@@ -61,6 +61,8 @@ public:
     PSF * psfs;
 
     void prepare_sources(std::vector<Source*> sources);
+private:
+    cv::Mat img;
 
 
 };

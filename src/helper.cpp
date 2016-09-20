@@ -13,7 +13,7 @@
 #include <cstdlib>
 #include <opencv2/imgproc.hpp>
 #include <highgui.h>
-
+#include <armadillo>
 
 void vectorToFile(std::vector<double> const& vec, std::string const& filename) {
   std::ofstream file(filename);
@@ -124,3 +124,23 @@ void print_cv_matrix_info(cv::Mat img, std::string imagename="Image") {
 
 }
 
+
+double interpolate(const std::map<double,double> &data,
+                    double x)
+{
+    typedef std::map<double, double>::const_iterator i_t;
+
+    i_t i=data.upper_bound(x);
+    if(i==data.end())
+    {
+        return (--i)->second;
+    }
+    if (i==data.begin())
+    {
+        return i->second;
+    }
+    i_t l=i; --l;
+
+    const double delta=(x- l->first)/(i->first - l->first);
+    return delta*i->second +(1-delta)*l->second;
+}

@@ -363,7 +363,7 @@ cv::Mat MatrixSimulator::simulate_spectrum(cv::gpu::GpuMat& slit_image)
 #pragma omp parallel for
   for(int o=this->orders.front(); o<this->orders.back()+1; ++o){
     std::cout << o << std::endl;
-    this->simulate_order(o, slit_image, img, true);
+    this->simulate_order(o, slit_image, img, false);
   }
     img.download(img_cpu);
   return img_cpu;
@@ -374,7 +374,7 @@ cv::Mat MatrixSimulator::simulate_spectrum(cv::Mat& slit_image)
   cv::Mat img = cv::Mat::zeros(4096*3, 4096*3, slit_image.type());
 #pragma omp parallel for
   for(int o=this->orders.front(); o<this->orders.back()+1; ++o){
-    this->simulate_order(o, slit_image, img, true);
+    this->simulate_order(o, slit_image, img, false);
   }
   return img;
 }
@@ -418,6 +418,7 @@ void MatrixSimulator::prepare_sources(std::vector<Source*> sources) {
         for(auto& s : sources)
         {
             std::vector<double> spectrum = s->get_spectrum(this->sim_wavelength[o]);
+            // vectorToFile(spectrum, "../o"+std::to_string(o)+".dat");
             for(int i=0; i< spectrum.size(); ++i)
             {
                 this->sim_spectra[o][i] = spectrum[i];
