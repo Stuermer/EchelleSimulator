@@ -42,7 +42,7 @@ int main(int argc, char *argv[])
 
     IdealEtalon cs = IdealEtalon(10., 1., 0., 0.9);
     std::vector<Source*> sources;
-    sources.push_back(&cs);
+    sources.push_back(&ps);
     m.prepare_sources(sources);
 
     cv::Mat img = m.simulate_spectrum(s.slit_image);

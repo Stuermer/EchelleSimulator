@@ -31,7 +31,7 @@ public:
     void set_wavelength(int N);
     void calc_sim_matrices();
     cv::gpu::GpuMat transform_slit(cv::gpu::GpuMat& slit_image, cv::Mat& transformation_matrix, double weight);
-    cv::Mat transform_slit(cv::Mat& slit_image, cv::Mat& transformation_matrix, double& weight);
+    cv::Mat transform_slit(cv::Mat& slit_image, cv::Mat& transformation_matrix, double weight);
     int simulate_order(int order, cv::gpu::GpuMat& slit_image, cv::gpu::GpuMat& output_image, bool aberrations);
     int simulate_order(int order, cv::Mat& slit_image, cv::Mat& output_image, bool aberrations);
     cv::Mat simulate_spectrum(cv::gpu::GpuMat& slit_image);
