@@ -380,7 +380,7 @@ void MatrixSimulator::simulate_spectrum()
     //cv::Mat img = cv::Mat::zeros(4096*3, 4096*3, slit_image.type());
 #pragma omp parallel for
     for(int o=this->orders.front(); o<this->orders.back()+1; ++o){
-        this->simulate_order(o, this->slit->slit_image, this->ccd->data, false);
+        this->simulate_order(o, this->slit->slit_image, this->ccd->data, true);
     }
     //return img;
 }

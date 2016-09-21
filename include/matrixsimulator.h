@@ -58,6 +58,7 @@ public:
 
     void prepare_sources(std::vector<Source *> sources);
     void save_to_file(std::string filename, bool downsample=true, bool overwrite=false);
+    CCD * ccd;
 private:
     cv::Mat img;
     std::map<int, std::vector<raw_transformation> > raw_transformations;
@@ -79,7 +80,7 @@ private:
 
     PSF * psfs;
     Slit * slit;
-    CCD * ccd;
+
 
 
 };
