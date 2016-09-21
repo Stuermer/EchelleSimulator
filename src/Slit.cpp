@@ -1,16 +1,16 @@
-#include "slit.h"
+#include "Slit.h"
 #include <opencv2/highgui.hpp>
 #include <iostream>
 
-slit::slit()
+Slit::Slit()
 {
 }
 
-slit::slit(double w, double h, int slit_sampling){
+Slit::Slit(double w, double h, int slit_sampling){
     this->set_slit(w,h,slit_sampling);
 }
 
-void slit::set_slit(double w, double h, int slit_sampling){
+void Slit::set_slit(double w, double h, int slit_sampling){
     this->w = w;
     this->h = h;
     this->ratio = h/w;
@@ -32,7 +32,7 @@ void slit::set_slit(double w, double h, int slit_sampling){
     #endif
 }
 
-void slit::show(){
+void Slit::show(){
     cv::imshow("Slit Image", this->slit_image);
     cv::waitKey(0);
 

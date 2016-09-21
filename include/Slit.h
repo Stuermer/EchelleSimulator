@@ -3,11 +3,11 @@
 #include <opencv2/core.hpp>
 #include "opencv2/gpu/gpu.hpp"
 
-class slit
+class Slit
 {
 public:
-    slit();
-    slit(double w, double h, int slit_sampling);
+    Slit();
+    Slit(double w, double h, int slit_sampling);
     void set_slit(double w, double h, int slit_sampling);
     void show();
 

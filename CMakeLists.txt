@@ -18,16 +18,17 @@ find_package(CCFITS REQUIRED)
 INSTALL_FILES("${CMAKE_ROOT}/Modules" FILES "${CMAKE_SOURCE_DIR}/FindCCOIFITS.cmake")
 
 find_package(HDF5 COMPONENTS HL REQUIRED)
+
 include_directories(SYSTEM ${HDF5_INCLUDE_DIRS} ${HDF5_HL_INCLUDE_DIR})
 include_directories(SYSTEM $OPENCV_INCLUDE_DIRS)
 include_directories(src)
 include_directories(include)
-set (LINK_LIBS ${LINK_LIBS} ${HDF5_LIBRARIES})
+set (LINK_LIBS ${LINK_LIBS} ${HDF5_LIBRARIES} ${HDF5_HL_LIBRARIES})
 
 set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -fopenmp")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/build")
 
-add_executable( echellesimulator src/helper.cpp src/source.cpp src/efficiency.cpp src/slit.cpp src/matrixsimulator.cpp src/main.cpp src/noise.cpp src/PSF.cpp)
+add_executable( echellesimulator src/helper.cpp src/source.cpp src/efficiency.cpp src/Slit.cpp src/matrixsimulator.cpp src/main.cpp src/noise.cpp src/PSF.cpp src/CCD.cpp src/hdf5opencv.cpp src/example1.cpp.cpp)
 target_link_libraries(echellesimulator ${LINK_LIBS})

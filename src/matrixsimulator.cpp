@@ -115,6 +115,7 @@ void MatrixSimulator::read_transformations(std::string path)
 
     for(auto imap: this->raw_transformations)
         this->orders.push_back(imap.first);
+    this->calc_splines();
 }
 void MatrixSimulator::calc_splines(){
     for(auto o: this->orders)
@@ -176,6 +177,7 @@ void MatrixSimulator::set_wavelength(int N){
             this->sim_wavelength[o].push_back(min_wl+dl*i);
         }
     }
+    this->calc_sim_matrices();
 }
 
 void MatrixSimulator::calc_sim_matrices(){
@@ -357,30 +359,33 @@ int MatrixSimulator::simulate_order(int order, cv::Mat& slit_image, cv::Mat& out
 }
 
 
-cv::Mat MatrixSimulator::simulate_spectrum(cv::gpu::GpuMat& slit_image)
+void MatrixSimulator::simulate_spectrum(cv::gpu::GpuMat& slit_image)
 {
-    cv::Mat img_cpu = cv::Mat::zeros(4096*3, 4096*3, slit_image.type());
-    cv::gpu::GpuMat img = cv::gpu::GpuMat(img_cpu);
+//    cv::Mat img_cpu = cv::Mat::zeros(4096*3, 4096*3, slit_image.type());
+    cv::gpu::GpuMat img = cv::gpu::GpuMat(this->ccd->data);
 #pragma omp parallel for
     for(int o=this->orders.front(); o<this->orders.back()+1; ++o){
         std::cout << o << std::endl;
         this->simulate_order(o, slit_image, img, false);
     }
-    img.download(img_cpu);
-    return img_cpu;
+    //img.download(img_cpu);
+    //return img_cpu;
 }
 
-cv::Mat MatrixSimulator::simulate_spectrum(cv::Mat& slit_image)
+void MatrixSimulator::simulate_spectrum()
 {
-    cv::Mat img = cv::Mat::zeros(4096*3, 4096*3, slit_image.type());
+    this->set_efficiencies(this->efficiencies);
+
+    this->prepare_sources(this->sources);
+    //cv::Mat img = cv::Mat::zeros(4096*3, 4096*3, slit_image.type());
 #pragma omp parallel for
     for(int o=this->orders.front(); o<this->orders.back()+1; ++o){
-        this->simulate_order(o, slit_image, img, false);
+        this->simulate_order(o, this->slit->slit_image, this->ccd->data, false);
     }
-    return img;
+    //return img;
 }
 
-void MatrixSimulator::prepare_efficiencies(std::vector<Efficiency*> &efficiencies)
+void MatrixSimulator::set_efficiencies(std::vector<Efficiency *> &efficiencies)
 {
     for(auto& o : this->orders)
     {
@@ -409,7 +414,7 @@ void MatrixSimulator::set_order_range(int min_order, int max_order) {
 
 }
 
-void MatrixSimulator::prepare_sources(std::vector<Source*> sources) {
+void MatrixSimulator::prepare_sources(std::vector<Source *> sources) {
     std::cout<<"Prepare sources" << std::endl;
     for(auto& o: this->orders)
     {
@@ -431,4 +436,27 @@ void MatrixSimulator::prepare_sources(std::vector<Source*> sources) {
 
 }
 
+void MatrixSimulator::add_efficiency(Efficiency *eff) {
+    this->efficiencies.push_back(eff);
+}
 
+
+void MatrixSimulator::set_ccd(CCD * ccd){
+    this->ccd = ccd;
+}
+
+void MatrixSimulator::set_slit(Slit * slit){
+    this->slit = slit;
+}
+
+void MatrixSimulator::set_psfs(PSF * psfs){
+    this->psfs = psfs;
+}
+
+void MatrixSimulator::add_source(Source *src) {
+    this->sources.push_back(src);
+}
+
+void MatrixSimulator::save_to_file(std::string filename, bool downsample, bool overwrite) {
+    this->ccd->save_to_file(filename, downsample, overwrite);
+}
