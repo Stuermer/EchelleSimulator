@@ -1,7 +1,7 @@
 ![EchelleSimulator](https://github.com/Stuermer/EchelleSimulator/blob/master/doc/logo.png "Echelle Simulator")
 
 
-EchelleSimulator is a tool to simulate realistic arbitrary 2D Echelle spectra. 
+Échelle++ is a tool to simulate realistic arbitrary 2D Echelle spectra. 
 
 
 The basic idea is that any (fiber-fed) echelle spectrograph can be modelled with a set of wavelength-dependent transformation matrices and point spread functions which describe the spectrographs optics:
