@@ -103,12 +103,19 @@ void show_cv_matrix(cv::Mat img, std::string windowname="image") {
     double minVal, maxVal;
 
     cv::Mat img_show = img.clone();
-    cv::minMaxLoc(img_show, &minVal, &maxVal); //find minimum and maximum intensities
 
-    cv::cvtColor(img_show, img_show, CV_GRAY2RGB);
-    cv::namedWindow(windowname,CV_WINDOW_NORMAL);
+//    cv::Mat img_show = cv::Mat::zeros(512/3, 1024, img.type());
+//    cv::resize(img.rowRange(0, 512*3).colRange(0,4096*3), img_show, img_show.size(), cv::INTER_NEAREST);
+//
+    cv::minMaxLoc(img_show, &minVal, &maxVal); //find minimum and maximum intensities
+//    int ty = img_show.type();
+    img_show.convertTo(img_show,CV_8U,255.0/(maxVal - minVal), -minVal * 255.0/(maxVal - minVal));
+
+    // cv::cvtColor(img_show, img_show, CV_GRAY2RGB);
+
+     cv::namedWindow(windowname,CV_WINDOW_NORMAL);
     cv::imshow(windowname, img_show);
-    cv::waitKey(0);
+    cv::waitKey(1);
 
 }
 

@@ -220,8 +220,8 @@ cv::gpu::GpuMat MatrixSimulator::transform_slit(cv::gpu::GpuMat& slit_image, cv:
     cv::Mat tm = transformation_matrix.clone();
     int tx_int = floor(tm.at<double>(0,2));
     int ty_int = floor(tm.at<double>(1,2));
-    tm.at<double>(0,2) += -tx_int + n_rows/2.;
-    tm.at<double>(1,2) += -ty_int + n_cols * 0.9;
+    tm.at<double>(0,2) += -tx_int + n_cols/2.;
+    tm.at<double>(1,2) += -ty_int + n_rows * 0.75;
 
     // cv::Mat warp_dst_cpu = cv::Mat::zeros( n_rows, n_cols, slit_image.type() );
     cv::gpu::GpuMat warp_dst=cv::gpu::GpuMat(n_rows, n_cols, slit_image.type() );
@@ -246,13 +246,21 @@ cv::Mat MatrixSimulator::transform_slit(cv::Mat& slit_image, cv::Mat& transforma
     cv::Mat tm = transformation_matrix.clone();
     int tx_int = floor(tm.at<double>(0,2));
     int ty_int = floor(tm.at<double>(1,2));
-    tm.at<double>(0,2) += -tx_int + n_rows/2.;
-    tm.at<double>(1,2) += -ty_int + n_cols * 0.9;
+    tm.at<double>(0,2) += -tx_int + n_cols/2.;
+    tm.at<double>(1,2) += -ty_int + n_rows * 0.75;
     double det = cv::determinant(transformation_matrix.colRange(0,2));
     cv::Mat warp_dst;
     weight /= det;
     warp_dst = cv::Mat::zeros( n_rows, n_cols, slit_image.type() );
     cv::warpAffine(slit_image.clone()*weight, warp_dst, tm, warp_dst.size() );
+//
+//    cv::putText(warp_dst, std::to_string(tx_int), cv::Point(0,10), cv::FONT_HERSHEY_COMPLEX_SMALL,
+//                0.4, // Scale. 2.0 = 2x bigger
+//                cv::Scalar(weight), // Color
+//                1, // Thickness
+//                CV_AA); // Anti-alias
+//
+//    show_cv_matrix(warp_dst, "slit");
     return warp_dst;
 }
 
