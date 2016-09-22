@@ -16,7 +16,7 @@ int main(int argc, char *argv[])
 {
     high_resolution_clock::time_point t1 = high_resolution_clock::now();
 
-    PhoenixSpectrum ps = PhoenixSpectrum("/home/julian/Dissertation/CRIRES-POP/template/lte03400-4.00-1.0.PHOENIX-ACES-AGSS-COND-2011-HiRes.fits","/home/julian/Dissertation/CRIRES-POP/template/WAVE_PHOENIX-ACES-AGSS-COND-2011.fits", 0.45, 0.7);
+    //PhoenixSpectrum ps = PhoenixSpectrum("/home/julian/Dissertation/CRIRES-POP/template/lte03400-4.00-1.0.PHOENIX-ACES-AGSS-COND-2011-HiRes.fits","/home/julian/Dissertation/CRIRES-POP/template/WAVE_PHOENIX-ACES-AGSS-COND-2011.fits", 0.45, 0.7);
 
     PSF_ZEMAX psfs1 = PSF_ZEMAX(argv[1]);
     PSF_ZEMAX psfs2 = PSF_ZEMAX(argv[2]);

@@ -7,7 +7,20 @@
 #include "hdf5opencv.h"
 
 CCD::CCD(int Nx, int Ny, int oversampling, int data_type) :Nx(Nx), Ny(Ny), oversampling(oversampling) {
-    this->data = cv::Mat::zeros(Ny*oversampling, Nx*oversampling, data_type);
+
+#ifdef USE_GPU
+    {
+        cv::Mat ones =  cv::Mat::ones(Nx*oversampling, Ny*oversampling, CV_32FC1);
+        this->data = cv::gpu::GpuMat();
+        this->data.upload(ones);
+    }
+#else
+    {
+        this->slit_image = cv::Mat::ones(round(this->h_px), this->w_px, CV_64F);
+    }
+#endif
+
+    // this->data = cv::Mat::zeros(Ny*oversampling, Nx*oversampling, data_type);
 
 }
 
@@ -27,8 +40,11 @@ cv::Mat CCD::get_image(bool downsample) {
         cv::resize(this->data, result, result.size(), cv::INTER_NEAREST);
         return result;
     }
-    else
-        return this->data;
+    else {
+        cv::Mat result;
+        this->data.download(result);
+        return result;
+    }
 }
 
 

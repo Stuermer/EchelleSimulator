@@ -10,6 +10,7 @@
 #include "hdf5.h"
 #include <string>
 #include <ml.h>
+#include "opencv2/gpu/gpu.hpp"
 
 /*!
  * \class CCD glass
@@ -30,10 +31,24 @@ public:
 
     cv::Mat get_image(bool downsample=true);
     //overload + operator
+
+    #ifdef USE_GPU
+    CCD operator+(const CCD & ccd){
+        cv::gpu::add(this->data, ccd.data, this->data);
+    }
+    #else
     CCD operator+(const CCD & ccd){
     this->data += ccd.data;
     }
-    cv::Mat data;
+    #endif
+
+    #ifdef USE_GPU
+        cv::gpu::GpuMat data;
+        bool use_gpu = true;
+    #else
+        cv::Mat data;
+            bool use_gpu = false;
+    #endif
 
 
 private:

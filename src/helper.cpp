@@ -13,7 +13,6 @@
 #include <cstdlib>
 #include <opencv2/imgproc.hpp>
 #include <highgui.h>
-#include <armadillo>
 
 void vectorToFile(std::vector<double> const& vec, std::string const& filename) {
   std::ofstream file(filename);
