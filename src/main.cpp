@@ -43,52 +43,52 @@ int main(int argc, char *argv[])
 
     simulator.simulate_spectrum();
 
-
-    MatrixSimulator simulator2;
-
-    simulator2.read_transformations(argv[7]);
-    simulator2.set_wavelength(10000);
-    simulator2.set_ccd(&ccd);
-    simulator2.set_slit(&s);
-    simulator2.set_psfs(&psfs2);
-    simulator2.add_efficiency(&ge);
-    simulator2.add_source(&cs);
-    simulator2.simulate_spectrum();
-
-    MatrixSimulator simulator3;
-
-    simulator3.read_transformations(argv[8]);
-    simulator3.set_wavelength(10000);
-    simulator3.set_ccd(&ccd);
-    simulator3.set_slit(&s);
-    simulator3.set_psfs(&psfs3);
-    simulator3.add_efficiency(&ge);
-    simulator3.add_source(&cs);
-    simulator3.simulate_spectrum();
-
-
-    MatrixSimulator simulator4;
-
-    simulator4.read_transformations(argv[9]);
-    simulator4.set_wavelength(10000);
-    simulator4.set_ccd(&ccd);
-    simulator4.set_slit(&s);
-    simulator4.set_psfs(&psfs4);
-    simulator4.add_efficiency(&ge);
-    simulator4.add_source(&cs);
-    simulator4.simulate_spectrum();
-
-
-    MatrixSimulator simulator5;
-
-    simulator5.read_transformations(argv[10]);
-    simulator5.set_wavelength(10000);
-    simulator5.set_ccd(&ccd);
-    simulator5.set_slit(&s);
-    simulator5.set_psfs(&psfs5);
-    simulator5.add_efficiency(&ge);
-    simulator5.add_source(&cs);
-    simulator5.simulate_spectrum();
+//
+//    MatrixSimulator simulator2;
+//
+//    simulator2.read_transformations(argv[7]);
+//    simulator2.set_wavelength(10000);
+//    simulator2.set_ccd(&ccd);
+//    simulator2.set_slit(&s);
+//    simulator2.set_psfs(&psfs2);
+//    simulator2.add_efficiency(&ge);
+//    simulator2.add_source(&cs);
+//    simulator2.simulate_spectrum();
+//
+//    MatrixSimulator simulator3;
+//
+//    simulator3.read_transformations(argv[8]);
+//    simulator3.set_wavelength(10000);
+//    simulator3.set_ccd(&ccd);
+//    simulator3.set_slit(&s);
+//    simulator3.set_psfs(&psfs3);
+//    simulator3.add_efficiency(&ge);
+//    simulator3.add_source(&cs);
+//    simulator3.simulate_spectrum();
+//
+//
+//    MatrixSimulator simulator4;
+//
+//    simulator4.read_transformations(argv[9]);
+//    simulator4.set_wavelength(10000);
+//    simulator4.set_ccd(&ccd);
+//    simulator4.set_slit(&s);
+//    simulator4.set_psfs(&psfs4);
+//    simulator4.add_efficiency(&ge);
+//    simulator4.add_source(&cs);
+//    simulator4.simulate_spectrum();
+//
+//
+//    MatrixSimulator simulator5;
+//
+//    simulator5.read_transformations(argv[10]);
+//    simulator5.set_wavelength(10000);
+//    simulator5.set_ccd(&ccd);
+//    simulator5.set_slit(&s);
+//    simulator5.set_psfs(&psfs5);
+//    simulator5.add_efficiency(&ge);
+//    simulator5.add_source(&cs);
+//    simulator5.simulate_spectrum();
 
     high_resolution_clock::time_point t2 = high_resolution_clock::now();
     auto duration = duration_cast<microseconds>( t2 - t1 ).count()/1000000.;

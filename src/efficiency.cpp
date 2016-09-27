@@ -51,13 +51,13 @@ std::vector< double > GratingEfficiency::get_efficieny(int order, std::vector<do
 {
   std::vector<double> res;  
   for(auto& w : wavelength)
-    res.push_back(this->calc_eff(this->scalingfactor, order, deg2rad(this->alpha), deg2rad(this->blaze), w*1000., this->gpmm));
+    res.push_back(this->calc_eff(this->scalingfactor, order, deg2rad(this->alpha), deg2rad(this->blaze), w, this->gpmm));
   return res;
 }
 
-double GratingEfficiency::calc_eff(double scalingfactor, int order, double alpha, double blaze, double wl, double n)
+double GratingEfficiency::calc_eff(double scalingfactor, int order, double alpha, double blaze, double wl, double gpmm)
 {
-  double bb = asin(-sin(alpha)+(double) order*wl*n*1E-6);
+  double bb = asin(-sin(alpha)+(double) order*wl*1E-6/(1./gpmm/1000.));
   double x = (double) order * (cos(alpha) / cos(alpha - blaze)) * (cos(blaze) - sin(blaze) / tan((alpha + bb) / 2.));
   double sinc = sin(M_PI*x)/(M_PI*x);
   return scalingfactor * sinc*sinc;

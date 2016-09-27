@@ -25,7 +25,9 @@
 
 Source::Source()
 {
-
+    //default value for number of integration steps.
+    this->integration_steps = 10;
+    this->shift = 1.;
 }
 
 Source::~Source()
@@ -46,17 +48,21 @@ std::vector<double> Source::get_spectrum(std::vector<double> wavelength) {
 
     for(std::vector<int>::size_type i = 0; i != wavelength.size()-1; i++)
     {
-        diff.push_back(wavelength[i+1] - wavelength[i]);
+        diff.push_back(this->shift*(wavelength[i+1] - wavelength[i]));
     }
     diff.push_back(diff.back());
 
     for(std::vector<int>::size_type i = 0; i != wavelength.size()-1; i++)
     {
-        double result = this->integral_s( wavelength[i] - diff[i] / 2., wavelength[i] + diff[i] / 2., 10);
+        double result = this->integral_s( this->shift*wavelength[i] - diff[i] / 2., this->shift*wavelength[i] + diff[i] / 2., this->integration_steps);
         spectrum.push_back(result);
     }
 
     return spectrum;
+}
+
+void Source::set_integration_steps(int n) {
+    this->integration_steps = n;
 }
 
 double Source::integral_s(double a, double b, int n) {
@@ -68,6 +74,9 @@ double Source::integral_s(double a, double b, int n) {
         return area;
 }
 
+void Source::set_doppler_shift(double shift) {
+    this->shift = 1. + shift / 300000.;
+}
 
 double Constant::get_spectral_density(double wavelength) {
     return this->value;

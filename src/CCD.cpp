@@ -10,13 +10,13 @@ CCD::CCD(int Nx, int Ny, int oversampling, int data_type) :Nx(Nx), Ny(Ny), overs
 
 #ifdef USE_GPU
     {
-        cv::Mat ones =  cv::Mat::ones(Nx*oversampling, Ny*oversampling, CV_32FC1);
+        cv::Mat ones =  cv::Mat::zeros(Ny*oversampling, Nx*oversampling, CV_32FC1);
         this->data = cv::gpu::GpuMat();
         this->data.upload(ones);
     }
 #else
     {
-        this->slit_image = cv::Mat::ones(round(this->h_px), this->w_px, CV_64F);
+        this->data = cv::Mat::zeros(Ny*oversampling, Nx*oversampling, CV_64F);
     }
 #endif
 
@@ -41,10 +41,16 @@ cv::Mat CCD::get_image(bool downsample) {
         return result;
     }
     else {
+#ifdef USE_GPU
+    {
         cv::Mat result;
         this->data.download(result);
         return result;
     }
+#else
+        {
+            return this->data;
+        }
+#endif
 }
-
-
+}

@@ -46,6 +46,19 @@ public:
      */
     std::vector<double> get_spectrum(std::vector<double> wavelength);
 
+    /*!
+     * Applies a spectral shift on the spectrum to simulate radial velocity shifts.
+     *
+     * @param shift doppler shift in [m/s]
+     */
+    void set_doppler_shift(double shift);
+
+    /*!
+     * Sets the number of sub steps of the integrator.
+     * @param n number of subintervalls
+     */
+    void set_integration_steps(int n);
+
 private:
     /*!
      * Integrates the \see{Source::spectral_density()} function between limits a and b.
@@ -64,6 +77,9 @@ private:
      * might not be very precise.
      */
     double integral_s(double a, double b, int n);
+
+    double shift; ///< current doppler shift
+    int integration_steps; ///< number of steps for the integrator
 
 };
 
