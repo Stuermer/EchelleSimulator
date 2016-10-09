@@ -192,3 +192,51 @@ double PhoenixSpectrum::get_spectral_density(double wavelength) {
     return lerp(this->spectrum[idx-1], this->spectrum[idx], frac);
      */
 }
+
+LineList::LineList(std::string linelist) {
+    this->read_spectrum(linelist);
+
+}
+
+
+
+void LineList::read_spectrum(std::string linelist) {
+    std::ifstream       file(linelist.c_str());
+
+    for(CSVIterator loop(file); loop != CSVIterator(); ++loop)
+    {
+        this->data.insert(std::pair<double, double> (std::stod((*loop)[0]), std::stod((*loop)[1])));
+    }
+
+}
+
+std::vector<double> LineList::get_spectrum(std::vector<double> wavelength){
+    std::vector<double> spectrum;
+    for(auto const & wl: wavelength){
+        double d = fabs(wl - this->data.begin()->first);
+        for(auto iterator = ++this->data.begin(); iterator!= this->data.end(); ++iterator)
+        {
+            if (fabs(wl - iterator->first) < d){
+                d = wl - iterator->first;
+            }
+            else
+            {
+                spectrum.push_back(iterator->second);
+                break;
+            }
+        }
+    }
+    return spectrum;
+}
+
+double LineList::get_spectral_density(double wavelength) {
+
+}
+
+std::vector<double> LineList::get_wavelength() {
+    std::vector<double> wavelength;
+    for (auto m: this->data){
+        wavelength.push_back(m.first);
+    }
+    return wavelength;
+}

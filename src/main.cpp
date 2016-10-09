@@ -19,10 +19,10 @@ int main(int argc, char *argv[])
     //PhoenixSpectrum ps = PhoenixSpectrum("/home/julian/Dissertation/CRIRES-POP/template/lte03400-4.00-1.0.PHOENIX-ACES-AGSS-COND-2011-HiRes.fits","/home/julian/Dissertation/CRIRES-POP/template/WAVE_PHOENIX-ACES-AGSS-COND-2011.fits", 0.45, 0.7);
 
     PSF_ZEMAX psfs1 = PSF_ZEMAX(argv[1]);
-    PSF_ZEMAX psfs2 = PSF_ZEMAX(argv[2]);
-    PSF_ZEMAX psfs3 = PSF_ZEMAX(argv[3]);
-    PSF_ZEMAX psfs4 = PSF_ZEMAX(argv[4]);
-    PSF_ZEMAX psfs5 = PSF_ZEMAX(argv[5]);
+//    PSF_ZEMAX psfs2 = PSF_ZEMAX(argv[2]);
+//    PSF_ZEMAX psfs3 = PSF_ZEMAX(argv[3]);
+//    PSF_ZEMAX psfs4 = PSF_ZEMAX(argv[4]);
+//    PSF_ZEMAX psfs5 = PSF_ZEMAX(argv[5]);
 
     Slit s = Slit(50., 150., 10);
     CCD ccd = CCD(4096, 4096, 3, s.slit_image.type());
@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
     MatrixSimulator simulator;
 
     simulator.read_transformations(argv[6]);
-    simulator.set_wavelength(10000);
+//    simulator.set_wavelength(10000);
     simulator.set_ccd(&ccd);
     simulator.set_slit(&s);
     simulator.set_psfs(&psfs1);
@@ -40,7 +40,11 @@ int main(int argc, char *argv[])
 
     IdealEtalon cs = IdealEtalon(10., 1., 0., 0.9);
     simulator.add_source(&cs);
+//    LineList ThAr = LineList("/home/julian/Studium/Dissertation/Latex/Dissertation/scripts4plots/calibration/ThArCatalog/thar.csv");
+//    simulator.add_source(&ThAr);
 
+//    simulator.set_wavelength(ThAr.get_wavelength());
+    simulator.set_wavelength(10000);
     simulator.simulate_spectrum();
 
 //

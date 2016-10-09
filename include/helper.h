@@ -13,6 +13,7 @@
 #include <fstream>
 #include <string>
 #include <cstdlib>
+#include "csv_reader.h"
 
 /*!
  * Saves vector to CSV File

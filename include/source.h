@@ -44,7 +44,7 @@ public:
      * @param wavelength wavelength vector
      * @return spectrum at given wavelength
      */
-    std::vector<double> get_spectrum(std::vector<double> wavelength);
+    virtual std::vector<double> get_spectrum(std::vector<double> wavelength);
 
     /*!
      * Applies a spectral shift on the spectrum to simulate radial velocity shifts.
@@ -80,7 +80,6 @@ private:
 
     double shift; ///< current doppler shift
     int integration_steps; ///< number of steps for the integrator
-
 };
 
 /*!
@@ -246,5 +245,21 @@ public:
 private:
     std::map<double, double> data;
 
+};
+
+/*!
+ * \class LineList
+ * \brief Implements line list spectrum
+ *
+ */
+class LineList : public Source{
+public:
+    LineList(std::string linelist);
+    void read_spectrum(std::string linelist);
+    double get_spectral_density(double wavelength);
+    std::vector<double> get_spectrum(std::vector<double> wavelength);
+    std::vector<double> get_wavelength();
+private:
+    std::map<double, double> data;
 };
 #endif // SOURCE_H

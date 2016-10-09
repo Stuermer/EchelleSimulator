@@ -30,5 +30,5 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/build")
 
-add_executable(echellesimulator src/main.cpp src/helper.cpp src/source.cpp src/efficiency.cpp src/Slit.cpp src/matrixsimulator.cpp src/noise.cpp src/PSF.cpp src/CCD.cpp src/hdf5opencv.cpp)
+add_executable(echellesimulator src/main.cpp src/helper.cpp src/source.cpp src/efficiency.cpp src/Slit.cpp src/matrixsimulator.cpp src/noise.cpp src/PSF.cpp src/CCD.cpp src/hdf5opencv.cpp include/csv_reader.h)
 target_link_libraries(echellesimulator ${LINK_LIBS})

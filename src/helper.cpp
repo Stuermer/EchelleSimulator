@@ -150,3 +150,4 @@ double interpolate(const std::map<double,double> &data,
     const double delta=(x- l->first)/(i->first - l->first);
     return delta*i->second +(1-delta)*l->second;
 }
+

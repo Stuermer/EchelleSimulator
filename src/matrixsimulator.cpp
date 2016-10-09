@@ -18,66 +18,7 @@ void print_transformation_matrix(cv::Mat tm){
 
 }
 
-class CSVRow
-{
-public:
-    std::string const& operator[](std::size_t index) const
-    {
-        return m_data[index];
-    }
-    std::size_t size() const
-    {
-        return m_data.size();
-    }
-    void readNextRow(std::istream& str)
-    {
-        std::string         line;
-        std::getline(str, line);
 
-        std::stringstream   lineStream(line);
-        std::string         cell;
-
-        m_data.clear();
-        while(std::getline(lineStream, cell, ';'))
-        {
-            m_data.push_back(cell);
-        }
-    }
-private:
-    std::vector<std::string>    m_data;
-};
-
-std::istream& operator>>(std::istream& str, CSVRow& data)
-{
-    data.readNextRow(str);
-    return str;
-}
-
-class CSVIterator
-{
-public:
-    typedef std::input_iterator_tag     iterator_category;
-    typedef CSVRow                      value_type;
-    typedef std::size_t                 difference_type;
-    typedef CSVRow*                     pointer;
-    typedef CSVRow&                     reference;
-
-    CSVIterator(std::istream& str)  :m_str(str.good()?&str:NULL) { ++(*this); }
-    CSVIterator()                   :m_str(NULL) {}
-
-    // Pre Increment
-    CSVIterator& operator++()               {if (m_str) { if (!((*m_str) >> m_row)){m_str = NULL;}}return *this;}
-    // Post increment
-    CSVIterator operator++(int)             {CSVIterator    tmp(*this);++(*this);return tmp;}
-    CSVRow const& operator*()   const       {return m_row;}
-    CSVRow const* operator->()  const       {return &m_row;}
-
-    bool operator==(CSVIterator const& rhs) {return ((this == &rhs) || ((this->m_str == NULL) && (rhs.m_str == NULL)));}
-    bool operator!=(CSVIterator const& rhs) {return !((*this) == rhs);}
-private:
-    std::istream*       m_str;
-    CSVRow              m_row;
-};
 
 MatrixSimulator::MatrixSimulator()
 {
@@ -167,6 +108,7 @@ void MatrixSimulator::calc_splines(){
 }
 
 void MatrixSimulator::set_wavelength(int N){
+    this->sim_wavelength.clear();
     for(auto o: this->orders)
     {
         double min_wl = this->raw_transformations[o].front().wavelength;
@@ -176,6 +118,26 @@ void MatrixSimulator::set_wavelength(int N){
         {
             this->sim_wavelength[o].push_back(min_wl+dl*i);
         }
+    }
+    this->calc_sim_matrices();
+}
+
+void MatrixSimulator::set_wavelength(std::vector<double> wavelength){
+    this->sim_wavelength.clear();
+    for(auto o: this->orders)
+    {
+        double min_wl = this->raw_transformations[o].front().wavelength;
+        double max_wl = this->raw_transformations[o].back().wavelength;
+        std::vector<double> wl_in_order;
+
+        for (auto wl: wavelength)
+        {
+            if ((wl>min_wl) && (wl<max_wl))
+            {
+                wl_in_order.push_back(wl);
+            }
+        }
+        this->sim_wavelength.insert(std::pair<int, std::vector<double>> (o, wl_in_order));
     }
     this->calc_sim_matrices();
 }
@@ -253,14 +215,7 @@ cv::Mat MatrixSimulator::transform_slit(cv::Mat& slit_image, cv::Mat& transforma
     weight /= det;
     warp_dst = cv::Mat::zeros( n_rows, n_cols, slit_image.type() );
     cv::warpAffine(slit_image.clone()*weight, warp_dst, tm, warp_dst.size() );
-//
-//    cv::putText(warp_dst, std::to_string(tx_int), cv::Point(0,10), cv::FONT_HERSHEY_COMPLEX_SMALL,
-//                0.4, // Scale. 2.0 = 2x bigger
-//                cv::Scalar(weight), // Color
-//                1, // Thickness
-//                CV_AA); // Anti-alias
-//
-//    show_cv_matrix(warp_dst, "slit");
+
     return warp_dst;
 }
 
@@ -424,20 +379,20 @@ void MatrixSimulator::set_order_range(int min_order, int max_order) {
 
 void MatrixSimulator::prepare_sources(std::vector<Source *> sources) {
     std::cout<<"Prepare sources" << std::endl;
-    for(auto& o: this->orders)
+    this->sim_spectra.clear();
+    for(auto const& o: this->orders)
     {
         std::cout << "Order " << o << std::endl;
-
-        this->sim_spectra.insert(std::pair<int, std::vector<double> > (o, std::vector<double>(this->sim_wavelength[o].size())));
-        for(auto& s : sources)
-        {
-            std::vector<double> spectrum = s->get_spectrum(this->sim_wavelength[o]);
-            // vectorToFile(spectrum, "../o"+std::to_string(o)+".dat");
-            for(int i=0; i< spectrum.size(); ++i)
+        if ( this->sim_wavelength.count(o) > 0 ){
+            this->sim_spectra.insert(std::pair<int, std::vector<double> > (o, std::vector<double>(this->sim_wavelength[o].size())));
+            for(auto& s : sources)
             {
-                this->sim_spectra[o][i] = spectrum[i];
+                std::vector<double> spectrum = s->get_spectrum(this->sim_wavelength[o]);
+                // vectorToFile(spectrum, "../o"+std::to_string(o)+".dat");
+                for (int i = 0; i < spectrum.size(); ++i) {
+                    this->sim_spectra[o][i] = spectrum[i];
+                }
             }
-
         }
 
     }

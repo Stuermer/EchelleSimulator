@@ -28,10 +28,10 @@ class MatrixSimulator
 public:
     MatrixSimulator();
     void read_transformations(std::string path);
-    // QwtPlot * plot_transformations();
     cv::Mat get_transformation_matrix(int order, double wavelength);
     void calc_splines();
     void set_wavelength(int N);
+    void set_wavelength(std::vector<double> wavelength);
     void calc_sim_matrices();
     cv::gpu::GpuMat transform_slit(cv::gpu::GpuMat& slit_image, cv::Mat& transformation_matrix, double weight);
     cv::Mat transform_slit(cv::Mat& slit_image, cv::Mat& transformation_matrix, double weight);
