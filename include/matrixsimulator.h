@@ -33,13 +33,15 @@ public:
     void set_wavelength(int N);
     void set_wavelength(std::vector<double> wavelength);
     void calc_sim_matrices();
+    #ifdef USE_GPU
     cv::gpu::GpuMat transform_slit(cv::gpu::GpuMat& slit_image, cv::Mat& transformation_matrix, double weight);
-    cv::Mat transform_slit(cv::Mat& slit_image, cv::Mat& transformation_matrix, double weight);
     int simulate_order(int order, cv::gpu::GpuMat& slit_image, cv::gpu::GpuMat& output_image, bool aberrations);
-    int simulate_order(int order, cv::Mat& slit_image, cv::Mat& output_image, bool aberrations);
     void simulate_spectrum(cv::gpu::GpuMat& slit_image);
+    #endif
+    cv::Mat transform_slit(cv::Mat& slit_image, cv::Mat& transformation_matrix, double weight);
+    int simulate_order(int order, cv::Mat& slit_image, cv::Mat& output_image, bool aberrations);
     void simulate_spectrum();
-    
+
     void set_efficiencies(std::vector<Efficiency *> &efficiencies);
     void add_efficiency(Efficiency *eff);
 
@@ -57,7 +59,8 @@ public:
 
 
     void prepare_sources(std::vector<Source *> sources);
-    void save_to_file(std::string filename, bool downsample=true, bool overwrite=false);
+    void save_to_file(std::string filename, bool downsample=true, bool bleed=true, bool overwrite=false);
+    void transformation_to_file(std::string filename);
     CCD * ccd;
 private:
     cv::Mat img;

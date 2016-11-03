@@ -94,4 +94,5 @@ void print_cv_matrix_info(cv::Mat img, std::string imagename);
 double interpolate(const std::map<double,double> &data,
                     double x);
 
+//int save_to_fits(const std::string filename, cv::Mat img);
 #endif

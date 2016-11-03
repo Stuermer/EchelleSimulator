@@ -13,6 +13,9 @@
 #include <cstdlib>
 #include <opencv2/imgproc.hpp>
 #include <highgui.h>
+//#include <CCfits>
+#include <CCfits/FITS.h>
+#include <CCfits/ExtHDU.h>
 
 void vectorToFile(std::vector<double> const& vec, std::string const& filename) {
   std::ofstream file(filename);
@@ -52,11 +55,14 @@ std::vector<double> decompose_matrix(cv::Mat mat){
     double sx = sqrt(a*a+d*d);
     double sy = sqrt(b*b+e*e);
     
-    double phi = atan2(b,a);
-    if (phi>0)
-      phi -= 2.*M_PI;	
+    double phi = atan2(d,a);
+    if (phi<0.1)
+      phi += 2.*M_PI;
     
-    double shear = atan2(-d,e) - phi;
+    double shear = atan2(-b,e) - phi;
+    if (shear < -6.1)
+        shear += 2.*M_PI;
+
     result.push_back(sx);
     result.push_back(sy);
     result.push_back(shear);
@@ -151,3 +157,53 @@ double interpolate(const std::map<double,double> &data,
     return delta*i->second +(1-delta)*l->second;
 }
 
+//int save_to_fits(const std::string filename, cv::Mat img){
+//    std::auto_ptr<CCfits::FITS> pFits(0);
+//
+//    long naxis    =   2;
+//    long naxes[2] = { img.cols, img.rows };
+//
+//    try
+//    {
+//        pFits.reset( new CCfits::FITS(filename , DOUBLE_IMG , naxis , naxes ) );
+//    }
+//    catch (CCfits::FITS::CantOpen)
+//    {
+//        return -1;
+//    }
+//
+//    long& vectorLength = naxes[0];
+//    long& numberOfRows = naxes[1];
+//    long nelements(1);
+//
+//
+//    // Find the total size of the array.
+//    // this is a little fancier than necessary ( It's only
+//    // calculating naxes[0]*naxes[1]) but it demonstrates  use of the
+//    // C++ standard library accumulate algorithm.
+//
+//    nelements = std::accumulate(&naxes[0],&naxes[naxis],1,std::multiplies<long>());
+//
+//    std::vector<long> extAx ;
+//    extAx.push_back(img.rows);
+//    extAx.push_back(img.cols);
+//
+//    string newName ("IMAGE");
+//    CCfits::ExtHDU* imageExt = pFits->addImage(newName,FLOAT_IMG, extAx);
+//
+//
+//    std::valarray<double> array(nelements);
+//    for (int i = 0; i < numberOfRows; ++i)
+//    {
+//        for (int j =0; j<img.cols; ++j)
+//            array[i*numberOfRows+j] = img.at<double>(i, j);
+//    }
+//
+//    long  fpixel(1);
+//
+//    imageExt->write(fpixel, (long) img.cols, array);
+////    imageExt->write(fpixel, img.cols, array);
+//
+//    return 0;
+//
+//};

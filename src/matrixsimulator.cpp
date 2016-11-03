@@ -10,7 +10,9 @@
 // using namespace std
 #include "helper.h"
 #include <opencv2/imgproc.hpp>
+#ifdef USE_GPU
 #include "opencv2/gpu/gpu.hpp"
+#endif
 
 void print_transformation_matrix(cv::Mat tm){
     std::cout << tm.at<double>(0,0) << "\t" << tm.at<double>(0,1) << "\t" << tm.at<double>(0,2) << "\n";
@@ -174,7 +176,7 @@ cv::Mat MatrixSimulator::get_transformation_matrix(int o, double wavelength){
     return compose_matrix(parameters);
 }
 
-
+#ifdef USE_GPU
 cv::gpu::GpuMat MatrixSimulator::transform_slit(cv::gpu::GpuMat& slit_image, cv::Mat& transformation_matrix, double weight){
     int n_rows = abs(round(slit_image.rows * 1.5 * transformation_matrix.at<double>(1,1)));
     int n_cols = abs(round(slit_image.cols * 4. * transformation_matrix.at<double>(0,0)));
@@ -192,7 +194,7 @@ cv::gpu::GpuMat MatrixSimulator::transform_slit(cv::gpu::GpuMat& slit_image, cv:
     cv::gpu::warpAffine(slit_image.clone(), warp_dst, tm, warp_dst.size() );
     return warp_dst;
 }
-
+#endif
 
 cv::Mat MatrixSimulator::transform_slit(cv::Mat& slit_image, cv::Mat& transformation_matrix, double weight){
     double sx, sy, a,b,c,d;
@@ -219,7 +221,7 @@ cv::Mat MatrixSimulator::transform_slit(cv::Mat& slit_image, cv::Mat& transforma
     return warp_dst;
 }
 
-
+#ifdef USE_GPU
 int MatrixSimulator::simulate_order(int order, cv::gpu::GpuMat& slit_image, cv::gpu::GpuMat& output_image, bool aberrations)
 {
     // cv::Mat img = cv::Mat::zeros(4096*3, 4096*3, CV_64FC1);
@@ -264,7 +266,7 @@ int MatrixSimulator::simulate_order(int order, cv::gpu::GpuMat& slit_image, cv::
     }
     return 0;
 }
-
+#endif
 
 int MatrixSimulator::simulate_order(int order, cv::Mat& slit_image, cv::Mat& output_image, bool aberrations)
 {
@@ -321,7 +323,7 @@ int MatrixSimulator::simulate_order(int order, cv::Mat& slit_image, cv::Mat& out
     return 0;
 }
 
-
+#ifdef USE_GPU
 void MatrixSimulator::simulate_spectrum(cv::gpu::GpuMat& slit_image)
 {
 //    cv::Mat img_cpu = cv::Mat::zeros(4096*3, 4096*3, slit_image.type());
@@ -334,6 +336,7 @@ void MatrixSimulator::simulate_spectrum(cv::gpu::GpuMat& slit_image)
     //img.download(img_cpu);
     //return img_cpu;
 }
+#endif
 
 void MatrixSimulator::simulate_spectrum()
 {
@@ -420,6 +423,21 @@ void MatrixSimulator::add_source(Source *src) {
     this->sources.push_back(src);
 }
 
-void MatrixSimulator::save_to_file(std::string filename, bool downsample, bool overwrite) {
-    this->ccd->save_to_file(filename, downsample, overwrite);
+void MatrixSimulator::save_to_file(std::string filename, bool downsample, bool bleed, bool overwrite) {
+    this->ccd->save_to_file(filename, downsample, bleed, overwrite);
+}
+
+void MatrixSimulator::transformation_to_file(std::string filename) {
+    std::ofstream myfile;
+    myfile.open(filename);
+    for(auto const &o: this->orders)
+    {
+        for (auto const & wl: this->sim_wavelength[o]){
+            cv::Mat tm = this->get_transformation_matrix(o, wl);
+            std::vector<double> tmp;
+            tmp = decompose_matrix(tm);
+            myfile << o << ";" << wl << ";" << tmp[0] << ";" << tmp[1] << ";" << tmp[2] << ";" << tmp[3] << ";"<< tmp[4] << ";" << tmp[5] << std::endl;
+        }
+    }
+    myfile.close();
 }
