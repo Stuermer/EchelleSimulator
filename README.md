@@ -1,7 +1,7 @@
 ![EchelleSimulator](https://github.com/Stuermer/EchelleSimulator/blob/master/doc/logo.png "Echelle Simulator")
 
 
-Échelle++ is a tool to simulate realistic arbitrary 2D Echelle spectra. 
+Échelle++, a fast generic échelle simulator.
 
 
 The basic idea is that any (fiber-fed) echelle spectrograph can be modelled with a set of wavelength-dependent transformation matrices and point spread functions which describe the spectrographs optics:
@@ -85,3 +85,12 @@ On a mordern PC this takes about 3s - 5s.
 ## Documentation
 The documentation can be found [here](https://stuermer.github.io/EchelleSimulator).
 The documentation is automatically produced by **doxygen**, using [this](https://github.com/Velron/doxygen-bootstrapped) template.
+
+## Contribution
+Contributions are welcome! You can help by 
+* report bugs
+* provide spectroraph models
+* make suggestions 
+* improve documentation
+* improve code
+* implement new features
