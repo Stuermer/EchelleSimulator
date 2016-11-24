@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['idealetalon',['IdealEtalon',['../class_ideal_etalon.html',1,'']]]
+  ['hdf5opencvexception',['Hdf5OpenCVException',['../classhdf5opencv_1_1_hdf5_open_c_v_exception.html',1,'hdf5opencv']]]
 ];

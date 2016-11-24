@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['n',['n',['../class_ideal_etalon.html#a1b1004d0898c3a054ca9cf412813c9d5',1,'IdealEtalon']]]
+  ['ksize',['ksize',['../class_p_s_f__gaussian.html#a553862ec78e59f6f36a67f9ddd50048c',1,'PSF_gaussian']]]
 ];

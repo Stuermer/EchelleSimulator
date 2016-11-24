@@ -45,3 +45,15 @@
 \form#44:\begin{tikzpicture} \begin{axis}[domain=300E-9:4000E-9, samples=100] \addplot[color=red]{2.0 *6.62606896E-34* 2.9979E8 * 2.9979E8 / (x^5)*1./(exp(6.62606896E-34*2.997E8/(x*1.3806504E-23*3500))-1)}; \end{axis} \end{tikzpicture}
 \form#45:\[ \fbox{ \begin{tikzpicture} \begin{axis} \addplot[color=green]{2.0 * 2.9979e8 * 2.9979e8 / (exp(x^5)*exp(6.62606896e-34*2.997e8/(x*1.3806504e-23*3500)-1)}; \end{axis} \end{tikzpicture} } \]
 \form#46:\[ \fbox{ \begin{tikzpicture} \begin{axis}[domain=300E-9:4000E-9, samples=100) \addplot[color=blue]{2.0 * 2.9979e8 * 2.9979e8 / (exp(x^5)*exp(6.62606896e-34*2.997e8/(x*1.3806504e-23*3500)-1)}; \end{axis} \end{tikzpicture} } \]
+\form#47:\[ M_{\lambda} = a \]
+\form#48:\[ M = a \]
+\form#49:\[ M = \int_{a}^{b}(s(\lambda) d\lambda \approx \sum_{i=0}^{n} s(a + (i+0.5)frac{b-a}{n}) * \frac{(b-a)}{n} \]
+\form#50:\[ L = \int_{a}^{b}(s(\lambda) d\lambda \approx \sum_{i=0}^{n} s(a + (i+0.5)frac{b-a}{n}) * \frac{(b-a)}{n} \]
+\form#51:\[ M = \begin{pmatrix} a & b & c \\ d & e & f \\ 0 & 0 & 1 \end{pmatrix} \]
+\form#52:\[ M_{\lambda} = \begin{pmatrix} sx \cdot \cos(\Theta) & -sy \cdot \sin(\Theta+shear) & tx \\ sx \cdot \sin(\Theta) & sy \cdot \cos(\Theta+shear) & ty \\ 0 & 0 & 1 \end{pmatrix} \]
+\form#53:$\Theta$
+\form#54:$shear$
+\form#55:$sx$
+\form#56:$sy$
+\form#57:$tx$
+\form#58:$ty$

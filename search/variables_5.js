@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['h',['h',['../classslit.html#a5dd71704be87b59d5e6e25a714d74f7d',1,'slit']]],
-  ['h_5fpx',['h_px',['../classslit.html#a6e61a406e9dcd115adc6ef506e6a936c',1,'slit']]]
+  ['gpmm',['gpmm',['../class_grating_efficiency.html#a3bbe348499e4b3d6792a2f8ecaca1f94',1,'GratingEfficiency::gpmm()'],['../structspectrograph__information.html#a698a49f2f4644c3142d457e18c3acd3d',1,'spectrograph_information::gpmm()']]]
 ];

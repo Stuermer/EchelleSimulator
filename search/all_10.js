@@ -1,15 +1,14 @@
 var searchData=
 [
-  ['t',['T',['../class_blackbody.html#ab565e14b93a8459ebbd4e2c5583932f0',1,'Blackbody::T()'],['../class_ideal_etalon.html#a18df1a0ca15f7d71763713f867cf3532',1,'IdealEtalon::T()']]],
-  ['theta',['theta',['../class_ideal_etalon.html#adb01dc93fb40a0735b5ed00907ffe0fd',1,'IdealEtalon']]],
-  ['tk',['tk',['../namespacetk.html',1,'']]],
-  ['todo_20list',['Todo List',['../todo.html',1,'']]],
-  ['tr_5fp',['tr_p',['../class_matrix_simulator.html#a8f9852337a1ab80f532ff69ae2b41b3b',1,'MatrixSimulator']]],
-  ['tr_5fphi',['tr_phi',['../class_matrix_simulator.html#ac892d19d1c68c6414b9a3c999205092b',1,'MatrixSimulator']]],
-  ['tr_5fq',['tr_q',['../class_matrix_simulator.html#a18bb49a4ca4363acce7e33382d578edb',1,'MatrixSimulator']]],
-  ['tr_5fr',['tr_r',['../class_matrix_simulator.html#a52d4a39c875373d76c0f7b9baf5f1e2f',1,'MatrixSimulator']]],
-  ['tr_5ftx',['tr_tx',['../class_matrix_simulator.html#aa544354356e00fe4da0edcb30f37e6b4',1,'MatrixSimulator']]],
-  ['tr_5fty',['tr_ty',['../class_matrix_simulator.html#a3d7f3962f4b2d2de111bc00539e0ba68',1,'MatrixSimulator']]],
-  ['transform_5fslit',['transform_slit',['../class_matrix_simulator.html#a34f8185854096d740ebc6df2a44a0f12',1,'MatrixSimulator::transform_slit(cv::gpu::GpuMat &amp;slit_image, cv::Mat &amp;transformation_matrix, double weight)'],['../class_matrix_simulator.html#aeee14e850fe04dd0006ac813e5aa9b56',1,'MatrixSimulator::transform_slit(cv::Mat &amp;slit_image, cv::Mat &amp;transformation_matrix, double &amp;weight)']]],
-  ['transformation_5fmatrix',['transformation_matrix',['../structraw__transformation.html#a664c5ba015a8d2c1cbd10a3787a306f3',1,'raw_transformation']]]
+  ['r',['R',['../class_ideal_etalon.html#ae545946e739c8079c0ced7f836180cd1',1,'IdealEtalon']]],
+  ['ratio',['ratio',['../class_slit.html#a28fd1dfc764c0cb46b40c5370708e4ff',1,'Slit']]],
+  ['raw_5fn',['raw_n',['../class_matrix_simulator.html#a2da306f4e998a609e9a9f26688d80949',1,'MatrixSimulator']]],
+  ['raw_5ftransformation',['raw_transformation',['../structraw__transformation.html',1,'raw_transformation'],['../matrixsimulator_8h.html#a6292a72e4c46d35aa75402c96189d4cb',1,'raw_transformation():&#160;matrixsimulator.h']]],
+  ['raw_5ftransformations',['raw_transformations',['../class_matrix_simulator.html#a1266c67228a0fc2c1387c4e7454fe435',1,'MatrixSimulator']]],
+  ['read_5fpsfs',['read_psfs',['../_p_s_f_8cpp.html#a25782ac63a4ff3af96ed6997360f8891',1,'PSF.cpp']]],
+  ['read_5fspectrum',['read_spectrum',['../class_phoenix_spectrum.html#a90e3cb19bdfaed4b5cd862bf00b64d2f',1,'PhoenixSpectrum::read_spectrum()'],['../class_line_list.html#a24602f1ed3e346d6c06e788d00dae6e8',1,'LineList::read_spectrum()']]],
+  ['read_5ftransformations',['read_transformations',['../class_matrix_simulator.html#a7d6123f82db49f9054228c31ba5dd44e',1,'MatrixSimulator']]],
+  ['readnextrow',['readNextRow',['../class_c_s_v_row.html#a14b9ac6d9ffb01a7b05ea903cfd04eeb',1,'CSVRow']]],
+  ['reference',['reference',['../class_c_s_v_iterator.html#a4f99b48a9e06dec230dda0b073d07d9e',1,'CSVIterator']]],
+  ['rotation',['rotation',['../structtransformation__hdf.html#a6bf990dbca06fc07556d2abb81186996',1,'transformation_hdf']]]
 ];

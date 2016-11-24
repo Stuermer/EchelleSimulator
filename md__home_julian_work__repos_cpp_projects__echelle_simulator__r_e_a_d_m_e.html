@@ -8,7 +8,7 @@
         <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
         <meta name="generator" content="Doxygen 1.8.6"/>
         <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
-        <title>Echelle Simulator: EchelleSimulator</title>
+        <title>Echelle++: README</title>
         <!--<link href="tabs.css" rel="stylesheet" type="text/css"/>-->
         <script type="text/javascript" src="dynsections.js"></script>
         <link href="search/search.css" rel="stylesheet" type="text/css"/>
@@ -27,7 +27,7 @@
         <nav class="navbar navbar-default" role="navigation">
             <div class="container">
                 <div class="navbar-header">
-                    <a class="navbar-brand">Echelle Simulator </a>
+                    <a class="navbar-brand">Echelle++ </a>
                 </div>
             </div>
         </nav>
@@ -84,10 +84,71 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!-- top -->
 <div class="header">
   <div class="headertitle">
-<div class="title">EchelleSimulator </div>  </div>
+<div class="title">README </div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p>EchelleSimulator is a tool to simulate realistic arbitrary 2D Echelle spectra. </p>
+<div class="textblock"><div class="image">
+<img src="https://github.com/Stuermer/EchelleSimulator/blob/master/doc/logo.png"  alt="EchelleSimulator" title="Echelle Simulator"/>
+</div>
+<p>Échelle++, a fast generic échelle simulator.</p>
+<p>The basic idea is that any (fiber-fed) echelle spectrograph can be modelled with a set of wavelength-dependent transformation matrices and point spread functions which describe the spectrographs optics:</p>
+<p>First, wavelength-dependent <b>affine transformation matrices</b> are extracted from the ZEMAX model of the spectrograph. As the underlying geometric transformations (scaling, rotation, shearing, translation) vary smoothly across an echelle order, these matrices can be interpolated for any intermediate wavelength.</p>
+<p>Second, a wavelength-dependent <b>point spread functions (PSFs)</b> is applied on the transformed slit images to properly account for optical aberrations. Again, the <a class="el" href="class_p_s_f.html" title="Class handles point spread functions. ">PSF</a> is only slowly varying across an echelle order, allowing for interpolation at intermediate wavelength.</p>
+<h2>#### Concept: </h2>
+<div class="image">
+<img src="https://github.com/Stuermer/EchelleSimulator/blob/master/doc/intro.png"  alt="Echelle simulation" title="Echelle simulation"/>
+</div>
+ <hr/>
+<p><b>Both, the matrices and the PSFs have to be extracted from ZEMAX only once. It is therefore possible to simulate spectra without access to ZEMAX</b> </p>
+<hr/>
+<h4>Output:</h4>
+<hr/>
+ <div class="image">
+<img src="https://github.com/Stuermer/EchelleSimulator/blob/master/doc/flat.png"  alt="Echelle spectrum" title="Simulated Echelle"/>
+</div>
+ <hr/>
+<p> Part of a simulated flat spectrum for the MAROON-X spectrograph.</p>
+<h4>Features:</h4>
+<hr/>
+<ul>
+<li>parallelized C++ code for fast simulations</li>
+<li>CUDA support (not fully functional yet)</li>
+<li>arbitrary 1D spectra</li>
+<li>arbitrary PSFs</li>
+<li>arbitrary efficiency modells can be applied</li>
+<li>works with any spectrograph (needs access to ZEMAX modell only once) <hr/>
+</li>
+</ul>
+<h2>Prerequisites</h2>
+<ul>
+<li>GCC &gt; 4.6 (or equivalent MSVC), capable of handling C++11 syntax</li>
+<li><a href="https://www.hdfgroup.org/hdf5/">HDF 5.0 library</a></li>
+<li><a href="http://opencv.org/">OpenCV 2.4</a></li>
+</ul>
+<h2>Example usage</h2>
+<p>```c++ #include &lt;iostream&gt; #include "matrixsimulator.h"</p>
+<p>int <a class="el" href="main_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97">main(int argc, char *argv[])</a> { <a class="el" href="class_p_s_f___z_e_m_a_x.html">PSF_ZEMAX</a> psfs = <a class="el" href="class_p_s_f___z_e_m_a_x.html">PSF_ZEMAX(argv[1])</a>; // Load ZEMAX simulated psfs from file <a class="el" href="class_slit.html">Slit</a> s = <a class="el" href="class_slit.html">Slit</a>(50., 150., 10); // define slit size <a class="el" href="class_c_c_d.html" title="class representing a CCD detector ">CCD</a> ccd = <a class="el" href="class_c_c_d.html" title="class representing a CCD detector ">CCD</a>(4096, 4096, 3, s.slit_image.type()); //define detector</p>
+<p><a class="el" href="class_matrix_simulator.html">MatrixSimulator</a> simulator; //create instance of simulator</p>
+<p>simulator.read_transformations(argv[2]); //read in ZEMAX simulated transformation matrices simulator.set_wavelength(10000); // set wavelength steps per order simulator.set_ccd(&amp;ccd); // set simulator ccd simulator.set_slit(&amp;s); //set simulator slit simulator.set_psfs(&amp;psfs); //set simulator psfs</p>
+<p><a class="el" href="class_grating_efficiency.html">GratingEfficiency</a> ge = <a class="el" href="class_grating_efficiency.html">GratingEfficiency</a>(0.8, 76., 76., 31.6); //Echelle Grating efficiency simulator.add_efficiency(&amp;ge); //add efficiency profile to simulator. More profiles can be added</p>
+<p><a class="el" href="class_ideal_etalon.html" title="Implements the spectral density of an ideal fabry-perot etalon. ">IdealEtalon</a> cs = <a class="el" href="class_ideal_etalon.html" title="Implements the spectral density of an ideal fabry-perot etalon. ">IdealEtalon</a>(10., 1., 0., 0.9); // spectral source ideal etalon simulator.add_source(&amp;cs); //add source to simulator</p>
+<p>simulator.simulate_spectrum(); //simulate echelle spectra</p>
+<p>simulator.save_to_file("../image2.hdf", true, true); //save echelle spectrum to file</p>
+<p>return 0; } ```</p>
+<p>generates a 2D Fabry-Perot etalon spectrum.</p>
+<p>On a mordern PC this takes about 3s - 5s.</p>
+<h2>Documentation</h2>
+<p>The documentation can be found <a href="https://stuermer.github.io/EchelleSimulator">here</a>. The documentation is automatically produced by <b>doxygen</b>, using <a href="https://github.com/Velron/doxygen-bootstrapped">this</a> template.</p>
+<h2>Contribution</h2>
+<p>Contributions are welcome! You can help by</p>
+<ul>
+<li>report bugs</li>
+<li>provide spectroraph models</li>
+<li>make suggestions</li>
+<li>improve documentation</li>
+<li>improve code</li>
+<li>implement new features </li>
+</ul>
 </div></div><!-- contents -->
 <!-- HTML footer for doxygen 1.8.8-->
 <!-- start footer part -->
@@ -97,7 +158,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div>
 </div>
 <hr class="footer"/><address class="footer"><small>
-Generated on Sun Sep 18 2016 16:41:08 for Echelle Simulator by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Nov 23 2016 14:46:26 for Echelle++ by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

@@ -8,7 +8,7 @@
         <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
         <meta name="generator" content="Doxygen 1.8.6"/>
         <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
-        <title>Echelle Simulator: PSF Class Reference</title>
+        <title>Echelle++: PSF Class Reference</title>
         <!--<link href="tabs.css" rel="stylesheet" type="text/css"/>-->
         <script type="text/javascript" src="dynsections.js"></script>
         <link href="search/search.css" rel="stylesheet" type="text/css"/>
@@ -27,7 +27,7 @@
         <nav class="navbar navbar-default" role="navigation">
             <div class="container">
                 <div class="navbar-header">
-                    <a class="navbar-brand">Echelle Simulator </a>
+                    <a class="navbar-brand">Echelle++ </a>
                 </div>
             </div>
         </nav>
@@ -93,40 +93,50 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
-<a href="#pri-attribs">Private Attributes</a> &#124;
 <a href="class_p_s_f-members.html">List of all members</a>  </div>
   <div class="headertitle">
-<div class="title">PSF Class Reference</div>  </div>
+<div class="title">PSF Class Reference<span class="mlabels"><span class="mlabel">abstract</span></span></div>  </div>
 </div><!--header-->
 <div class="contents">
 
+<p>Class handles point spread functions.  
+ <a href="class_p_s_f.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="_p_s_f_8h_source.html">PSF.h</a>&gt;</code></p>
+<div class="dynheader">
+Inheritance diagram for PSF:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="class_p_s_f.png" usemap="#PSF_map" alt=""/>
+  <map id="PSF_map" name="PSF_map">
+<area href="class_p_s_f__gaussian.html" alt="PSF_gaussian" shape="rect" coords="0,56,93,80"/>
+<area href="class_p_s_f___z_e_m_a_x.html" alt="PSF_ZEMAX" shape="rect" coords="103,56,196,80"/>
+</map>
+ </div></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:af34b176cedb4f9a7dfe8fbb532e07e96"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_p_s_f.html#af34b176cedb4f9a7dfe8fbb532e07e96">PSF</a> (std::string filename)</td></tr>
-<tr class="separator:af34b176cedb4f9a7dfe8fbb532e07e96"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1d29ccd9a3a65a27188c66702ef240c8"><td class="memItemLeft" align="right" valign="top">cv::Mat&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_p_s_f.html#a1d29ccd9a3a65a27188c66702ef240c8">get_PSF</a> (int order, double wavelength)</td></tr>
-<tr class="separator:a1d29ccd9a3a65a27188c66702ef240c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:affd4f6b1f810cc5f7f0edcd6ba7f0a95"><td class="memItemLeft" align="right" valign="top">cv::Mat&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_p_s_f.html#affd4f6b1f810cc5f7f0edcd6ba7f0a95">interpolate_PSF</a> (cv::Mat psf1, cv::Mat psf2, double w1, double w2, double w)</td></tr>
-<tr class="separator:affd4f6b1f810cc5f7f0edcd6ba7f0a95"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
-Private Attributes</h2></td></tr>
-<tr class="memitem:a3fc3ca0ed80c61d74ca788a00e492d5b"><td class="memItemLeft" align="right" valign="top">std::map&lt; int, std::vector<br class="typebreak"/>
-&lt; <a class="el" href="struct_p_s_fdata.html">PSFdata</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_p_s_f.html#a3fc3ca0ed80c61d74ca788a00e492d5b">psfs</a></td></tr>
-<tr class="separator:a3fc3ca0ed80c61d74ca788a00e492d5b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae71c0e4726ca7813fdcc3fe55b67d6d9"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_p_s_f.html#ae71c0e4726ca7813fdcc3fe55b67d6d9">PSF</a> ()</td></tr>
+<tr class="separator:ae71c0e4726ca7813fdcc3fe55b67d6d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3e8372a6dc5cc4a547ad6c92aa358807"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_p_s_f.html#a3e8372a6dc5cc4a547ad6c92aa358807">~PSF</a> ()</td></tr>
+<tr class="separator:a3e8372a6dc5cc4a547ad6c92aa358807"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a136bdda01aeb3e8f2fc3554aa7d8be06"><td class="memItemLeft" align="right" valign="top">virtual cv::Mat&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_p_s_f.html#a136bdda01aeb3e8f2fc3554aa7d8be06">get_PSF</a> (int order, double wavelength)=0</td></tr>
+<tr class="separator:a136bdda01aeb3e8f2fc3554aa7d8be06"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a class="anchor" id="af34b176cedb4f9a7dfe8fbb532e07e96"></a>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Class handles point spread functions. </p>
+<p>This class handles point spread functions (PSFs). It's basic functionality is to deliver a <a class="el" href="class_p_s_f.html" title="Class handles point spread functions. ">PSF</a> as a 2d matrix for a given wavelength and order of an echelle spectrograph.</p>
+<p>Typically the <a class="el" href="class_p_s_f.html" title="Class handles point spread functions. ">PSF</a> of an echelle spectrograph will vary across the <a class="el" href="class_c_c_d.html" title="class representing a CCD detector ">CCD</a> depending on the wavelength, the echelle order, and the illumination of the optics. The <a class="el" href="class_p_s_f.html" title="Class handles point spread functions. ">PSF</a> might not be stable from target to target, as illumination might vary due to different coupling conditions and imperfect scrambling of the fibers.</p>
+<p>To implement own <a class="el" href="class_p_s_f.html" title="Class handles point spread functions. ">PSF</a> classes, inherit from <a class="el" href="class_p_s_f.html" title="Class handles point spread functions. ">PSF</a> and overwrite get_PSF function </p>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a class="anchor" id="ae71c0e4726ca7813fdcc3fe55b67d6d9"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">PSF::PSF </td>
           <td>(</td>
-          <td class="paramtype">std::string&#160;</td>
-          <td class="paramname"><em>filename</em></td><td>)</td>
+          <td class="paramname"></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -134,13 +144,39 @@ Private Attributes</h2></td></tr>
 
 </div>
 </div>
-<h2 class="groupheader">Member Function Documentation</h2>
-<a class="anchor" id="a1d29ccd9a3a65a27188c66702ef240c8"></a>
+<a class="anchor" id="a3e8372a6dc5cc4a547ad6c92aa358807"></a>
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">cv::Mat PSF::get_PSF </td>
+          <td class="memname">PSF::~PSF </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a class="anchor" id="a136bdda01aeb3e8f2fc3554aa7d8be06"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual cv::Mat PSF::get_PSF </td>
           <td>(</td>
           <td class="paramtype">int&#160;</td>
           <td class="paramname"><em>order</em>, </td>
@@ -157,72 +193,14 @@ Private Attributes</h2></td></tr>
           <td></td><td></td>
         </tr>
       </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a class="anchor" id="affd4f6b1f810cc5f7f0edcd6ba7f0a95"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">cv::Mat PSF::interpolate_PSF </td>
-          <td>(</td>
-          <td class="paramtype">cv::Mat&#160;</td>
-          <td class="paramname"><em>psf1</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">cv::Mat&#160;</td>
-          <td class="paramname"><em>psf2</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">double&#160;</td>
-          <td class="paramname"><em>w1</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">double&#160;</td>
-          <td class="paramname"><em>w2</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">double&#160;</td>
-          <td class="paramname"><em>w</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<h2 class="groupheader">Member Data Documentation</h2>
-<a class="anchor" id="a3fc3ca0ed80c61d74ca788a00e492d5b"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::map&lt; int, std::vector&lt;<a class="el" href="struct_p_s_fdata.html">PSFdata</a>&gt; &gt; PSF::psfs</td>
-        </tr>
-      </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Implemented in <a class="el" href="class_p_s_f__gaussian.html#a1f19bc740363485cd2e067f9580bafdd">PSF_gaussian</a>, and <a class="el" href="class_p_s_f___z_e_m_a_x.html#a2fec338597b88e4f560489e9648649c5">PSF_ZEMAX</a>.</p>
 
 </div>
 </div>
@@ -239,7 +217,7 @@ Private Attributes</h2></td></tr>
 </div>
 </div>
 <hr class="footer"/><address class="footer"><small>
-Generated on Sun Sep 18 2016 16:41:09 for Echelle Simulator by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Nov 23 2016 19:01:47 for Echelle++ by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

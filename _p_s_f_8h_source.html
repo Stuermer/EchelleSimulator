@@ -8,7 +8,7 @@
         <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
         <meta name="generator" content="Doxygen 1.8.6"/>
         <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
-        <title>Echelle Simulator: /home/julian/work/Repos/cpp_projects/EchelleSimulator/include/PSF.h Source File</title>
+        <title>Echelle++: /home/julian/work/Repos/cpp_projects/EchelleSimulator/include/PSF.h Source File</title>
         <!--<link href="tabs.css" rel="stylesheet" type="text/css"/>-->
         <script type="text/javascript" src="dynsections.js"></script>
         <link href="search/search.css" rel="stylesheet" type="text/css"/>
@@ -27,7 +27,7 @@
         <nav class="navbar navbar-default" role="navigation">
             <div class="container">
                 <div class="navbar-header">
-                    <a class="navbar-brand">Echelle Simulator </a>
+                    <a class="navbar-brand">Echelle++ </a>
                 </div>
             </div>
         </nav>
@@ -121,28 +121,52 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;    }</div>
 <div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;};</div>
 <div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;</div>
-<div class="line"><a name="l00026"></a><span class="lineno"><a class="line" href="class_p_s_f.html">   26</a></span>&#160;<span class="keyword">class </span><a class="code" href="class_p_s_f.html">PSF</a> {</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;    <a class="code" href="class_p_s_f.html#af34b176cedb4f9a7dfe8fbb532e07e96">PSF</a>(std::string filename);</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;    cv::Mat <a class="code" href="class_p_s_f.html#a1d29ccd9a3a65a27188c66702ef240c8">get_PSF</a>(<span class="keywordtype">int</span> order, <span class="keywordtype">double</span> wavelength);</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;    cv::Mat <a class="code" href="class_p_s_f.html#affd4f6b1f810cc5f7f0edcd6ba7f0a95">interpolate_PSF</a>(cv::Mat psf1, cv::Mat psf2, <span class="keywordtype">double</span> w1, <span class="keywordtype">double</span> w2, <span class="keywordtype">double</span> w);</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00033"></a><span class="lineno"><a class="line" href="class_p_s_f.html#a3fc3ca0ed80c61d74ca788a00e492d5b">   33</a></span>&#160;    std::map&lt; int, std::vector&lt;PSFdata&gt; &gt; <a class="code" href="class_p_s_f.html#a3fc3ca0ed80c61d74ca788a00e492d5b">psfs</a>;</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;};</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;<span class="preprocessor">#endif //ECHELLESIMULATOR_PSF_H</span></div>
-<div class="ttc" id="class_p_s_f_html_af34b176cedb4f9a7dfe8fbb532e07e96"><div class="ttname"><a href="class_p_s_f.html#af34b176cedb4f9a7dfe8fbb532e07e96">PSF::PSF</a></div><div class="ttdeci">PSF(std::string filename)</div><div class="ttdef"><b>Definition:</b> PSF.cpp:72</div></div>
-<div class="ttc" id="class_p_s_f_html"><div class="ttname"><a href="class_p_s_f.html">PSF</a></div><div class="ttdef"><b>Definition:</b> PSF.h:26</div></div>
-<div class="ttc" id="class_p_s_f_html_a3fc3ca0ed80c61d74ca788a00e492d5b"><div class="ttname"><a href="class_p_s_f.html#a3fc3ca0ed80c61d74ca788a00e492d5b">PSF::psfs</a></div><div class="ttdeci">std::map&lt; int, std::vector&lt; PSFdata &gt; &gt; psfs</div><div class="ttdef"><b>Definition:</b> PSF.h:33</div></div>
+<div class="line"><a name="l00038"></a><span class="lineno"><a class="line" href="class_p_s_f.html">   38</a></span>&#160;<span class="keyword">class </span><a class="code" href="class_p_s_f.html">PSF</a> {</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;    <a class="code" href="class_p_s_f.html#ae71c0e4726ca7813fdcc3fe55b67d6d9">PSF</a>();</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    <span class="keyword">virtual</span> <a class="code" href="class_p_s_f.html#a3e8372a6dc5cc4a547ad6c92aa358807">~PSF</a>();</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    <span class="keyword">virtual</span> cv::Mat <a class="code" href="class_p_s_f.html#a136bdda01aeb3e8f2fc3554aa7d8be06">get_PSF</a>(<span class="keywordtype">int</span> order, <span class="keywordtype">double</span> wavelength) = 0;</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;};</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;</div>
+<div class="line"><a name="l00045"></a><span class="lineno"><a class="line" href="class_p_s_f___z_e_m_a_x.html">   45</a></span>&#160;<span class="keyword">class </span><a class="code" href="class_p_s_f___z_e_m_a_x.html">PSF_ZEMAX</a> : <span class="keyword">public</span> <a class="code" href="class_p_s_f.html">PSF</a>{</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    <a class="code" href="class_p_s_f___z_e_m_a_x.html#ab535ad762578d3c3c28940239403d4a0">PSF_ZEMAX</a>(std::string filename);</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    cv::Mat <a class="code" href="class_p_s_f___z_e_m_a_x.html#a2fec338597b88e4f560489e9648649c5">get_PSF</a>(<span class="keywordtype">int</span> order, <span class="keywordtype">double</span> wavelength);</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;    cv::Mat <a class="code" href="class_p_s_f___z_e_m_a_x.html#ad3b5bb955539e861246cc0f3e3add141">interpolate_PSF</a>(cv::Mat psf1, cv::Mat psf2, <span class="keywordtype">double</span> w1, <span class="keywordtype">double</span> w2, <span class="keywordtype">double</span> w);</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00051"></a><span class="lineno"><a class="line" href="class_p_s_f___z_e_m_a_x.html#af44c6c61ee1c43bfb34b98922f796bad">   51</a></span>&#160;    std::map&lt; int, std::vector&lt;PSFdata&gt; &gt; <a class="code" href="class_p_s_f___z_e_m_a_x.html#af44c6c61ee1c43bfb34b98922f796bad">psfs</a>;</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;};</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;</div>
+<div class="line"><a name="l00055"></a><span class="lineno"><a class="line" href="class_p_s_f__gaussian.html">   55</a></span>&#160;<span class="keyword">class </span><a class="code" href="class_p_s_f__gaussian.html">PSF_gaussian</a> : <span class="keyword">public</span> <a class="code" href="class_p_s_f.html">PSF</a>{</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;    <a class="code" href="class_p_s_f__gaussian.html#a24935b42954caa3cb04b3926dc1f80e2">PSF_gaussian</a>(<span class="keywordtype">double</span> <a class="code" href="class_p_s_f__gaussian.html#ad0bcbd4165e73b7645f18906dd0d4aef">sigma</a>, <span class="keywordtype">double</span> aperture=3.);</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;    cv::Mat <a class="code" href="class_p_s_f__gaussian.html#a1f19bc740363485cd2e067f9580bafdd">get_PSF</a>(<span class="keywordtype">int</span> order, <span class="keywordtype">double</span> wavelength);</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00060"></a><span class="lineno"><a class="line" href="class_p_s_f__gaussian.html#ad0bcbd4165e73b7645f18906dd0d4aef">   60</a></span>&#160;    <span class="keywordtype">double</span> <a class="code" href="class_p_s_f__gaussian.html#ad0bcbd4165e73b7645f18906dd0d4aef">sigma</a>;</div>
+<div class="line"><a name="l00061"></a><span class="lineno"><a class="line" href="class_p_s_f__gaussian.html#a553862ec78e59f6f36a67f9ddd50048c">   61</a></span>&#160;    <span class="keywordtype">int</span> <a class="code" href="class_p_s_f__gaussian.html#a553862ec78e59f6f36a67f9ddd50048c">ksize</a>;</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;};</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;<span class="preprocessor">#endif //ECHELLESIMULATOR_PSF_H</span></div>
+<div class="ttc" id="class_p_s_f_html_ae71c0e4726ca7813fdcc3fe55b67d6d9"><div class="ttname"><a href="class_p_s_f.html#ae71c0e4726ca7813fdcc3fe55b67d6d9">PSF::PSF</a></div><div class="ttdeci">PSF()</div><div class="ttdef"><b>Definition:</b> PSF.cpp:69</div></div>
+<div class="ttc" id="class_p_s_f__gaussian_html_ad0bcbd4165e73b7645f18906dd0d4aef"><div class="ttname"><a href="class_p_s_f__gaussian.html#ad0bcbd4165e73b7645f18906dd0d4aef">PSF_gaussian::sigma</a></div><div class="ttdeci">double sigma</div><div class="ttdef"><b>Definition:</b> PSF.h:60</div></div>
+<div class="ttc" id="class_p_s_f__gaussian_html_a553862ec78e59f6f36a67f9ddd50048c"><div class="ttname"><a href="class_p_s_f__gaussian.html#a553862ec78e59f6f36a67f9ddd50048c">PSF_gaussian::ksize</a></div><div class="ttdeci">int ksize</div><div class="ttdef"><b>Definition:</b> PSF.h:61</div></div>
+<div class="ttc" id="class_p_s_f___z_e_m_a_x_html_ad3b5bb955539e861246cc0f3e3add141"><div class="ttname"><a href="class_p_s_f___z_e_m_a_x.html#ad3b5bb955539e861246cc0f3e3add141">PSF_ZEMAX::interpolate_PSF</a></div><div class="ttdeci">cv::Mat interpolate_PSF(cv::Mat psf1, cv::Mat psf2, double w1, double w2, double w)</div><div class="ttdef"><b>Definition:</b> PSF.cpp:155</div></div>
+<div class="ttc" id="class_p_s_f__gaussian_html_a24935b42954caa3cb04b3926dc1f80e2"><div class="ttname"><a href="class_p_s_f__gaussian.html#a24935b42954caa3cb04b3926dc1f80e2">PSF_gaussian::PSF_gaussian</a></div><div class="ttdeci">PSF_gaussian(double sigma, double aperture=3.)</div><div class="ttdef"><b>Definition:</b> PSF.cpp:196</div></div>
+<div class="ttc" id="class_p_s_f___z_e_m_a_x_html_ab535ad762578d3c3c28940239403d4a0"><div class="ttname"><a href="class_p_s_f___z_e_m_a_x.html#ab535ad762578d3c3c28940239403d4a0">PSF_ZEMAX::PSF_ZEMAX</a></div><div class="ttdeci">PSF_ZEMAX(std::string filename)</div><div class="ttdef"><b>Definition:</b> PSF.cpp:77</div></div>
+<div class="ttc" id="class_p_s_f_html"><div class="ttname"><a href="class_p_s_f.html">PSF</a></div><div class="ttdoc">Class handles point spread functions. </div><div class="ttdef"><b>Definition:</b> PSF.h:38</div></div>
+<div class="ttc" id="class_p_s_f__gaussian_html_a1f19bc740363485cd2e067f9580bafdd"><div class="ttname"><a href="class_p_s_f__gaussian.html#a1f19bc740363485cd2e067f9580bafdd">PSF_gaussian::get_PSF</a></div><div class="ttdeci">cv::Mat get_PSF(int order, double wavelength)</div><div class="ttdef"><b>Definition:</b> PSF.cpp:204</div></div>
 <div class="ttc" id="struct_p_s_fdata_html_acad9e0c352a0a7bada4b8ac89ff5487e"><div class="ttname"><a href="struct_p_s_fdata.html#acad9e0c352a0a7bada4b8ac89ff5487e">PSFdata::wavelength</a></div><div class="ttdeci">double wavelength</div><div class="ttdef"><b>Definition:</b> PSF.h:14</div></div>
 <div class="ttc" id="struct_p_s_fdata_html_a4947cba76060627e31534f978fd83804"><div class="ttname"><a href="struct_p_s_fdata.html#a4947cba76060627e31534f978fd83804">PSFdata::psf</a></div><div class="ttdeci">cv::Mat psf</div><div class="ttdef"><b>Definition:</b> PSF.h:15</div></div>
+<div class="ttc" id="class_p_s_f___z_e_m_a_x_html_af44c6c61ee1c43bfb34b98922f796bad"><div class="ttname"><a href="class_p_s_f___z_e_m_a_x.html#af44c6c61ee1c43bfb34b98922f796bad">PSF_ZEMAX::psfs</a></div><div class="ttdeci">std::map&lt; int, std::vector&lt; PSFdata &gt; &gt; psfs</div><div class="ttdef"><b>Definition:</b> PSF.h:51</div></div>
 <div class="ttc" id="struct_p_s_fdata_html_a7ca41b4250b8a9dda6f141fe426b9e02"><div class="ttname"><a href="struct_p_s_fdata.html#a7ca41b4250b8a9dda6f141fe426b9e02">PSFdata::operator&lt;</a></div><div class="ttdeci">bool operator&lt;(const PSFdata &amp;str) const </div><div class="ttdef"><b>Definition:</b> PSF.h:19</div></div>
-<div class="ttc" id="class_p_s_f_html_a1d29ccd9a3a65a27188c66702ef240c8"><div class="ttname"><a href="class_p_s_f.html#a1d29ccd9a3a65a27188c66702ef240c8">PSF::get_PSF</a></div><div class="ttdeci">cv::Mat get_PSF(int order, double wavelength)</div><div class="ttdef"><b>Definition:</b> PSF.cpp:152</div></div>
+<div class="ttc" id="class_p_s_f___z_e_m_a_x_html"><div class="ttname"><a href="class_p_s_f___z_e_m_a_x.html">PSF_ZEMAX</a></div><div class="ttdef"><b>Definition:</b> PSF.h:45</div></div>
+<div class="ttc" id="class_p_s_f_html_a3e8372a6dc5cc4a547ad6c92aa358807"><div class="ttname"><a href="class_p_s_f.html#a3e8372a6dc5cc4a547ad6c92aa358807">PSF::~PSF</a></div><div class="ttdeci">virtual ~PSF()</div><div class="ttdef"><b>Definition:</b> PSF.cpp:73</div></div>
+<div class="ttc" id="class_p_s_f__gaussian_html"><div class="ttname"><a href="class_p_s_f__gaussian.html">PSF_gaussian</a></div><div class="ttdef"><b>Definition:</b> PSF.h:55</div></div>
+<div class="ttc" id="class_p_s_f___z_e_m_a_x_html_a2fec338597b88e4f560489e9648649c5"><div class="ttname"><a href="class_p_s_f___z_e_m_a_x.html#a2fec338597b88e4f560489e9648649c5">PSF_ZEMAX::get_PSF</a></div><div class="ttdeci">cv::Mat get_PSF(int order, double wavelength)</div><div class="ttdef"><b>Definition:</b> PSF.cpp:143</div></div>
 <div class="ttc" id="struct_p_s_fdata_html"><div class="ttname"><a href="struct_p_s_fdata.html">PSFdata</a></div><div class="ttdef"><b>Definition:</b> PSF.h:12</div></div>
-<div class="ttc" id="class_p_s_f_html_affd4f6b1f810cc5f7f0edcd6ba7f0a95"><div class="ttname"><a href="class_p_s_f.html#affd4f6b1f810cc5f7f0edcd6ba7f0a95">PSF::interpolate_PSF</a></div><div class="ttdeci">cv::Mat interpolate_PSF(cv::Mat psf1, cv::Mat psf2, double w1, double w2, double w)</div><div class="ttdef"><b>Definition:</b> PSF.cpp:164</div></div>
+<div class="ttc" id="class_p_s_f_html_a136bdda01aeb3e8f2fc3554aa7d8be06"><div class="ttname"><a href="class_p_s_f.html#a136bdda01aeb3e8f2fc3554aa7d8be06">PSF::get_PSF</a></div><div class="ttdeci">virtual cv::Mat get_PSF(int order, double wavelength)=0</div></div>
 <div class="ttc" id="struct_p_s_fdata_html_a716864fd12b8169ed6253757dffbee9e"><div class="ttname"><a href="struct_p_s_fdata.html#a716864fd12b8169ed6253757dffbee9e">PSFdata::PSFdata</a></div><div class="ttdeci">PSFdata(double w, cv::Mat p)</div><div class="ttdef"><b>Definition:</b> PSF.h:17</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- HTML footer for doxygen 1.8.8-->
@@ -153,7 +177,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div>
 </div>
 <hr class="footer"/><address class="footer"><small>
-Generated on Sun Sep 18 2016 16:41:08 for Echelle Simulator by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Nov 23 2016 19:01:45 for Echelle++ by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

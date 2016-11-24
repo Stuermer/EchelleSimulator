@@ -8,7 +8,7 @@
         <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
         <meta name="generator" content="Doxygen 1.8.6"/>
         <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
-        <title>Echelle Simulator: /home/julian/work/Repos/cpp_projects/EchelleSimulator/src/helper.cpp File Reference</title>
+        <title>Echelle++: /home/julian/work/Repos/cpp_projects/EchelleSimulator/src/helper.cpp File Reference</title>
         <!--<link href="tabs.css" rel="stylesheet" type="text/css"/>-->
         <script type="text/javascript" src="dynsections.js"></script>
         <link href="search/search.css" rel="stylesheet" type="text/css"/>
@@ -27,7 +27,7 @@
         <nav class="navbar navbar-default" role="navigation">
             <div class="container">
                 <div class="navbar-header">
-                    <a class="navbar-brand">Echelle Simulator </a>
+                    <a class="navbar-brand">Echelle++ </a>
                 </div>
             </div>
         </nav>
@@ -111,6 +111,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <code>#include &lt;cstdlib&gt;</code><br/>
 <code>#include &lt;opencv2/imgproc.hpp&gt;</code><br/>
 <code>#include &lt;highgui.h&gt;</code><br/>
+<code>#include &lt;CCfits/FITS.h&gt;</code><br/>
+<code>#include &lt;CCfits/ExtHDU.h&gt;</code><br/>
 </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
@@ -128,6 +130,10 @@ Functions</h2></td></tr>
 <tr class="separator:afe024dd89b6f2aa7f81014b5040aa106"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a270e0c15767b4a3273ae9b9d5b0d451b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="helper_8cpp.html#a270e0c15767b4a3273ae9b9d5b0d451b">print_cv_matrix_info</a> (cv::Mat img, std::string imagename=&quot;Image&quot;)</td></tr>
 <tr class="separator:a270e0c15767b4a3273ae9b9d5b0d451b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae8b627d14bbed33480e3977e30998850"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="helper_8cpp.html#ae8b627d14bbed33480e3977e30998850">interpolate</a> (const std::map&lt; double, double &gt; &amp;data, double x)</td></tr>
+<tr class="separator:ae8b627d14bbed33480e3977e30998850"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaba2c47b65195188060b2cf56017b1ea"><td class="memItemLeft" align="right" valign="top">herr_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="helper_8cpp.html#aaba2c47b65195188060b2cf56017b1ea">file_info</a> (hid_t loc_id, const char *name, const H5L_info_t *linfo, void *opdata)</td></tr>
+<tr class="separator:aaba2c47b65195188060b2cf56017b1ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
 <a class="anchor" id="a9f391b78cf660157816b7643d4a0aa54"></a>
@@ -203,6 +209,70 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>[sx, sy, shear, <img class="formulaInl" alt="$ \phi $" src="form_4.png"/>, tx, ty] </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="aaba2c47b65195188060b2cf56017b1ea"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">herr_t file_info </td>
+          <td>(</td>
+          <td class="paramtype">hid_t&#160;</td>
+          <td class="paramname"><em>loc_id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const H5L_info_t *&#160;</td>
+          <td class="paramname"><em>linfo</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>opdata</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="ae8b627d14bbed33480e3977e30998850"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double interpolate </td>
+          <td>(</td>
+          <td class="paramtype">const std::map&lt; double, double &gt; &amp;&#160;</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>x</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
 
 </div>
 </div>
@@ -355,7 +425,7 @@ Functions</h2></td></tr>
 </div>
 </div>
 <hr class="footer"/><address class="footer"><small>
-Generated on Sun Sep 18 2016 16:41:08 for Echelle Simulator by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Nov 23 2016 19:01:45 for Echelle++ by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

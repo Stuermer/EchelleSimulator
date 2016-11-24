@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['m_5fdata',['m_data',['../class_c_s_v_row.html#a6ccfa2b79438ff191e0973c2e8f5fe1a',1,'CSVRow']]],
-  ['m_5frow',['m_row',['../class_c_s_v_iterator.html#a051522e4a6e5097f0348869455c2eddd',1,'CSVIterator']]],
-  ['m_5fstr',['m_str',['../class_c_s_v_iterator.html#abb34432d545dcb80447b020fe8a47cad',1,'CSVIterator']]]
+  ['img',['img',['../class_matrix_simulator.html#a90bcc13f784a69c54ad605ef77dcbbe8',1,'MatrixSimulator']]],
+  ['integration_5fsteps',['integration_steps',['../class_source.html#ac2c09694b86c1936b386afac137126e5',1,'Source']]]
 ];

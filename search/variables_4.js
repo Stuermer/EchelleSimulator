@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['gpmm',['gpmm',['../class_grating_efficiency.html#a3bbe348499e4b3d6792a2f8ecaca1f94',1,'GratingEfficiency']]]
+  ['efficiencies',['efficiencies',['../class_matrix_simulator.html#a05c00fb5164a5faa987da2642b899035',1,'MatrixSimulator']]]
 ];

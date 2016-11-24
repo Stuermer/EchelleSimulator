@@ -1,6 +1,7 @@
 var searchData=
 [
-  ['main',['main',['../build_2_c_make_files_22_88_812_82_2_compiler_id_c_2_c_make_c_compiler_id_8c.html#a0ddf1224851353fc92bfbff6f499fa97',1,'main(int argc, char *argv[]):&#160;CMakeCCompilerId.c'],['../build_2_c_make_files_22_88_812_82_2_compiler_id_c_x_x_2_c_make_c_x_x_compiler_id_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97',1,'main(int argc, char *argv[]):&#160;CMakeCXXCompilerId.cpp'],['../release_2_c_make_files_22_88_812_82_2_compiler_id_c_2_c_make_c_compiler_id_8c.html#a0ddf1224851353fc92bfbff6f499fa97',1,'main(int argc, char *argv[]):&#160;CMakeCCompilerId.c'],['../release_2_c_make_files_22_88_812_82_2_compiler_id_c_x_x_2_c_make_c_x_x_compiler_id_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97',1,'main(int argc, char *argv[]):&#160;CMakeCXXCompilerId.cpp'],['../main_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97',1,'main(int argc, char *argv[]):&#160;main.cpp']]],
-  ['matrixsimulator',['MatrixSimulator',['../class_matrix_simulator.html#ae3feb47ab98f917ad0b8b4b53d1b34aa',1,'MatrixSimulator']]],
-  ['mattofile',['MatToFile',['../helper_8h.html#a6c0a198e7e2462a4cb6ce1c12f7c8a07',1,'MatToFile(cv::Mat &amp;image, std::string const &amp;filename):&#160;helper.cpp'],['../helper_8cpp.html#a6c0a198e7e2462a4cb6ce1c12f7c8a07',1,'MatToFile(cv::Mat &amp;image, std::string const &amp;filename):&#160;helper.cpp']]]
+  ['idealetalon',['IdealEtalon',['../class_ideal_etalon.html#acde8c0bcfe454c60177b00116ed5ae7e',1,'IdealEtalon']]],
+  ['integral_5fs',['integral_s',['../class_source.html#ade0a7e2d3911f3247748ac21ab15e585',1,'Source']]],
+  ['interpolate',['interpolate',['../helper_8h.html#ae8b627d14bbed33480e3977e30998850',1,'interpolate(const std::map&lt; double, double &gt; &amp;data, double x):&#160;helper.cpp'],['../helper_8cpp.html#ae8b627d14bbed33480e3977e30998850',1,'interpolate(const std::map&lt; double, double &gt; &amp;data, double x):&#160;helper.cpp']]],
+  ['interpolate_5fpsf',['interpolate_PSF',['../class_p_s_f___z_e_m_a_x.html#ad3b5bb955539e861246cc0f3e3add141',1,'PSF_ZEMAX']]]
 ];

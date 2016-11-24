@@ -8,7 +8,7 @@
         <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
         <meta name="generator" content="Doxygen 1.8.6"/>
         <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
-        <title>Echelle Simulator: Source Class Reference</title>
+        <title>Echelle++: Source Class Reference</title>
         <!--<link href="tabs.css" rel="stylesheet" type="text/css"/>-->
         <script type="text/javascript" src="dynsections.js"></script>
         <link href="search/search.css" rel="stylesheet" type="text/css"/>
@@ -27,7 +27,7 @@
         <nav class="navbar navbar-default" role="navigation">
             <div class="container">
                 <div class="navbar-header">
-                    <a class="navbar-brand">Echelle Simulator </a>
+                    <a class="navbar-brand">Echelle++ </a>
                 </div>
             </div>
         </nav>
@@ -94,6 +94,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pri-methods">Private Member Functions</a> &#124;
+<a href="#pri-attribs">Private Attributes</a> &#124;
 <a href="class_source-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">Source Class Reference</div>  </div>
@@ -110,9 +111,11 @@ Inheritance diagram for Source:</div>
  <div class="center">
   <img src="class_source.png" usemap="#Source_map" alt=""/>
   <map id="Source_map" name="Source_map">
-<area href="class_blackbody.html" title="Implements a blackbody spectrum. " alt="Blackbody" shape="rect" coords="0,56,74,80"/>
-<area href="class_constant.html" title="Implements constant spectral density. " alt="Constant" shape="rect" coords="84,56,158,80"/>
-<area href="class_ideal_etalon.html" title="Implements the spectral density of an ideal fabry-perot etalon. " alt="IdealEtalon" shape="rect" coords="168,56,242,80"/>
+<area href="class_blackbody.html" title="Implements a blackbody spectrum. " alt="Blackbody" shape="rect" coords="0,56,110,80"/>
+<area href="class_constant.html" title="Implements constant spectral density. " alt="Constant" shape="rect" coords="120,56,230,80"/>
+<area href="class_ideal_etalon.html" title="Implements the spectral density of an ideal fabry-perot etalon. " alt="IdealEtalon" shape="rect" coords="240,56,350,80"/>
+<area href="class_line_list.html" title="Implements line list spectrum. " alt="LineList" shape="rect" coords="360,56,470,80"/>
+<area href="class_phoenix_spectrum.html" alt="PhoenixSpectrum" shape="rect" coords="480,56,590,80"/>
 </map>
  </div></div>
 <table class="memberdecls">
@@ -126,13 +129,26 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a165b9f7281915b5fdf5ce3278fb1e3aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a546ae8ec1ae47e888c74f146278e19af"><td class="memItemLeft" align="right" valign="top">virtual double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_source.html#a546ae8ec1ae47e888c74f146278e19af">get_spectral_density</a> (double wavelength)</td></tr>
 <tr class="separator:a546ae8ec1ae47e888c74f146278e19af"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab5d90ab3a4cfb8403803d88ce8b9f0f8"><td class="memItemLeft" align="right" valign="top">std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_source.html#ab5d90ab3a4cfb8403803d88ce8b9f0f8">get_spectrum</a> (std::vector&lt; double &gt; wavelength)</td></tr>
+<tr class="memitem:ab5d90ab3a4cfb8403803d88ce8b9f0f8"><td class="memItemLeft" align="right" valign="top">virtual std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_source.html#ab5d90ab3a4cfb8403803d88ce8b9f0f8">get_spectrum</a> (std::vector&lt; double &gt; wavelength)</td></tr>
 <tr class="separator:ab5d90ab3a4cfb8403803d88ce8b9f0f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0bd707ab373bc9b957cb30d577af8a07"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_source.html#a0bd707ab373bc9b957cb30d577af8a07">set_doppler_shift</a> (double <a class="el" href="class_source.html#a33104a788577b65918c95d240110c082">shift</a>)</td></tr>
+<tr class="separator:a0bd707ab373bc9b957cb30d577af8a07"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5d2eac20504111cbee890666e052e4df"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_source.html#a5d2eac20504111cbee890666e052e4df">set_integration_steps</a> (int n)</td></tr>
+<tr class="separator:a5d2eac20504111cbee890666e052e4df"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-methods"></a>
 Private Member Functions</h2></td></tr>
 <tr class="memitem:ade0a7e2d3911f3247748ac21ab15e585"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_source.html#ade0a7e2d3911f3247748ac21ab15e585">integral_s</a> (double a, double b, int n)</td></tr>
 <tr class="separator:ade0a7e2d3911f3247748ac21ab15e585"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
+Private Attributes</h2></td></tr>
+<tr class="memitem:a33104a788577b65918c95d240110c082"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_source.html#a33104a788577b65918c95d240110c082">shift</a></td></tr>
+<tr class="memdesc:a33104a788577b65918c95d240110c082"><td class="mdescLeft">&#160;</td><td class="mdescRight">current doppler shift  <a href="#a33104a788577b65918c95d240110c082">More...</a><br/></td></tr>
+<tr class="separator:a33104a788577b65918c95d240110c082"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac2c09694b86c1936b386afac137126e5"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_source.html#ac2c09694b86c1936b386afac137126e5">integration_steps</a></td></tr>
+<tr class="memdesc:ac2c09694b86c1936b386afac137126e5"><td class="mdescLeft">&#160;</td><td class="mdescRight">number of steps for the integrator  <a href="#ac2c09694b86c1936b386afac137126e5">More...</a><br/></td></tr>
+<tr class="separator:ac2c09694b86c1936b386afac137126e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Base class of all spectral sources. </p>
@@ -241,13 +257,16 @@ Private Member Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>spectral density </dd></dl>
 
-<p>Reimplemented in <a class="el" href="class_blackbody.html#a2e667cd4c4362550a77eb9081258ffb3">Blackbody</a>, <a class="el" href="class_ideal_etalon.html#a6ba6c6d89e88e646da38ec45d12dab09">IdealEtalon</a>, and <a class="el" href="class_constant.html#ae0526443e519154bcd338ee930bcad04">Constant</a>.</p>
+<p>Reimplemented in <a class="el" href="class_line_list.html#acb1e41d6120cf6bc0df2afaeb35a5aad">LineList</a>, <a class="el" href="class_phoenix_spectrum.html#a4e5ddcd25114f1a62a0f728165318fb1">PhoenixSpectrum</a>, <a class="el" href="class_blackbody.html#a2e667cd4c4362550a77eb9081258ffb3">Blackbody</a>, <a class="el" href="class_ideal_etalon.html#a6ba6c6d89e88e646da38ec45d12dab09">IdealEtalon</a>, and <a class="el" href="class_constant.html#ae0526443e519154bcd338ee930bcad04">Constant</a>.</p>
 
 </div>
 </div>
 <a class="anchor" id="ab5d90ab3a4cfb8403803d88ce8b9f0f8"></a>
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">std::vector&lt; double &gt; Source::get_spectrum </td>
@@ -257,6 +276,11 @@ Private Member Functions</h2></td></tr>
           <td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 <p>Returns spectrum at given wavelength</p>
 <p>This function returns the integrated spectral density for a given wavelength vector. </p>
@@ -267,6 +291,8 @@ Private Member Functions</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>spectrum at given wavelength </dd></dl>
+
+<p>Reimplemented in <a class="el" href="class_line_list.html#aa51704a60f48389c06c583d2a4cc6733">LineList</a>.</p>
 
 </div>
 </div>
@@ -327,6 +353,97 @@ Private Member Functions</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="a0bd707ab373bc9b957cb30d577af8a07"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Source::set_doppler_shift </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>shift</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Applies a spectral shift on the spectrum to simulate radial velocity shifts.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">shift</td><td>doppler shift in [m/s] </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a5d2eac20504111cbee890666e052e4df"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Source::set_integration_steps </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>n</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Sets the number of sub steps of the integrator. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">n</td><td>number of subintervalls </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a class="anchor" id="ac2c09694b86c1936b386afac137126e5"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int Source::integration_steps</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>number of steps for the integrator </p>
+
+</div>
+</div>
+<a class="anchor" id="a33104a788577b65918c95d240110c082"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double Source::shift</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>current doppler shift </p>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li>/home/julian/work/Repos/cpp_projects/EchelleSimulator/include/<a class="el" href="source_8h_source.html">source.h</a></li>
 <li>/home/julian/work/Repos/cpp_projects/EchelleSimulator/src/<a class="el" href="source_8cpp.html">source.cpp</a></li>
@@ -340,7 +457,7 @@ Private Member Functions</h2></td></tr>
 </div>
 </div>
 <hr class="footer"/><address class="footer"><small>
-Generated on Sun Sep 18 2016 16:41:09 for Echelle Simulator by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Nov 23 2016 19:01:47 for Echelle++ by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

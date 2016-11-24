@@ -1,13 +1,16 @@
 var searchData=
 [
-  ['r',['R',['../class_ideal_etalon.html#ae545946e739c8079c0ced7f836180cd1',1,'IdealEtalon']]],
-  ['ratio',['ratio',['../classslit.html#ace654ad3568054e8352b9abe7528e4f6',1,'slit']]],
-  ['raw_5fn',['raw_n',['../class_matrix_simulator.html#a2da306f4e998a609e9a9f26688d80949',1,'MatrixSimulator']]],
-  ['raw_5ftransformation',['raw_transformation',['../structraw__transformation.html',1,'raw_transformation'],['../matrixsimulator_8h.html#a6292a72e4c46d35aa75402c96189d4cb',1,'raw_transformation():&#160;matrixsimulator.h']]],
-  ['raw_5ftransformations',['raw_transformations',['../class_matrix_simulator.html#a1266c67228a0fc2c1387c4e7454fe435',1,'MatrixSimulator']]],
-  ['read_5fpsfs',['read_psfs',['../_p_s_f_8cpp.html#a25782ac63a4ff3af96ed6997360f8891',1,'PSF.cpp']]],
-  ['read_5ftransformations',['read_transformations',['../class_matrix_simulator.html#a7d6123f82db49f9054228c31ba5dd44e',1,'MatrixSimulator']]],
-  ['readme_2emd',['README.md',['../_r_e_a_d_m_e_8md.html',1,'']]],
-  ['readnextrow',['readNextRow',['../class_c_s_v_row.html#a14b9ac6d9ffb01a7b05ea903cfd04eeb',1,'CSVRow']]],
-  ['reference',['reference',['../class_c_s_v_iterator.html#a4f99b48a9e06dec230dda0b073d07d9e',1,'CSVIterator']]]
+  ['open_5for_5fcreate',['open_or_create',['../namespacehdf5opencv.html#a58f465a2f8d2c165eb9f52a85eb08820',1,'hdf5opencv']]],
+  ['operator_21_3d',['operator!=',['../class_c_s_v_iterator.html#a4ba4b13be1e878cfd1a9c9e6d69f9a62',1,'CSVIterator']]],
+  ['operator_2a',['operator*',['../class_c_s_v_iterator.html#a0577e6c41cd7f595762f84736d751c38',1,'CSVIterator']]],
+  ['operator_2b',['operator+',['../class_c_c_d.html#addede6d5e44ddb13370396c77fbf7178',1,'CCD']]],
+  ['operator_2b_2b',['operator++',['../class_c_s_v_iterator.html#a5bac2b8aaf235c2ee1b0b2b9da9b3399',1,'CSVIterator::operator++()'],['../class_c_s_v_iterator.html#ab3f320940c36f5524865b349e6d1b36b',1,'CSVIterator::operator++(int)']]],
+  ['operator_2d_3e',['operator-&gt;',['../class_c_s_v_iterator.html#aea83ae54c091c545a462d4152e06bf5f',1,'CSVIterator']]],
+  ['operator_3c',['operator&lt;',['../struct_p_s_fdata.html#a7ca41b4250b8a9dda6f141fe426b9e02',1,'PSFdata']]],
+  ['operator_3d_3d',['operator==',['../class_c_s_v_iterator.html#a75dbe096c1a074b74dadd7ab2283f3e9',1,'CSVIterator']]],
+  ['operator_3e_3e',['operator&gt;&gt;',['../csv__reader_8h.html#ac2c0b2d1ccc5f44ad4a24f6411cc1d34',1,'csv_reader.h']]],
+  ['operator_5b_5d',['operator[]',['../class_c_s_v_row.html#ae44706c256795a7fbe21148305f076ba',1,'CSVRow']]],
+  ['order',['order',['../structraw__transformation.html#a896cd09845802341d970910f7b6a1617',1,'raw_transformation']]],
+  ['orders',['orders',['../class_matrix_simulator.html#a5524a9a77d30e2b396737260ec6f73f8',1,'MatrixSimulator']]],
+  ['oversampling',['oversampling',['../class_c_c_d.html#a147d14d779dc54c05b3fc65a4e97c698',1,'CCD']]]
 ];

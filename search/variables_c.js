@@ -1,10 +1,5 @@
 var searchData=
 [
-  ['scalingfactor',['scalingfactor',['../class_grating_efficiency.html#af452d057f148d401e9f2072e3752e0a4',1,'GratingEfficiency']]],
-  ['sim_5fefficiencies',['sim_efficiencies',['../class_matrix_simulator.html#a6202de105f6c949a226b98bb048560c1',1,'MatrixSimulator']]],
-  ['sim_5fmatrices',['sim_matrices',['../class_matrix_simulator.html#a4886dd70ef084bd73bb224c7f28897ee',1,'MatrixSimulator']]],
-  ['sim_5fspectra',['sim_spectra',['../class_matrix_simulator.html#aa3ddf31246c9f2be64ab12fe4b47e8af',1,'MatrixSimulator']]],
-  ['sim_5fwavelength',['sim_wavelength',['../class_matrix_simulator.html#aac8850d4461c6a7775dc44f6bdafb2e2',1,'MatrixSimulator']]],
-  ['slit_5fimage',['slit_image',['../classslit.html#a54f7a481357f5f132a4b699fc583a18b',1,'slit']]],
-  ['slit_5fsampling',['slit_sampling',['../classslit.html#a20b15979cce3d21f068cf661c02bed67',1,'slit']]]
+  ['psf',['psf',['../struct_p_s_fdata.html#a4947cba76060627e31534f978fd83804',1,'PSFdata']]],
+  ['psfs',['psfs',['../class_matrix_simulator.html#a4f8b1a0772c43203f1b06420c0d018fa',1,'MatrixSimulator::psfs()'],['../class_p_s_f___z_e_m_a_x.html#af44c6c61ee1c43bfb34b98922f796bad',1,'PSF_ZEMAX::psfs()']]]
 ];
