@@ -44,7 +44,7 @@ public:
 
 class PSF_ZEMAX : public PSF{
 public:
-    PSF_ZEMAX(std::string filename);
+    PSF_ZEMAX(std::string filename, int fiber_number);
     cv::Mat get_PSF(int order, double wavelength);
     cv::Mat interpolate_PSF(cv::Mat psf1, cv::Mat psf2, double w1, double w2, double w);
 private:

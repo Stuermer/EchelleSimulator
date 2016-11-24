@@ -11,17 +11,17 @@
 #include "helper.h"
 
 
-herr_t
-file_info(hid_t loc_id, const char *name, const H5L_info_t *linfo, void *opdata) {
-    hid_t group;
-    auto group_names = reinterpret_cast< std::vector<std::string> * >(opdata);
-    group = H5Gopen2(loc_id, name, H5P_DEFAULT);
-
-    group_names->push_back(name);
-    // std::cout << "Name : " << name << std::endl;
-    H5Gclose(group);
-    return 0;
-}
+//herr_t
+//file_info(hid_t loc_id, const char *name, const H5L_info_t *linfo, void *opdata) {
+//    hid_t group;
+//    auto group_names = reinterpret_cast< std::vector<std::string> * >(opdata);
+//    group = H5Gopen2(loc_id, name, H5P_DEFAULT);
+//
+//    group_names->push_back(name);
+//    // std::cout << "Name : " << name << std::endl;
+//    H5Gclose(group);
+//    return 0;
+//}
 
 herr_t
 dataset_info(hid_t loc_id, const char *name, const H5L_info_t *linfo, void *opdata) {
@@ -74,70 +74,85 @@ PSF::~PSF() {
 
 }
 
-PSF_ZEMAX::PSF_ZEMAX(const std::string filename) {
+PSF_ZEMAX::PSF_ZEMAX(const std::string filename, int fiber_number) {
 
     H5::H5File * file = new H5::H5File(filename, H5F_ACC_RDONLY);
     std::cout << std::endl << "Iterating over elements in the file" << std::endl;
-    H5::Group * rootGr = new H5::Group(file->openGroup("/"));
+    H5::Group * rootGr = new H5::Group(file->openGroup("fiber_"+std::to_string(fiber_number)));
     std::vector<std::string> group_names;
     // H5::Group *rootGr = new H5::Group (file->openGroup("/"));
     herr_t idx = H5Literate(rootGr->getId(), H5_INDEX_NAME, H5_ITER_INC, NULL, file_info, &group_names);
 
     for(auto& gn : group_names)
     {
-        int order = std::stoi(gn);
-        std::vector<PSFdata> psf_vec;
+        if (gn.find("psf") != std::string::npos){
+            // group names are psf_order_100    get order number here
+            int order = std::stoi(gn.substr(10));
+            std::vector<PSFdata> psf_vec;
 
-        std::vector<std::string> wl_names;
-        std::string dt_path = "/" + gn;
-        H5::Group * wlGr = new H5::Group(file->openGroup(dt_path));
-
-
-        herr_t idx2 = H5Literate(wlGr->getId(), H5_INDEX_NAME, H5_ITER_INC, NULL, dataset_info, &wl_names);
-        for(auto& w : wl_names){
-            double wavelength = std::stod(w.c_str());
-            std::vector< cv::Mat > raw_psfs;
-
-            hid_t ds;
-
-            H5::DataSet dataset = file->openDataSet(dt_path+"/"+w);
-            H5::DataSpace dspace = dataset.getSpace();
+            std::vector<std::string> wl_names;
+            std::string dt_path = gn;
+            std::cout<<dt_path<<std::endl;
+            H5::Group * wlGr = new H5::Group(rootGr->openGroup(dt_path));
 
 
-            int ndims = dspace.getSimpleExtentNdims();
-            hsize_t dims[ndims];
-            ndims = dspace.getSimpleExtentDims( dims );
+            herr_t idx2 = H5Literate(wlGr->getId(), H5_INDEX_NAME, H5_ITER_INC, NULL, dataset_info, &wl_names);
+            for(auto& w : wl_names){
+                std::vector< cv::Mat > raw_psfs;
+
+                hid_t ds;
+
+                H5::DataSet dataset = rootGr->openDataSet(dt_path+"/"+w);
+
+                H5::Attribute *attr = new H5::Attribute(dataset.openAttribute("wavelength"));
+                H5::DataType  *type = new H5::DataType(attr->getDataType());
+                double wavelength = 0.;
+                attr->read(*type, &wavelength);
 
 
-            double * buffer = new double[dims[0] * dims[1]];
-
-            H5::DataSpace mspace1 = H5::DataSpace(2, dims);
-            dataset.read( buffer, H5::PredType::NATIVE_DOUBLE, mspace1, dspace );
+                H5::DataSpace dspace = dataset.getSpace();
 
 
-            cv::Mat psf((int) dims[0], (int) dims[1], CV_64FC1);
-            for(int i=0; i<dims[0]; ++i){
-                for(int j=0; j<dims[1]; ++j){
-                    psf.at<double>(i,j) = buffer[i*dims[1]+j];
+                int ndims = dspace.getSimpleExtentNdims();
+                hsize_t dims[ndims];
+                ndims = dspace.getSimpleExtentDims( dims );
+
+
+                double * buffer = new double[dims[0] * dims[1]];
+
+                H5::DataSpace mspace1 = H5::DataSpace(2, dims);
+                dataset.read( buffer, H5::PredType::NATIVE_DOUBLE, mspace1, dspace );
+
+
+                cv::Mat psf((int) dims[0], (int) dims[1], CV_64FC1);
+                for(int i=0; i<dims[0]; ++i){
+                    for(int j=0; j<dims[1]; ++j){
+                        psf.at<double>(i,j) = buffer[i*dims[1]+j];
+                    }
                 }
-            }
-            // cv::cvtColor(psf,psf,CV_32FC1,0);
-            PSFdata p(wavelength, psf);
+                // cv::cvtColor(psf,psf,CV_32FC1,0);
+                PSFdata p(wavelength, psf);
 
-            if ( this->psfs.find(order) == this->psfs.end() ) {
-                // not found
-                psf_vec.push_back(p);
-                this->psfs.insert(std::make_pair(order, psf_vec));
-            } else {
-                this->psfs[order].push_back(p);
-                // found
-            }
-            psf.release();
+                if ( this->psfs.find(order) == this->psfs.end() ) {
+                    // not found
+                    psf_vec.push_back(p);
+                    this->psfs.insert(std::make_pair(order, psf_vec));
+                } else {
+                    this->psfs[order].push_back(p);
+                    // found
+                }
+                psf.release();
 
+            }
+            delete wlGr;
+
+            std::sort(this->psfs[order].begin(), this->psfs[order].end());
         }
 
-        std::sort(this->psfs[order].begin(), this->psfs[order].end());
+
     }
+    delete rootGr;
+    delete file;
 }
 
 cv::Mat PSF_ZEMAX::get_PSF(int order, double wavelength) {

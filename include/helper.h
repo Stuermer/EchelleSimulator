@@ -14,6 +14,7 @@
 #include <string>
 #include <cstdlib>
 #include "csv_reader.h"
+#include "H5Cpp.h"
 
 /*!
  * Saves vector to CSV File
@@ -93,6 +94,8 @@ void print_cv_matrix_info(cv::Mat img, std::string imagename);
 
 double interpolate(const std::map<double,double> &data,
                     double x);
+
+herr_t file_info(hid_t loc_id, const char *name, const H5L_info_t *linfo, void *opdata);
 
 //int save_to_fits(const std::string filename, cv::Mat img);
 #endif

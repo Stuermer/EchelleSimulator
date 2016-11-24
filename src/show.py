@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import scipy.misc
 import tables
 
-h5file = tables.open_file('../image2.hdf')
+h5file = tables.open_file('../FIES.hdf')
 data = h5file.root.image
 
 plt.figure()

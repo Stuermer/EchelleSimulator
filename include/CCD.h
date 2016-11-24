@@ -15,7 +15,7 @@
 #endif
 
 /*!
- * \class CCD glass
+ * \class CCD
  * \brief class representing a CCD detector
  */
 class CCD {
@@ -24,6 +24,7 @@ public:
      * Constructor
      * @param Nx number of pixels in X direction
      * @param Ny number of pixels in Y direction
+     * @param oversampling specifies the oversampling factor that will be used to downsample the image to its physical size
      * @param data_type data type, should be same as slit.image. Possible values see opencv datatypes (e.g. CV_32F, CV_64F,...)
      * @return CCD
      */

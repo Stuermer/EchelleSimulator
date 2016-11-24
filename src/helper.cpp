@@ -207,3 +207,15 @@ double interpolate(const std::map<double,double> &data,
 //    return 0;
 //
 //};
+
+herr_t file_info(hid_t loc_id, const char *name, const H5L_info_t *linfo, void *opdata)
+{
+    hid_t group;
+    auto group_names=reinterpret_cast< std::vector<std::string>* >(opdata);
+//    group = H5Gopen2(loc_id, name, H5P_DEFAULT);
+
+    group_names->push_back(name);
+    std::cout << "Name : " << name << std::endl;
+//    H5Gclose(group);
+    return 0;
+}

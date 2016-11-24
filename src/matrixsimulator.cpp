@@ -5,11 +5,13 @@
 #include "spline.h"
 // #include <string>
 // #include <stdlib.h>
-
+#include "H5Cpp.h"
 
 // using namespace std
 #include "helper.h"
 #include <opencv2/imgproc.hpp>
+#include <hdf5_hl.h>
+
 #ifdef USE_GPU
 #include "opencv2/gpu/gpu.hpp"
 #endif
@@ -20,10 +22,140 @@ void print_transformation_matrix(cv::Mat tm){
 
 }
 
-
+typedef struct transformation_hdf
+{
+    float rotation;
+    float scale_x;
+    float scale_y;
+    float shear;
+    float translation_x;
+    float translation_y;
+    float wavelength;
+} transformation_hdf;
 
 MatrixSimulator::MatrixSimulator()
 {
+}
+
+void MatrixSimulator::load_spectrograph_model(std::string path, int fiber_number)
+{
+    const H5std_string filename(path);
+    // open file readonly
+    H5::H5File * h5file = new H5::H5File(filename, H5F_ACC_RDONLY);
+
+    // read in spectrograph information
+    H5::Group *spec = new H5::Group (h5file->openGroup("Spectrograph"));
+    H5::Attribute *attr = new H5::Attribute(spec->openAttribute("blaze"));
+    H5::DataType  *type = new H5::DataType(attr->getDataType());
+    double blaze, gpmm = 0;
+    attr->read(*type, &blaze);
+    spec->openAttribute("gpmm").read(*type, &gpmm);
+    this->spec_info.blaze=blaze;
+    this->spec_info.gpmm=gpmm;
+
+    // read in field information and transformations and PSFs
+    H5::Group *fiber = new H5::Group (h5file->openGroup("fiber_"+std::to_string(fiber_number)));
+    attr = new H5::Attribute(fiber->openAttribute("field_height"));
+    type = new H5::DataType(attr->getDataType());
+    double field_height, field_width = 0;
+    int oversampling = 0;
+    int sampling_input_x;
+    int number_of_points;
+
+    attr->read(*type, &field_height);
+    fiber->openAttribute("field_with").read(*type, &field_width);
+    attr = new H5::Attribute(fiber->openAttribute("oversampling_output"));
+    type = new H5::DataType(attr->getDataType());
+    attr->read(*type, &oversampling);
+    fiber->openAttribute("sampling_input_x").read(*type, &sampling_input_x);
+    fiber->openAttribute("MatricesPerOrder").read(*type, &number_of_points);
+
+    this->slit = new Slit(field_width, field_height, sampling_input_x);
+
+    std::vector<std::string> group_names;
+    herr_t idx = H5Literate(fiber->getId(), H5_INDEX_NAME, H5_ITER_INC, NULL, file_info, &group_names);
+    size_t dst_size = sizeof( transformation_hdf );
+    size_t dst_offset[7] = { HOFFSET(transformation_hdf, rotation),
+                             HOFFSET(transformation_hdf, scale_x),
+                             HOFFSET(transformation_hdf, scale_y),
+                             HOFFSET(transformation_hdf, shear),
+                             HOFFSET(transformation_hdf, translation_x),
+                             HOFFSET(transformation_hdf, translation_y),
+                             HOFFSET(transformation_hdf, wavelength) };
+    size_t dst_sizes[7] = { sizeof(float),sizeof(float),sizeof(float),sizeof(float),sizeof(float),sizeof(float),sizeof(float)};
+
+    bool file_contains_psfs = false;
+
+    for(auto gn: group_names)
+    {
+        if (gn.find("psf") == std::string::npos)
+        {
+            transformation_hdf data[number_of_points];
+            std::string tablename = "fiber_"+std::to_string(fiber_number)+"/"+gn;
+            int order = std::stoi(gn.substr(5));
+            herr_t read = H5TBread_table(h5file->getId(), tablename.c_str(), dst_size, dst_offset, dst_sizes, &data);
+            std::cout << order<< "\t" <<read<< "\t" << data[0].translation_x << std::endl;
+            for(int i=0; i<number_of_points; ++i)
+            {
+                raw_transformation t;
+                t.wavelength = data[i].wavelength;
+                std::vector<double> result;
+                // return <sx, sy, shear, rot, tx ,ty>
+                result.push_back(data[i].scale_x);
+                result.push_back(data[i].scale_y);
+                result.push_back(data[i].shear);
+                result.push_back(data[i].rotation);
+                result.push_back(data[i].translation_x);
+                result.push_back(data[i].translation_y);
+                t.decomposed_matrix = result;
+                t.transformation_matrix = compose_matrix(result);
+                t.order = order;
+                this->raw_transformations[order].push_back(t);
+            }
+            std::sort(this->raw_transformations[order].begin(),this->raw_transformations[order].end(), [](const raw_transformation &x, const raw_transformation &y){ return (x.wavelength < y.wavelength);});
+
+
+        }
+        else{
+            file_contains_psfs = true;
+        }
+    }
+
+
+
+    for(auto imap: this->raw_transformations)
+        this->orders.push_back(imap.first);
+    this->calc_splines();
+
+
+    // read in CCD information
+    H5::Group *ccd = new H5::Group (h5file->openGroup("CCD"));
+    attr = new H5::Attribute(ccd->openAttribute("Nx"));
+    type = new H5::DataType(attr->getDataType());
+    int Nx = 0;
+    int Ny = 0;
+    int pixelsize = 0;
+
+    attr->read(*type, &Nx);
+
+    ccd->openAttribute("Ny").read(*type, &Ny);
+    ccd->openAttribute("pixelsize").read(*type, &pixelsize);
+
+    this->ccd = new CCD(Nx, Ny, oversampling, this->slit->slit_image.type());
+    delete ccd;
+
+
+
+    delete type;
+    delete attr;
+
+    delete h5file;
+
+    if (file_contains_psfs){
+            this->psfs = new PSF_ZEMAX(path, fiber_number);
+        }
+
+
 }
 
 void MatrixSimulator::read_transformations(std::string path)
@@ -60,6 +192,16 @@ void MatrixSimulator::read_transformations(std::string path)
         this->orders.push_back(imap.first);
     this->calc_splines();
 }
+
+
+double MatrixSimulator::get_blaze() {
+    return this->spec_info.blaze;
+}
+
+double MatrixSimulator::get_gpmm() {
+    return this->spec_info.gpmm;
+}
+
 void MatrixSimulator::calc_splines(){
     for(auto o: this->orders)
     {
@@ -195,6 +337,15 @@ cv::gpu::GpuMat MatrixSimulator::transform_slit(cv::gpu::GpuMat& slit_image, cv:
     return warp_dst;
 }
 #endif
+double tmp_image_height(int rows, double sy)
+{
+    return abs(rows * sy)+16.;
+}
+
+double tmp_image_width(int cols, double sx)
+{
+    return abs(cols * sx)+16.;
+}
 
 cv::Mat MatrixSimulator::transform_slit(cv::Mat& slit_image, cv::Mat& transformation_matrix, double weight){
     double sx, sy, a,b,c,d;
@@ -204,14 +355,28 @@ cv::Mat MatrixSimulator::transform_slit(cv::Mat& slit_image, cv::Mat& transforma
     d= transformation_matrix.at<double>(1,1);
     sx = sqrt(a*a+b*b);
     sy = sqrt(c*c+d*d);
-    int n_rows = abs(round(slit_image.rows * 1.5 * sy));
-    int n_cols = abs(round(slit_image.cols * 4. * sx));
+//    int n_rows = abs(round(slit_image.rows * 1.5 * sy));
+//    int n_cols = abs(round(slit_image.cols * 4. * sx));
+
+    int n_rows = tmp_image_height(slit_image.rows, sy);
+    int n_cols = tmp_image_width(slit_image.cols, sx);
 
     cv::Mat tm = transformation_matrix.clone();
     int tx_int = floor(tm.at<double>(0,2));
     int ty_int = floor(tm.at<double>(1,2));
-    tm.at<double>(0,2) += -tx_int + n_cols/2.;
-    tm.at<double>(1,2) += -ty_int + n_rows * 0.75;
+    // Offset accounting for rotation / flipping of
+    // no rotation / flip
+    int offset_x = 0;
+    int offset_y = 0;
+    // 2 flips (=~180 deg rotation)
+    if (a<0 && d<0){
+        offset_x = (n_cols-16.);
+        offset_y = n_rows-16.;
+    }
+
+    tm.at<double>(0,2) += -tx_int + 8 + offset_x;
+    tm.at<double>(1,2) += -ty_int + 8 + offset_y;
+//    std::cout<< tm.at<double>(0,2) << "\t" << tm.at<double>(1,2) << std::endl;
     double det = cv::determinant(transformation_matrix.colRange(0,2));
     cv::Mat warp_dst;
     weight /= det;
@@ -301,9 +466,10 @@ int MatrixSimulator::simulate_order(int order, cv::Mat& slit_image, cv::Mat& out
         sx = sqrt(a*a+b*b);
         sy = sqrt(c*c+d*d);
 
-        int n_rows = abs(round(slit_image.rows * 1.5 * sy));
-        int n_cols = abs(round(slit_image.cols * 4. * sx));
-
+//        int n_rows = abs(round(slit_image.rows * 1.5 * sy));
+//        int n_cols = abs(round(slit_image.cols * 4. * sx));
+        int n_rows = tmp_image_height(slit_image.rows, sy);
+        int n_cols = tmp_image_width(slit_image.cols, sx);
 
         //int TSX = -tx_int + n_rows/2.;
         //tm.at<double>(1,2) += -ty_int + n_cols * 0.9;
@@ -317,6 +483,10 @@ int MatrixSimulator::simulate_order(int order, cv::Mat& slit_image, cv::Mat& out
             // std::cout<<i <<"\t" << tx_int <<"\t" << ty_int <<"\t" << width <<"\t" << n_rows <<"\t" << n_cols << std::endl;
             //print_transformation_matrix(tr);
             output_image.rowRange(ty_int, ty_int + n_rows).colRange(tx_int, tx_int+n_cols) += tmp;
+//            cv::namedWindow( "Display window", cv::WINDOW_AUTOSIZE );// Create a window for display.
+//            cv::imshow( "Display window", tmp );
+//            show_cv_matrix(tmp, "SlitImage");
+//            cv::waitKey(5);
             // tmp.copyTo(img.rowRange(ty_int, ty_int + n_rows).colRange(tx_int, tx_int+n_cols));
         }
     }
@@ -346,7 +516,7 @@ void MatrixSimulator::simulate_spectrum()
     //cv::Mat img = cv::Mat::zeros(4096*3, 4096*3, slit_image.type());
 #pragma omp parallel for
     for(int o=this->orders.front(); o<this->orders.back()+1; ++o){
-        this->simulate_order(o, this->slit->slit_image, this->ccd->data, true);
+        this->simulate_order(o, this->slit->slit_image, this->ccd->data, false);
     }
     //return img;
 }

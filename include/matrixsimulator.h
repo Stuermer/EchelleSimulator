@@ -21,6 +21,11 @@ struct raw_transformation{
 
 };
 
+struct spectrograph_information{
+    double blaze;
+    double gpmm;
+};
+
 typedef struct raw_transformation raw_transformation;
 
 class MatrixSimulator
@@ -47,6 +52,13 @@ public:
 
     void add_source(Source * src);
 
+    /**
+     * Load spectrograph model from HDF file
+     * @param path path to HDF file containing spectrograph model
+     * @param fiber_number fiber to select
+     */
+    void load_spectrograph_model(std::string path, int fiber_number);
+
     
     void set_order_range(int min_order, int max_order);
     std::vector<int> orders;
@@ -62,6 +74,8 @@ public:
     void save_to_file(std::string filename, bool downsample=true, bool bleed=true, bool overwrite=false);
     void transformation_to_file(std::string filename);
     CCD * ccd;
+    double get_blaze();
+    double get_gpmm();
 private:
     cv::Mat img;
     std::map<int, std::vector<raw_transformation> > raw_transformations;
@@ -83,6 +97,8 @@ private:
 
     PSF * psfs;
     Slit * slit;
+
+    spectrograph_information spec_info;
 
 
 

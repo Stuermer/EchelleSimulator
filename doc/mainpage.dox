@@ -1,8 +1,12 @@
 /**
 \mainpage Welcome to the Documentation of Echelle++
 
-Right now, you will only find class documentation in the 'Classes' section for parts of the code.
+This documentation is divided in the following sections:
+- \subpage intro
+- \subpage concept "General concept"
+- \subpage install "Installation"
+- \subpage usage "Usage"
+- \subpage examples "Examples"
+- \subpage classes "Class documentation"
 
-Proper documentation of all classes and more examples are on the way.
-Stay tuned!
 */

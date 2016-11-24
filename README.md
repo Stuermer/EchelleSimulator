@@ -52,17 +52,10 @@ Part of a simulated flat spectrum for the MAROON-X spectrograph.
 
 int main(int argc, char *argv[])
 {
-PSF_ZEMAX psfs = PSF_ZEMAX(argv[1]); // Load ZEMAX simulated psfs from file
-Slit s = Slit(50., 150., 10);        // define slit size
-CCD ccd = CCD(4096, 4096, 3, s.slit_image.type()); //define detector
-
 MatrixSimulator simulator;  //create instance of simulator
 
-simulator.read_transformations(argv[2]);  //read in ZEMAX simulated transformation matrices
+simulator.load_spectrograph_model(argv[1], 1);  //read in ZEMAX simulated transformation matrices
 simulator.set_wavelength(10000); // set wavelength steps per order
-simulator.set_ccd(&ccd); // set simulator ccd
-simulator.set_slit(&s); //set simulator slit
-simulator.set_psfs(&psfs); //set simulator psfs
 
 GratingEfficiency ge = GratingEfficiency(0.8, 76., 76., 31.6); //Echelle Grating efficiency
 simulator.add_efficiency(&ge); //add efficiency profile to simulator. More profiles can be added
@@ -72,7 +65,7 @@ simulator.add_source(&cs); //add source to simulator
 
 simulator.simulate_spectrum(); //simulate echelle spectra 
 
-simulator.save_to_file("../image2.hdf", true, true); //save echelle spectrum to file
+simulator.save_to_file("../image2.hdf", true, true, true); //save echelle spectrum to file
 
 return 0;
 }
@@ -80,7 +73,7 @@ return 0;
 
 generates a 2D Fabry-Perot etalon spectrum.
 
-On a mordern PC this takes about 3s - 5s.
+On a mordern PC this takes about 5s.
 
 ## Documentation
 The documentation can be found [here](https://stuermer.github.io/EchelleSimulator).
