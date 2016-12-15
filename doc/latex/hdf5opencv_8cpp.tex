@@ -1,0 +1,36 @@
+\hypertarget{hdf5opencv_8cpp}{}\section{/home/stuermer/\+Repos/cpp/\+Echelle\+Simulator/src/hdf5opencv.cpp File Reference}
+\label{hdf5opencv_8cpp}\index{/home/stuermer/\+Repos/cpp/\+Echelle\+Simulator/src/hdf5opencv.\+cpp@{/home/stuermer/\+Repos/cpp/\+Echelle\+Simulator/src/hdf5opencv.\+cpp}}
+{\ttfamily \#include \char`\"{}hdf5opencv.\+h\char`\"{}}\\*
+{\ttfamily \#include $<$sys/stat.\+h$>$}\\*
+\subsection*{Namespaces}
+\begin{DoxyCompactItemize}
+\item 
+ \hyperlink{namespacehdf5opencv}{hdf5opencv}
+\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+bool \hyperlink{hdf5opencv_8cpp_a1e9d3cfdfcd2e43b9557c8cfd9d910f1}{exists} (const std\+::string \&name)
+\item 
+hid\+\_\+t \hyperlink{namespacehdf5opencv_a58f465a2f8d2c165eb9f52a85eb08820}{hdf5opencv\+::open\+\_\+or\+\_\+create} (const char $\ast$filename, bool overwrite)
+\item 
+void \hyperlink{namespacehdf5opencv_a77e80392bf97b70fc7a4ee1230966fa5}{hdf5opencv\+::hdf5save} (const char $\ast$filename, const char $\ast$dataset\+\_\+name, const char $\ast$strbuf, bool overwrite=false)
+\item 
+void \hyperlink{namespacehdf5opencv_a0a862a59f3ed4d9f5245c753b3b2a3ee}{hdf5opencv\+::hdf5save} (const char $\ast$filename, const char $\ast$dataset\+\_\+name, cv\+::\+Mat \&dataset, bool overwrite=false)
+\item 
+void \hyperlink{namespacehdf5opencv_abeb3b1c0af59c81e112bac07ced86d87}{hdf5opencv\+::hdf5load} (const char $\ast$filename, const char $\ast$dataset\+\_\+name, cv\+::\+Mat \&dataset)
+\item 
+void \hyperlink{namespacehdf5opencv_abe776b48aa183e84ac3d3f66c256a33b}{hdf5opencv\+::hdf5load} (const char $\ast$filename, const char $\ast$dataset\+\_\+name, char $\ast$$\ast$strbuf)
+\item 
+void \hyperlink{namespacehdf5opencv_a6c049c41c340cada7bec153008db21c3}{hdf5opencv\+::hdf5create} (const char $\ast$filename, bool overwrite=false)
+\end{DoxyCompactItemize}
+
+
+\subsection{Function Documentation}
+\index{hdf5opencv.\+cpp@{hdf5opencv.\+cpp}!exists@{exists}}
+\index{exists@{exists}!hdf5opencv.\+cpp@{hdf5opencv.\+cpp}}
+\subsubsection[{\texorpdfstring{exists(const std\+::string \&name)}{exists(const std::string &name)}}]{\setlength{\rightskip}{0pt plus 5cm}bool exists (
+\begin{DoxyParamCaption}
+\item[{const std\+::string \&}]{name}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{hdf5opencv_8cpp_a1e9d3cfdfcd2e43b9557c8cfd9d910f1}{}\label{hdf5opencv_8cpp_a1e9d3cfdfcd2e43b9557c8cfd9d910f1}

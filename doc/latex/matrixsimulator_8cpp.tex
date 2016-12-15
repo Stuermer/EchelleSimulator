@@ -1,0 +1,62 @@
+\hypertarget{matrixsimulator_8cpp}{}\section{/home/stuermer/\+Repos/cpp/\+Echelle\+Simulator/src/matrixsimulator.cpp File Reference}
+\label{matrixsimulator_8cpp}\index{/home/stuermer/\+Repos/cpp/\+Echelle\+Simulator/src/matrixsimulator.\+cpp@{/home/stuermer/\+Repos/cpp/\+Echelle\+Simulator/src/matrixsimulator.\+cpp}}
+{\ttfamily \#include \char`\"{}matrixsimulator.\+h\char`\"{}}\\*
+{\ttfamily \#include $<$iostream$>$}\\*
+{\ttfamily \#include $<$fstream$>$}\\*
+{\ttfamily \#include $<$iterator$>$}\\*
+{\ttfamily \#include \char`\"{}spline.\+h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}H5\+Cpp.\+h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}helper.\+h\char`\"{}}\\*
+{\ttfamily \#include $<$opencv2/imgproc.\+hpp$>$}\\*
+{\ttfamily \#include $<$hdf5\+\_\+hl.\+h$>$}\\*
+\subsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \hyperlink{structtransformation__hdf}{transformation\+\_\+hdf}
+\end{DoxyCompactItemize}
+\subsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+typedef struct \hyperlink{structtransformation__hdf}{transformation\+\_\+hdf} \hyperlink{matrixsimulator_8cpp_adbcfb34711a3f618ca7a27640c83ce30}{transformation\+\_\+hdf}
+\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{matrixsimulator_8cpp_aeb262deb44a10f5acad134df215fedeb}{print\+\_\+transformation\+\_\+matrix} (cv\+::\+Mat tm)
+\item 
+double \hyperlink{matrixsimulator_8cpp_af5be66a99d4ee3e3bd37609cad9272c4}{tmp\+\_\+image\+\_\+height} (int rows, double sy)
+\item 
+double \hyperlink{matrixsimulator_8cpp_aedf0bee5e0722d495d91003bf1bc0f1f}{tmp\+\_\+image\+\_\+width} (int cols, double sx)
+\end{DoxyCompactItemize}
+
+
+\subsection{Typedef Documentation}
+\index{matrixsimulator.\+cpp@{matrixsimulator.\+cpp}!transformation\+\_\+hdf@{transformation\+\_\+hdf}}
+\index{transformation\+\_\+hdf@{transformation\+\_\+hdf}!matrixsimulator.\+cpp@{matrixsimulator.\+cpp}}
+\subsubsection[{\texorpdfstring{transformation\+\_\+hdf}{transformation_hdf}}]{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf transformation\+\_\+hdf}  {\bf transformation\+\_\+hdf}}\hypertarget{matrixsimulator_8cpp_adbcfb34711a3f618ca7a27640c83ce30}{}\label{matrixsimulator_8cpp_adbcfb34711a3f618ca7a27640c83ce30}
+
+
+\subsection{Function Documentation}
+\index{matrixsimulator.\+cpp@{matrixsimulator.\+cpp}!print\+\_\+transformation\+\_\+matrix@{print\+\_\+transformation\+\_\+matrix}}
+\index{print\+\_\+transformation\+\_\+matrix@{print\+\_\+transformation\+\_\+matrix}!matrixsimulator.\+cpp@{matrixsimulator.\+cpp}}
+\subsubsection[{\texorpdfstring{print\+\_\+transformation\+\_\+matrix(cv\+::\+Mat tm)}{print_transformation_matrix(cv::Mat tm)}}]{\setlength{\rightskip}{0pt plus 5cm}void print\+\_\+transformation\+\_\+matrix (
+\begin{DoxyParamCaption}
+\item[{cv\+::\+Mat}]{tm}
+\end{DoxyParamCaption}
+)}\hypertarget{matrixsimulator_8cpp_aeb262deb44a10f5acad134df215fedeb}{}\label{matrixsimulator_8cpp_aeb262deb44a10f5acad134df215fedeb}
+\index{matrixsimulator.\+cpp@{matrixsimulator.\+cpp}!tmp\+\_\+image\+\_\+height@{tmp\+\_\+image\+\_\+height}}
+\index{tmp\+\_\+image\+\_\+height@{tmp\+\_\+image\+\_\+height}!matrixsimulator.\+cpp@{matrixsimulator.\+cpp}}
+\subsubsection[{\texorpdfstring{tmp\+\_\+image\+\_\+height(int rows, double sy)}{tmp_image_height(int rows, double sy)}}]{\setlength{\rightskip}{0pt plus 5cm}double tmp\+\_\+image\+\_\+height (
+\begin{DoxyParamCaption}
+\item[{int}]{rows, }
+\item[{double}]{sy}
+\end{DoxyParamCaption}
+)}\hypertarget{matrixsimulator_8cpp_af5be66a99d4ee3e3bd37609cad9272c4}{}\label{matrixsimulator_8cpp_af5be66a99d4ee3e3bd37609cad9272c4}
+\index{matrixsimulator.\+cpp@{matrixsimulator.\+cpp}!tmp\+\_\+image\+\_\+width@{tmp\+\_\+image\+\_\+width}}
+\index{tmp\+\_\+image\+\_\+width@{tmp\+\_\+image\+\_\+width}!matrixsimulator.\+cpp@{matrixsimulator.\+cpp}}
+\subsubsection[{\texorpdfstring{tmp\+\_\+image\+\_\+width(int cols, double sx)}{tmp_image_width(int cols, double sx)}}]{\setlength{\rightskip}{0pt plus 5cm}double tmp\+\_\+image\+\_\+width (
+\begin{DoxyParamCaption}
+\item[{int}]{cols, }
+\item[{double}]{sx}
+\end{DoxyParamCaption}
+)}\hypertarget{matrixsimulator_8cpp_aedf0bee5e0722d495d91003bf1bc0f1f}{}\label{matrixsimulator_8cpp_aedf0bee5e0722d495d91003bf1bc0f1f}

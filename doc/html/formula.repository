@@ -1,0 +1,25 @@
+\form#0:$ \begin{pmatrix} a & b & c \\ d & e & f \end{pmatrix} $
+\form#1:$ \phi $
+\form#2:$ sx, sy $
+\form#3:$ s $
+\form#4:$ tx, ty $
+\form#5:$ \pm 2\pi $
+\form#6:$ 2 \pi $
+\form#7:$ -\pi $
+\form#8:\[ s(\lambda) = const. \]
+\form#9:\[ s(\lambda) = \frac{1}{cF sin(\frac{\delta} {2})^2} \]
+\form#10:\[ \fbox{ \begin{tikzpicture} \begin{axis}[domain=300E-9:4000E-9, samples=100] \addplot[color=red]{2.0 *6.62606896E-34* 2.9979E8 * 2.9979E8 / (x^5)*1./(exp(6.62606896E-34*2.997E8/(x*1.3806504E-23*3500))-1)}; \end{axis} \end{tikzpicture} } \]
+\form#11:\[ I = \int_{a}^{b}(s(\lambda) d\lambda \approx \sum_{i=0}^{n} s(a + (i+0.5)frac{b-a}{n}) * \frac{(b-a)}{n} \]
+\form#12:\[ cF = \frac{4 R}{(1-R)^2} \]
+\form#13:\[ T(\lambda) = \frac{1}{cF sin(\frac{\delta} {2})^2} \]
+\form#14:\[ \delta \left( \frac{2\pi}{\lambda} \right) 2nlcos(\Theta) \]
+\form#15:$ F $
+\form#16:\[ cF = \frac{4R}{(1-R)^2} \]
+\form#17:\[ s(\lambda) = \frac{2hc^2}{\lambda^5}\frac{1}{\exp{\frac{hc}{\lambda k_B T}}-1} \]
+\form#18:$\Theta$
+\form#19:$shear$
+\form#20:$sx$
+\form#21:$sy$
+\form#22:$tx$
+\form#23:$ty$
+\form#24:\[ M_{\lambda} = \begin{pmatrix} sx \cdot \cos(\Theta) & -sy \cdot \sin(\Theta+shear) & tx \\ sx \cdot \sin(\Theta) & sy \cdot \cos(\Theta+shear) & ty \\ 0 & 0 & 1 \end{pmatrix} \]

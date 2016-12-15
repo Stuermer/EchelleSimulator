@@ -1,0 +1,30 @@
+
+\begin{DoxyCode}
+1 #include <iostream>
+2 #include "matrixsimulator.h"
+3 
+4 int main(int argc, char *argv[])
+5 \{
+6 MatrixSimulator simulator;  //create instance of simulator
+7 
+8 simulator.load\_spectrograph\_model(argv[1], 1);  //read in ZEMAX simulated transformation matrices
+9 simulator.set\_wavelength(10000); // set wavelength steps per order
+10 
+11 GratingEfficiency ge = GratingEfficiency(0.8, 76., 76., 31.6); //Echelle Grating efficiency
+12 simulator.add\_efficiency(&ge); //add efficiency profile to simulator. More profiles can be added
+13 
+14 IdealEtalon cs = IdealEtalon(10., 1., 0., 0.9); // spectral source ideal etalon
+15 simulator.add\_source(&cs); //add source to simulator
+16 
+17 simulator.simulate\_spectrum(); //simulate echelle spectra 
+18 
+19 simulator.save\_to\_file("../image2.hdf", true, true, true); //save echelle spectrum to file
+20 
+21 return 0;
+22 \}
+\end{DoxyCode}
+
+
+generates a 2D Fabry-\/\+Perot etalon spectrum.
+
+On a mordern PC this should take $<$3s. 

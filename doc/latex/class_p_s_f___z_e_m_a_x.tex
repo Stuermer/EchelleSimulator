@@ -1,0 +1,75 @@
+\hypertarget{class_p_s_f___z_e_m_a_x}{}\section{P\+S\+F\+\_\+\+Z\+E\+M\+AX Class Reference}
+\label{class_p_s_f___z_e_m_a_x}\index{P\+S\+F\+\_\+\+Z\+E\+M\+AX@{P\+S\+F\+\_\+\+Z\+E\+M\+AX}}
+
+
+{\ttfamily \#include $<$P\+S\+F.\+h$>$}
+
+Inheritance diagram for P\+S\+F\+\_\+\+Z\+E\+M\+AX\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_p_s_f___z_e_m_a_x}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{class_p_s_f___z_e_m_a_x_aa1d613e53e5acb9744461efd35c2ef09}{P\+S\+F\+\_\+\+Z\+E\+M\+AX} (std\+::string filename, int fiber\+\_\+number)
+\item 
+cv\+::\+Mat \hyperlink{class_p_s_f___z_e_m_a_x_a2fec338597b88e4f560489e9648649c5}{get\+\_\+\+P\+SF} (int order, double wavelength)
+\item 
+cv\+::\+Mat \hyperlink{class_p_s_f___z_e_m_a_x_ad3b5bb955539e861246cc0f3e3add141}{interpolate\+\_\+\+P\+SF} (cv\+::\+Mat psf1, cv\+::\+Mat psf2, double w1, double w2, double w)
+\end{DoxyCompactItemize}
+\subsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+std\+::map$<$ int, std\+::vector$<$ \hyperlink{struct_p_s_fdata}{P\+S\+Fdata} $>$ $>$ \hyperlink{class_p_s_f___z_e_m_a_x_af44c6c61ee1c43bfb34b98922f796bad}{psfs}
+\end{DoxyCompactItemize}
+
+
+\subsection{Constructor \& Destructor Documentation}
+\index{P\+S\+F\+\_\+\+Z\+E\+M\+AX@{P\+S\+F\+\_\+\+Z\+E\+M\+AX}!P\+S\+F\+\_\+\+Z\+E\+M\+AX@{P\+S\+F\+\_\+\+Z\+E\+M\+AX}}
+\index{P\+S\+F\+\_\+\+Z\+E\+M\+AX@{P\+S\+F\+\_\+\+Z\+E\+M\+AX}!P\+S\+F\+\_\+\+Z\+E\+M\+AX@{P\+S\+F\+\_\+\+Z\+E\+M\+AX}}
+\subsubsection[{\texorpdfstring{P\+S\+F\+\_\+\+Z\+E\+M\+A\+X(std\+::string filename, int fiber\+\_\+number)}{PSF_ZEMAX(std::string filename, int fiber_number)}}]{\setlength{\rightskip}{0pt plus 5cm}P\+S\+F\+\_\+\+Z\+E\+M\+A\+X\+::\+P\+S\+F\+\_\+\+Z\+E\+M\+AX (
+\begin{DoxyParamCaption}
+\item[{std\+::string}]{filename, }
+\item[{int}]{fiber\+\_\+number}
+\end{DoxyParamCaption}
+)}\hypertarget{class_p_s_f___z_e_m_a_x_aa1d613e53e5acb9744461efd35c2ef09}{}\label{class_p_s_f___z_e_m_a_x_aa1d613e53e5acb9744461efd35c2ef09}
+
+
+\subsection{Member Function Documentation}
+\index{P\+S\+F\+\_\+\+Z\+E\+M\+AX@{P\+S\+F\+\_\+\+Z\+E\+M\+AX}!get\+\_\+\+P\+SF@{get\+\_\+\+P\+SF}}
+\index{get\+\_\+\+P\+SF@{get\+\_\+\+P\+SF}!P\+S\+F\+\_\+\+Z\+E\+M\+AX@{P\+S\+F\+\_\+\+Z\+E\+M\+AX}}
+\subsubsection[{\texorpdfstring{get\+\_\+\+P\+S\+F(int order, double wavelength)}{get_PSF(int order, double wavelength)}}]{\setlength{\rightskip}{0pt plus 5cm}cv\+::\+Mat P\+S\+F\+\_\+\+Z\+E\+M\+A\+X\+::get\+\_\+\+P\+SF (
+\begin{DoxyParamCaption}
+\item[{int}]{order, }
+\item[{double}]{wavelength}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}\hypertarget{class_p_s_f___z_e_m_a_x_a2fec338597b88e4f560489e9648649c5}{}\label{class_p_s_f___z_e_m_a_x_a2fec338597b88e4f560489e9648649c5}
+
+
+Implements \hyperlink{class_p_s_f_a136bdda01aeb3e8f2fc3554aa7d8be06}{P\+SF}.
+
+\index{P\+S\+F\+\_\+\+Z\+E\+M\+AX@{P\+S\+F\+\_\+\+Z\+E\+M\+AX}!interpolate\+\_\+\+P\+SF@{interpolate\+\_\+\+P\+SF}}
+\index{interpolate\+\_\+\+P\+SF@{interpolate\+\_\+\+P\+SF}!P\+S\+F\+\_\+\+Z\+E\+M\+AX@{P\+S\+F\+\_\+\+Z\+E\+M\+AX}}
+\subsubsection[{\texorpdfstring{interpolate\+\_\+\+P\+S\+F(cv\+::\+Mat psf1, cv\+::\+Mat psf2, double w1, double w2, double w)}{interpolate_PSF(cv::Mat psf1, cv::Mat psf2, double w1, double w2, double w)}}]{\setlength{\rightskip}{0pt plus 5cm}cv\+::\+Mat P\+S\+F\+\_\+\+Z\+E\+M\+A\+X\+::interpolate\+\_\+\+P\+SF (
+\begin{DoxyParamCaption}
+\item[{cv\+::\+Mat}]{psf1, }
+\item[{cv\+::\+Mat}]{psf2, }
+\item[{double}]{w1, }
+\item[{double}]{w2, }
+\item[{double}]{w}
+\end{DoxyParamCaption}
+)}\hypertarget{class_p_s_f___z_e_m_a_x_ad3b5bb955539e861246cc0f3e3add141}{}\label{class_p_s_f___z_e_m_a_x_ad3b5bb955539e861246cc0f3e3add141}
+
+
+\subsection{Member Data Documentation}
+\index{P\+S\+F\+\_\+\+Z\+E\+M\+AX@{P\+S\+F\+\_\+\+Z\+E\+M\+AX}!psfs@{psfs}}
+\index{psfs@{psfs}!P\+S\+F\+\_\+\+Z\+E\+M\+AX@{P\+S\+F\+\_\+\+Z\+E\+M\+AX}}
+\subsubsection[{\texorpdfstring{psfs}{psfs}}]{\setlength{\rightskip}{0pt plus 5cm}std\+::map$<$ int, std\+::vector$<${\bf P\+S\+Fdata}$>$ $>$ P\+S\+F\+\_\+\+Z\+E\+M\+A\+X\+::psfs\hspace{0.3cm}{\ttfamily [private]}}\hypertarget{class_p_s_f___z_e_m_a_x_af44c6c61ee1c43bfb34b98922f796bad}{}\label{class_p_s_f___z_e_m_a_x_af44c6c61ee1c43bfb34b98922f796bad}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+/home/stuermer/\+Repos/cpp/\+Echelle\+Simulator/include/\hyperlink{_p_s_f_8h}{P\+S\+F.\+h}\item 
+/home/stuermer/\+Repos/cpp/\+Echelle\+Simulator/src/\hyperlink{_p_s_f_8cpp}{P\+S\+F.\+cpp}\end{DoxyCompactItemize}

@@ -1,0 +1,113 @@
+\hypertarget{class_blackbody}{}\section{Blackbody Class Reference}
+\label{class_blackbody}\index{Blackbody@{Blackbody}}
+
+
+Implements a {\itshape blackbody spectrum.}  
+
+
+
+
+{\ttfamily \#include $<$source.\+h$>$}
+
+Inheritance diagram for Blackbody\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_blackbody}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{class_blackbody_a4461b2a29dd0ee94ec0d23c7a936c4ce}{Blackbody} (double \hyperlink{class_blackbody_ab565e14b93a8459ebbd4e2c5583932f0}{T})
+\item 
+double \hyperlink{class_blackbody_a2e667cd4c4362550a77eb9081258ffb3}{get\+\_\+spectral\+\_\+density} (double wavelength)
+\end{DoxyCompactItemize}
+\subsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static double \hyperlink{class_blackbody_a7c2d99ba62b8d499de07edaabdc3b7f9}{planck} (const double \&\hyperlink{class_blackbody_ab565e14b93a8459ebbd4e2c5583932f0}{T}, const double \&wavelength)
+\end{DoxyCompactItemize}
+\subsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+double \hyperlink{class_blackbody_ab565e14b93a8459ebbd4e2c5583932f0}{T}
+\begin{DoxyCompactList}\small\item\em Temperature \mbox{[}K\mbox{]}. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Implements a {\itshape blackbody spectrum.} 
+
+This class implements the spectrum of a blackbody of a certain Temperature. \begin{DoxySeeAlso}{See also}
+\{\hyperlink{class_blackbody_a2e667cd4c4362550a77eb9081258ffb3}{Blackbody\+::get\+\_\+spectral\+\_\+density()}\}
+\end{DoxySeeAlso}
+\[ \fbox{ \begin{tikzpicture} \begin{axis}[domain=300E-9:4000E-9, samples=100] \addplot[color=red]{2.0 *6.62606896E-34* 2.9979E8 * 2.9979E8 / (x^5)*1./(exp(6.62606896E-34*2.997E8/(x*1.3806504E-23*3500))-1)}; \end{axis} \end{tikzpicture} } \] 
+
+\subsection{Constructor \& Destructor Documentation}
+\index{Blackbody@{Blackbody}!Blackbody@{Blackbody}}
+\index{Blackbody@{Blackbody}!Blackbody@{Blackbody}}
+\subsubsection[{\texorpdfstring{Blackbody(double T)}{Blackbody(double T)}}]{\setlength{\rightskip}{0pt plus 5cm}Blackbody\+::\+Blackbody (
+\begin{DoxyParamCaption}
+\item[{double}]{T}
+\end{DoxyParamCaption}
+)}\hypertarget{class_blackbody_a4461b2a29dd0ee94ec0d23c7a936c4ce}{}\label{class_blackbody_a4461b2a29dd0ee94ec0d23c7a936c4ce}
+Constructor 
+\begin{DoxyParams}{Parameters}
+{\em T} & Temperature \mbox{[}K\mbox{]} \\
+\hline
+\end{DoxyParams}
+
+
+\subsection{Member Function Documentation}
+\index{Blackbody@{Blackbody}!get\+\_\+spectral\+\_\+density@{get\+\_\+spectral\+\_\+density}}
+\index{get\+\_\+spectral\+\_\+density@{get\+\_\+spectral\+\_\+density}!Blackbody@{Blackbody}}
+\subsubsection[{\texorpdfstring{get\+\_\+spectral\+\_\+density(double wavelength)}{get_spectral_density(double wavelength)}}]{\setlength{\rightskip}{0pt plus 5cm}double Blackbody\+::get\+\_\+spectral\+\_\+density (
+\begin{DoxyParamCaption}
+\item[{double}]{wavelength}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}\hypertarget{class_blackbody_a2e667cd4c4362550a77eb9081258ffb3}{}\label{class_blackbody_a2e667cd4c4362550a77eb9081258ffb3}
+spectral density of a blackbody \[ s(\lambda) = \frac{2hc^2}{\lambda^5}\frac{1}{\exp{\frac{hc}{\lambda k_B T}}-1} \] 
+\begin{DoxyParams}{Parameters}
+{\em wavelength} & wavelength \mbox{[}micron\mbox{]} \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+spectral density of a blackbody at given wavelength 
+\end{DoxyReturn}
+
+
+Reimplemented from \hyperlink{class_source_a546ae8ec1ae47e888c74f146278e19af}{Source}.
+
+\index{Blackbody@{Blackbody}!planck@{planck}}
+\index{planck@{planck}!Blackbody@{Blackbody}}
+\subsubsection[{\texorpdfstring{planck(const double \&\+T, const double \&wavelength)}{planck(const double &T, const double &wavelength)}}]{\setlength{\rightskip}{0pt plus 5cm}double Blackbody\+::planck (
+\begin{DoxyParamCaption}
+\item[{const double \&}]{T, }
+\item[{const double \&}]{wavelength}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [static]}}\hypertarget{class_blackbody_a7c2d99ba62b8d499de07edaabdc3b7f9}{}\label{class_blackbody_a7c2d99ba62b8d499de07edaabdc3b7f9}
+Planck function for spectral density of a blackbody with Temperature T 
+\begin{DoxyParams}{Parameters}
+{\em T} & Temperature \mbox{[}K\mbox{]} \\
+\hline
+{\em wavelength} & wavelength \mbox{[}m\mbox{]} \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+spectral density 
+\end{DoxyReturn}
+
+
+\subsection{Member Data Documentation}
+\index{Blackbody@{Blackbody}!T@{T}}
+\index{T@{T}!Blackbody@{Blackbody}}
+\subsubsection[{\texorpdfstring{T}{T}}]{\setlength{\rightskip}{0pt plus 5cm}double Blackbody\+::T\hspace{0.3cm}{\ttfamily [private]}}\hypertarget{class_blackbody_ab565e14b93a8459ebbd4e2c5583932f0}{}\label{class_blackbody_ab565e14b93a8459ebbd4e2c5583932f0}
+
+
+Temperature \mbox{[}K\mbox{]}. 
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+/home/stuermer/\+Repos/cpp/\+Echelle\+Simulator/include/\hyperlink{source_8h}{source.\+h}\item 
+/home/stuermer/\+Repos/cpp/\+Echelle\+Simulator/src/\hyperlink{source_8cpp}{source.\+cpp}\end{DoxyCompactItemize}

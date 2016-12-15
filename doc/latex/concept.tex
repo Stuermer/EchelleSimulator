@@ -1,0 +1,25 @@
+The basic idea is that for a specific wavelength, the response of the spectrograph to a certain input illumination can be described by a 3x3 transformation matrix and a subsequent convolution with a point spread function (\hyperlink{class_p_s_f}{P\+SF}). Both, the transformation matrices and the P\+S\+Fs are therefore wavelength dependent. It is reasonable to assume that along a single echelle order, the P\+S\+Fs and transformation parameters will vary smoothly. If we know the matrices and P\+S\+Fs for a sufficient large number of wavelength, we can interpolate between them for arbitrary wavelength.
+
+\subsection*{Transformation matrices}
+
+At a monochromatic wavelength, the information about the mapping of the input slit / fiber onto the detector of the spectrograph can be described by a 3x3 transformation matrix. In principle there are two geometric transformation we could choose from\+: Affine and projective transformation. While the latter is more general, we found that affine transformations are sufficiently accurate to describe the spectrograph optics. Affine transformation parameters also give an intuitive insight in what happens across an order, because they can be expressed in terms of rotation( $\Theta$), shear ( $shear$), scaling in both directions ( $sx$ and $sy$ ) and translation ( $tx$ and $ty$ ) .
+
+There is no unique definition of how do compose an affine transformation matrix, we will use the following\+:
+
+\[ M_{\lambda} = \begin{pmatrix} sx \cdot \cos(\Theta) & -sy \cdot \sin(\Theta+shear) & tx \\ sx \cdot \sin(\Theta) & sy \cdot \cos(\Theta+shear) & ty \\ 0 & 0 & 1 \end{pmatrix} \]
+
+As an example, we plot the scale parameter in x-\/direction (dispersion direction) as a function of wavelength for the MaroonX spectrograph. Data of the same echelle order are connected by a line. The anamorphic magnification of the spectrograph is directly reflected by an increase of {\itshape sx} across each order. On the right plot we see {\itshape sx} for order 100. Note that the increase of {\itshape sx} with wavelength is not a linear, but a smooth function.
+
+
+
+\subsection*{Point Spread Function}
+
+While the transformation matrix describes well the coarse behaviour of a spectrograph at a specific wavelength, we need additional information to account for all optical aberrations that occur in a realistic spectrograph. The point spread function (or \hyperlink{class_p_s_f}{P\+SF}) is defined as the response of an optical system to a point source.
+
+Casually speaking, the \hyperlink{class_p_s_f}{P\+SF} leads to a blur of the imaged input slit. In a spectrograph, this blur of the \hyperlink{class_p_s_f}{P\+SF} will usually be of the same size or smaller than the size of the input slit on the detector.
+
+The shape of the \hyperlink{class_p_s_f}{P\+SF} can have a complex form, and using a simple Gaussian function might not accurately describe the \hyperlink{class_p_s_f}{P\+SF}. The \hyperlink{class_p_s_f}{P\+SF} will vary in form and size across the detector, depending on the subtleties of the optics for a specific wavelength.
+
+This makes it difficult to describe the \hyperlink{class_p_s_f}{P\+SF} in a general analytic form. Therefore, we use a numeric 2D array on an oversampled grid (compared to the detector\textquotesingle{}s natural grid) to describe the P\+S\+Fs.
+
+In order to interpolate between two P\+S\+Fs, we calculate the normalized linear sum of the two neighbouring P\+S\+Fs. (see also \hyperlink{class_p_s_f___z_e_m_a_x_ad3b5bb955539e861246cc0f3e3add141}{P\+S\+F\+\_\+\+Z\+E\+M\+A\+X\+::interpolate\+\_\+\+P\+SF}) 

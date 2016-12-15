@@ -1,0 +1,211 @@
+\hypertarget{class_source}{}\section{Source Class Reference}
+\label{class_source}\index{Source@{Source}}
+
+
+Base class of all spectral sources.  
+
+
+
+
+{\ttfamily \#include $<$source.\+h$>$}
+
+Inheritance diagram for Source\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=1.898305cm]{class_source}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{class_source_a660c0a4b8b8f8402568bef86f2cb2fbb}{Source} ()
+\item 
+virtual \hyperlink{class_source_ac5104a4d66641ae529419b47da4a1473}{$\sim$\+Source} ()
+\item 
+virtual std\+::vector$<$ double $>$ \hyperlink{class_source_a165b9f7281915b5fdf5ce3278fb1e3aa}{get\+\_\+spectral\+\_\+density} (std\+::vector$<$ double $>$ wavelength)
+\item 
+virtual double \hyperlink{class_source_a546ae8ec1ae47e888c74f146278e19af}{get\+\_\+spectral\+\_\+density} (double wavelength)
+\item 
+virtual std\+::vector$<$ double $>$ \hyperlink{class_source_ab5d90ab3a4cfb8403803d88ce8b9f0f8}{get\+\_\+spectrum} (std\+::vector$<$ double $>$ wavelength)
+\item 
+void \hyperlink{class_source_a0bd707ab373bc9b957cb30d577af8a07}{set\+\_\+doppler\+\_\+shift} (double \hyperlink{class_source_a33104a788577b65918c95d240110c082}{shift})
+\item 
+void \hyperlink{class_source_a5d2eac20504111cbee890666e052e4df}{set\+\_\+integration\+\_\+steps} (int n)
+\end{DoxyCompactItemize}
+\subsection*{Private Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+double \hyperlink{class_source_ade0a7e2d3911f3247748ac21ab15e585}{integral\+\_\+s} (double a, double b, int n)
+\end{DoxyCompactItemize}
+\subsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+double \hyperlink{class_source_a33104a788577b65918c95d240110c082}{shift}
+\begin{DoxyCompactList}\small\item\em current doppler shift \end{DoxyCompactList}\item 
+int \hyperlink{class_source_ac2c09694b86c1936b386afac137126e5}{integration\+\_\+steps}
+\begin{DoxyCompactList}\small\item\em number of steps for the integrator \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Base class of all spectral sources. 
+
+This class is the base class of all spectral sources. Its purpose is to provide a common interface for all sources. For implementing a new spectral source, inherit from this class and implement the \hyperlink{class_source_a165b9f7281915b5fdf5ce3278fb1e3aa}{Source\+::get\+\_\+spectral\+\_\+density} function. 
+
+\subsection{Constructor \& Destructor Documentation}
+\index{Source@{Source}!Source@{Source}}
+\index{Source@{Source}!Source@{Source}}
+\subsubsection[{\texorpdfstring{Source()}{Source()}}]{\setlength{\rightskip}{0pt plus 5cm}Source\+::\+Source (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{class_source_a660c0a4b8b8f8402568bef86f2cb2fbb}{}\label{class_source_a660c0a4b8b8f8402568bef86f2cb2fbb}
+\index{Source@{Source}!````~Source@{$\sim$\+Source}}
+\index{````~Source@{$\sim$\+Source}!Source@{Source}}
+\subsubsection[{\texorpdfstring{$\sim$\+Source()}{~Source()}}]{\setlength{\rightskip}{0pt plus 5cm}Source\+::$\sim$\+Source (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}\hypertarget{class_source_ac5104a4d66641ae529419b47da4a1473}{}\label{class_source_ac5104a4d66641ae529419b47da4a1473}
+
+
+\subsection{Member Function Documentation}
+\index{Source@{Source}!get\+\_\+spectral\+\_\+density@{get\+\_\+spectral\+\_\+density}}
+\index{get\+\_\+spectral\+\_\+density@{get\+\_\+spectral\+\_\+density}!Source@{Source}}
+\subsubsection[{\texorpdfstring{get\+\_\+spectral\+\_\+density(std\+::vector$<$ double $>$ wavelength)}{get_spectral_density(std::vector< double > wavelength)}}]{\setlength{\rightskip}{0pt plus 5cm}std\+::vector$<$ double $>$ Source\+::get\+\_\+spectral\+\_\+density (
+\begin{DoxyParamCaption}
+\item[{std\+::vector$<$ double $>$}]{wavelength}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}\hypertarget{class_source_a165b9f7281915b5fdf5ce3278fb1e3aa}{}\label{class_source_a165b9f7281915b5fdf5ce3278fb1e3aa}
+This is an overloaded member function, provided for convenience. It differs from the above function only in what argument(s) it accepts.
+
+Returns the spectral density of the \hyperlink{class_source}{Source} at the given wavelength vector.
+
+
+\begin{DoxyParams}{Parameters}
+{\em wavelength} & wavelength vector \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+spectral density at given wavelength 
+\end{DoxyReturn}
+\index{Source@{Source}!get\+\_\+spectral\+\_\+density@{get\+\_\+spectral\+\_\+density}}
+\index{get\+\_\+spectral\+\_\+density@{get\+\_\+spectral\+\_\+density}!Source@{Source}}
+\subsubsection[{\texorpdfstring{get\+\_\+spectral\+\_\+density(double wavelength)}{get_spectral_density(double wavelength)}}]{\setlength{\rightskip}{0pt plus 5cm}double Source\+::get\+\_\+spectral\+\_\+density (
+\begin{DoxyParamCaption}
+\item[{double}]{wavelength}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}\hypertarget{class_source_a546ae8ec1ae47e888c74f146278e19af}{}\label{class_source_a546ae8ec1ae47e888c74f146278e19af}
+This function returns the spectral density at a given wavelength. It is the essential function for all subclasses. \begin{DoxySeeAlso}{See also}
+\hyperlink{class_source_ab5d90ab3a4cfb8403803d88ce8b9f0f8}{Source\+::get\+\_\+spectrum()} will use this function to integrate over it to retreive a spectrum for a given wavelength vector. 
+\end{DoxySeeAlso}
+
+\begin{DoxyParams}{Parameters}
+{\em wavelength} & wavelength \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+spectral density 
+\end{DoxyReturn}
+
+
+Reimplemented in \hyperlink{class_line_list_acb1e41d6120cf6bc0df2afaeb35a5aad}{Line\+List}, \hyperlink{class_phoenix_spectrum_a4e5ddcd25114f1a62a0f728165318fb1}{Phoenix\+Spectrum}, \hyperlink{class_blackbody_a2e667cd4c4362550a77eb9081258ffb3}{Blackbody}, \hyperlink{class_ideal_etalon_a6ba6c6d89e88e646da38ec45d12dab09}{Ideal\+Etalon}, and \hyperlink{class_constant_ae0526443e519154bcd338ee930bcad04}{Constant}.
+
+\index{Source@{Source}!get\+\_\+spectrum@{get\+\_\+spectrum}}
+\index{get\+\_\+spectrum@{get\+\_\+spectrum}!Source@{Source}}
+\subsubsection[{\texorpdfstring{get\+\_\+spectrum(std\+::vector$<$ double $>$ wavelength)}{get_spectrum(std::vector< double > wavelength)}}]{\setlength{\rightskip}{0pt plus 5cm}std\+::vector$<$ double $>$ Source\+::get\+\_\+spectrum (
+\begin{DoxyParamCaption}
+\item[{std\+::vector$<$ double $>$}]{wavelength}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}\hypertarget{class_source_ab5d90ab3a4cfb8403803d88ce8b9f0f8}{}\label{class_source_ab5d90ab3a4cfb8403803d88ce8b9f0f8}
+Returns spectrum at given wavelength
+
+This function returns the integrated spectral density for a given wavelength vector. 
+\begin{DoxyParams}{Parameters}
+{\em wavelength} & wavelength vector \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+spectrum at given wavelength 
+\end{DoxyReturn}
+
+
+Reimplemented in \hyperlink{class_line_list_aa51704a60f48389c06c583d2a4cc6733}{Line\+List}.
+
+\index{Source@{Source}!integral\+\_\+s@{integral\+\_\+s}}
+\index{integral\+\_\+s@{integral\+\_\+s}!Source@{Source}}
+\subsubsection[{\texorpdfstring{integral\+\_\+s(double a, double b, int n)}{integral_s(double a, double b, int n)}}]{\setlength{\rightskip}{0pt plus 5cm}double Source\+::integral\+\_\+s (
+\begin{DoxyParamCaption}
+\item[{double}]{a, }
+\item[{double}]{b, }
+\item[{int}]{n}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [private]}}\hypertarget{class_source_ade0a7e2d3911f3247748ac21ab15e585}{}\label{class_source_ade0a7e2d3911f3247748ac21ab15e585}
+Integrates the \begin{DoxySeeAlso}{See also}
+\{Source\+::spectral\+\_\+density()\} function between limits a and b.
+\end{DoxySeeAlso}
+This is a simple integrator, which integrates the \begin{DoxySeeAlso}{See also}
+\{Source\+::spectral\+\_\+density\} function between a and b. It uses a simple aproximation by deviding the interval \mbox{[}a,b\mbox{]} in n parts and sum \[ I = \int_{a}^{b}(s(\lambda) d\lambda \approx \sum_{i=0}^{n} s(a + (i+0.5)frac{b-a}{n}) * \frac{(b-a)}{n} \] 
+\end{DoxySeeAlso}
+
+\begin{DoxyParams}{Parameters}
+{\em a} & lower wavelength limit \\
+\hline
+{\em b} & upper wavelength limit \\
+\hline
+{\em n} & number of subintervalls \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+integrated spectrum within \mbox{[}a, b\mbox{]}
+\end{DoxyReturn}
+\begin{DoxyRefDesc}{Todo}
+\item[\hyperlink{todo__todo000002}{Todo}]This integrator should be replaved with a more accurate one. For highly unresolved spectra this integrator might not be very precise. \end{DoxyRefDesc}
+\index{Source@{Source}!set\+\_\+doppler\+\_\+shift@{set\+\_\+doppler\+\_\+shift}}
+\index{set\+\_\+doppler\+\_\+shift@{set\+\_\+doppler\+\_\+shift}!Source@{Source}}
+\subsubsection[{\texorpdfstring{set\+\_\+doppler\+\_\+shift(double shift)}{set_doppler_shift(double shift)}}]{\setlength{\rightskip}{0pt plus 5cm}void Source\+::set\+\_\+doppler\+\_\+shift (
+\begin{DoxyParamCaption}
+\item[{double}]{shift}
+\end{DoxyParamCaption}
+)}\hypertarget{class_source_a0bd707ab373bc9b957cb30d577af8a07}{}\label{class_source_a0bd707ab373bc9b957cb30d577af8a07}
+Applies a spectral shift on the spectrum to simulate radial velocity shifts.
+
+
+\begin{DoxyParams}{Parameters}
+{\em shift} & doppler shift in \mbox{[}m/s\mbox{]} \\
+\hline
+\end{DoxyParams}
+\index{Source@{Source}!set\+\_\+integration\+\_\+steps@{set\+\_\+integration\+\_\+steps}}
+\index{set\+\_\+integration\+\_\+steps@{set\+\_\+integration\+\_\+steps}!Source@{Source}}
+\subsubsection[{\texorpdfstring{set\+\_\+integration\+\_\+steps(int n)}{set_integration_steps(int n)}}]{\setlength{\rightskip}{0pt plus 5cm}void Source\+::set\+\_\+integration\+\_\+steps (
+\begin{DoxyParamCaption}
+\item[{int}]{n}
+\end{DoxyParamCaption}
+)}\hypertarget{class_source_a5d2eac20504111cbee890666e052e4df}{}\label{class_source_a5d2eac20504111cbee890666e052e4df}
+Sets the number of sub steps of the integrator. 
+\begin{DoxyParams}{Parameters}
+{\em n} & number of subintervalls \\
+\hline
+\end{DoxyParams}
+
+
+\subsection{Member Data Documentation}
+\index{Source@{Source}!integration\+\_\+steps@{integration\+\_\+steps}}
+\index{integration\+\_\+steps@{integration\+\_\+steps}!Source@{Source}}
+\subsubsection[{\texorpdfstring{integration\+\_\+steps}{integration_steps}}]{\setlength{\rightskip}{0pt plus 5cm}int Source\+::integration\+\_\+steps\hspace{0.3cm}{\ttfamily [private]}}\hypertarget{class_source_ac2c09694b86c1936b386afac137126e5}{}\label{class_source_ac2c09694b86c1936b386afac137126e5}
+
+
+number of steps for the integrator 
+
+\index{Source@{Source}!shift@{shift}}
+\index{shift@{shift}!Source@{Source}}
+\subsubsection[{\texorpdfstring{shift}{shift}}]{\setlength{\rightskip}{0pt plus 5cm}double Source\+::shift\hspace{0.3cm}{\ttfamily [private]}}\hypertarget{class_source_a33104a788577b65918c95d240110c082}{}\label{class_source_a33104a788577b65918c95d240110c082}
+
+
+current doppler shift 
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+/home/stuermer/\+Repos/cpp/\+Echelle\+Simulator/include/\hyperlink{source_8h}{source.\+h}\item 
+/home/stuermer/\+Repos/cpp/\+Echelle\+Simulator/src/\hyperlink{source_8cpp}{source.\+cpp}\end{DoxyCompactItemize}

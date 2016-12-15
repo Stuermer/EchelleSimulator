@@ -1,0 +1,355 @@
+\hypertarget{class_matrix_simulator}{}\section{Matrix\+Simulator Class Reference}
+\label{class_matrix_simulator}\index{Matrix\+Simulator@{Matrix\+Simulator}}
+
+
+{\ttfamily \#include $<$matrixsimulator.\+h$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{class_matrix_simulator_ae3feb47ab98f917ad0b8b4b53d1b34aa}{Matrix\+Simulator} ()
+\item 
+void \hyperlink{class_matrix_simulator_a7d6123f82db49f9054228c31ba5dd44e}{read\+\_\+transformations} (std\+::string path)
+\item 
+cv\+::\+Mat \hyperlink{class_matrix_simulator_a5bdb033cbabf36fdd7f57a92f65dbec6}{get\+\_\+transformation\+\_\+matrix} (int order, double wavelength)
+\item 
+void \hyperlink{class_matrix_simulator_aa584302cfbfc8d5f02f184282bd60584}{calc\+\_\+splines} ()
+\item 
+void \hyperlink{class_matrix_simulator_a516c57a6e2d27e249202c60bd0fb5cc6}{set\+\_\+wavelength} (int N)
+\item 
+void \hyperlink{class_matrix_simulator_a85e8651b0a540ae40b3352ee73ed1c11}{set\+\_\+wavelength} (std\+::vector$<$ double $>$ wavelength)
+\item 
+void \hyperlink{class_matrix_simulator_a225df602310e87aa476faafafb08bb48}{calc\+\_\+sim\+\_\+matrices} ()
+\item 
+cv\+::\+Mat \hyperlink{class_matrix_simulator_a3016ecb082ba87ef7594928c14d74694}{transform\+\_\+slit} (cv\+::\+Mat \&slit\+\_\+image, cv\+::\+Mat \&transformation\+\_\+matrix, double weight)
+\item 
+int \hyperlink{class_matrix_simulator_a48920e35ea386faca140453878c4ed38}{simulate\+\_\+order} (int order, cv\+::\+Mat \&slit\+\_\+image, cv\+::\+Mat \&output\+\_\+image, bool aberrations)
+\item 
+void \hyperlink{class_matrix_simulator_a92cbe25d3d5317dac8ded3d974710bbd}{simulate\+\_\+spectrum} ()
+\item 
+void \hyperlink{class_matrix_simulator_aed5d9befa4e4c4af5e6331a836d25e6c}{set\+\_\+efficiencies} (std\+::vector$<$ \hyperlink{class_efficiency}{Efficiency} $\ast$ $>$ \&\hyperlink{class_matrix_simulator_a05c00fb5164a5faa987da2642b899035}{efficiencies})
+\item 
+void \hyperlink{class_matrix_simulator_a2caa7f889603addf02db9094c20b91a6}{add\+\_\+efficiency} (\hyperlink{class_efficiency}{Efficiency} $\ast$eff)
+\item 
+void \hyperlink{class_matrix_simulator_a250a81596cd303057c4d14a86c4bb728}{add\+\_\+source} (\hyperlink{class_source}{Source} $\ast$src)
+\item 
+void \hyperlink{class_matrix_simulator_a9a9afb06c7285f20658092da61f65c36}{load\+\_\+spectrograph\+\_\+model} (std\+::string path, int fiber\+\_\+number)
+\item 
+void \hyperlink{class_matrix_simulator_a26d15d1dd2e1e8944e74e5f9f47dca76}{set\+\_\+order\+\_\+range} (int min\+\_\+order, int max\+\_\+order)
+\item 
+void \hyperlink{class_matrix_simulator_a0741978f171e1c5f229c19de64042958}{set\+\_\+ccd} (\hyperlink{class_c_c_d}{C\+CD} $\ast$\hyperlink{class_matrix_simulator_a151ec381d921be1b5b30fef6430ceb91}{ccd})
+\item 
+void \hyperlink{class_matrix_simulator_afaf8acf533e2b0e0e440aabbeb6a4743}{set\+\_\+slit} (\hyperlink{class_slit}{Slit} $\ast$\hyperlink{class_matrix_simulator_a5b054ede1af3c6e29296af6f2cd5e313}{slit})
+\item 
+void \hyperlink{class_matrix_simulator_ad31531aec0901325d6e01ebbd82b1da5}{set\+\_\+psfs} (\hyperlink{class_p_s_f}{P\+SF} $\ast$\hyperlink{class_matrix_simulator_a4f8b1a0772c43203f1b06420c0d018fa}{psfs})
+\item 
+void \hyperlink{class_matrix_simulator_a042e798c6f289100c88a656f71101502}{prepare\+\_\+sources} (std\+::vector$<$ \hyperlink{class_source}{Source} $\ast$ $>$ \hyperlink{class_matrix_simulator_abb3bc16d0336f6bbda99300ceccdf427}{sources})
+\item 
+void \hyperlink{class_matrix_simulator_ac7e48c2e271c13b09e5a1c55f6f477c8}{save\+\_\+to\+\_\+file} (std\+::string filename, bool downsample=true, bool bleed=true, bool overwrite=false)
+\item 
+void \hyperlink{class_matrix_simulator_a8ce41368c573f2faba7e74a5756250e4}{transformation\+\_\+to\+\_\+file} (std\+::string filename)
+\item 
+double \hyperlink{class_matrix_simulator_abf10a6ad60e8fa959e41df6a1f07c82d}{get\+\_\+blaze} ()
+\item 
+double \hyperlink{class_matrix_simulator_ab4e1e824d0e819fcf967d7d8b770de8a}{get\+\_\+gpmm} ()
+\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+std\+::vector$<$ int $>$ \hyperlink{class_matrix_simulator_a5524a9a77d30e2b396737260ec6f73f8}{orders}
+\item 
+int \hyperlink{class_matrix_simulator_a2da306f4e998a609e9a9f26688d80949}{raw\+\_\+n}
+\item 
+\hyperlink{class_c_c_d}{C\+CD} $\ast$ \hyperlink{class_matrix_simulator_a151ec381d921be1b5b30fef6430ceb91}{ccd}
+\end{DoxyCompactItemize}
+\subsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+cv\+::\+Mat \hyperlink{class_matrix_simulator_a90bcc13f784a69c54ad605ef77dcbbe8}{img}
+\item 
+std\+::map$<$ int, std\+::vector$<$ \hyperlink{structraw__transformation}{raw\+\_\+transformation} $>$ $>$ \hyperlink{class_matrix_simulator_a1266c67228a0fc2c1387c4e7454fe435}{raw\+\_\+transformations}
+\item 
+std\+::vector$<$ \hyperlink{class_efficiency}{Efficiency} $\ast$ $>$ \hyperlink{class_matrix_simulator_a05c00fb5164a5faa987da2642b899035}{efficiencies}
+\item 
+std\+::vector$<$ \hyperlink{class_source}{Source} $\ast$ $>$ \hyperlink{class_matrix_simulator_abb3bc16d0336f6bbda99300ceccdf427}{sources}
+\item 
+std\+::map$<$ int, std\+::vector$<$ double $>$ $>$ \hyperlink{class_matrix_simulator_aac8850d4461c6a7775dc44f6bdafb2e2}{sim\+\_\+wavelength}
+\item 
+std\+::map$<$ int, std\+::vector$<$ cv\+::\+Mat $>$ $>$ \hyperlink{class_matrix_simulator_a4886dd70ef084bd73bb224c7f28897ee}{sim\+\_\+matrices}
+\item 
+std\+::map$<$ int, std\+::vector$<$ double $>$ $>$ \hyperlink{class_matrix_simulator_a6202de105f6c949a226b98bb048560c1}{sim\+\_\+efficiencies}
+\item 
+std\+::map$<$ int, std\+::vector$<$ double $>$ $>$ \hyperlink{class_matrix_simulator_aa3ddf31246c9f2be64ab12fe4b47e8af}{sim\+\_\+spectra}
+\item 
+std\+::map$<$ int, tk\+::spline $>$ \hyperlink{class_matrix_simulator_a8f9852337a1ab80f532ff69ae2b41b3b}{tr\+\_\+p}
+\item 
+std\+::map$<$ int, tk\+::spline $>$ \hyperlink{class_matrix_simulator_a52d4a39c875373d76c0f7b9baf5f1e2f}{tr\+\_\+r}
+\item 
+std\+::map$<$ int, tk\+::spline $>$ \hyperlink{class_matrix_simulator_a18bb49a4ca4363acce7e33382d578edb}{tr\+\_\+q}
+\item 
+std\+::map$<$ int, tk\+::spline $>$ \hyperlink{class_matrix_simulator_ac892d19d1c68c6414b9a3c999205092b}{tr\+\_\+phi}
+\item 
+std\+::map$<$ int, tk\+::spline $>$ \hyperlink{class_matrix_simulator_aa544354356e00fe4da0edcb30f37e6b4}{tr\+\_\+tx}
+\item 
+std\+::map$<$ int, tk\+::spline $>$ \hyperlink{class_matrix_simulator_a3d7f3962f4b2d2de111bc00539e0ba68}{tr\+\_\+ty}
+\item 
+\hyperlink{class_p_s_f}{P\+SF} $\ast$ \hyperlink{class_matrix_simulator_a4f8b1a0772c43203f1b06420c0d018fa}{psfs}
+\item 
+\hyperlink{class_slit}{Slit} $\ast$ \hyperlink{class_matrix_simulator_a5b054ede1af3c6e29296af6f2cd5e313}{slit}
+\item 
+\hyperlink{structspectrograph__information}{spectrograph\+\_\+information} \hyperlink{class_matrix_simulator_a3a1e3511ea01199d625b19f4add87b75}{spec\+\_\+info}
+\end{DoxyCompactItemize}
+
+
+\subsection{Constructor \& Destructor Documentation}
+\index{Matrix\+Simulator@{Matrix\+Simulator}!Matrix\+Simulator@{Matrix\+Simulator}}
+\index{Matrix\+Simulator@{Matrix\+Simulator}!Matrix\+Simulator@{Matrix\+Simulator}}
+\subsubsection[{\texorpdfstring{Matrix\+Simulator()}{MatrixSimulator()}}]{\setlength{\rightskip}{0pt plus 5cm}Matrix\+Simulator\+::\+Matrix\+Simulator (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{class_matrix_simulator_ae3feb47ab98f917ad0b8b4b53d1b34aa}{}\label{class_matrix_simulator_ae3feb47ab98f917ad0b8b4b53d1b34aa}
+
+
+\subsection{Member Function Documentation}
+\index{Matrix\+Simulator@{Matrix\+Simulator}!add\+\_\+efficiency@{add\+\_\+efficiency}}
+\index{add\+\_\+efficiency@{add\+\_\+efficiency}!Matrix\+Simulator@{Matrix\+Simulator}}
+\subsubsection[{\texorpdfstring{add\+\_\+efficiency(\+Efficiency $\ast$eff)}{add_efficiency(Efficiency *eff)}}]{\setlength{\rightskip}{0pt plus 5cm}void Matrix\+Simulator\+::add\+\_\+efficiency (
+\begin{DoxyParamCaption}
+\item[{{\bf Efficiency} $\ast$}]{eff}
+\end{DoxyParamCaption}
+)}\hypertarget{class_matrix_simulator_a2caa7f889603addf02db9094c20b91a6}{}\label{class_matrix_simulator_a2caa7f889603addf02db9094c20b91a6}
+\index{Matrix\+Simulator@{Matrix\+Simulator}!add\+\_\+source@{add\+\_\+source}}
+\index{add\+\_\+source@{add\+\_\+source}!Matrix\+Simulator@{Matrix\+Simulator}}
+\subsubsection[{\texorpdfstring{add\+\_\+source(\+Source $\ast$src)}{add_source(Source *src)}}]{\setlength{\rightskip}{0pt plus 5cm}void Matrix\+Simulator\+::add\+\_\+source (
+\begin{DoxyParamCaption}
+\item[{{\bf Source} $\ast$}]{src}
+\end{DoxyParamCaption}
+)}\hypertarget{class_matrix_simulator_a250a81596cd303057c4d14a86c4bb728}{}\label{class_matrix_simulator_a250a81596cd303057c4d14a86c4bb728}
+\index{Matrix\+Simulator@{Matrix\+Simulator}!calc\+\_\+sim\+\_\+matrices@{calc\+\_\+sim\+\_\+matrices}}
+\index{calc\+\_\+sim\+\_\+matrices@{calc\+\_\+sim\+\_\+matrices}!Matrix\+Simulator@{Matrix\+Simulator}}
+\subsubsection[{\texorpdfstring{calc\+\_\+sim\+\_\+matrices()}{calc_sim_matrices()}}]{\setlength{\rightskip}{0pt plus 5cm}void Matrix\+Simulator\+::calc\+\_\+sim\+\_\+matrices (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{class_matrix_simulator_a225df602310e87aa476faafafb08bb48}{}\label{class_matrix_simulator_a225df602310e87aa476faafafb08bb48}
+\index{Matrix\+Simulator@{Matrix\+Simulator}!calc\+\_\+splines@{calc\+\_\+splines}}
+\index{calc\+\_\+splines@{calc\+\_\+splines}!Matrix\+Simulator@{Matrix\+Simulator}}
+\subsubsection[{\texorpdfstring{calc\+\_\+splines()}{calc_splines()}}]{\setlength{\rightskip}{0pt plus 5cm}void Matrix\+Simulator\+::calc\+\_\+splines (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{class_matrix_simulator_aa584302cfbfc8d5f02f184282bd60584}{}\label{class_matrix_simulator_aa584302cfbfc8d5f02f184282bd60584}
+\index{Matrix\+Simulator@{Matrix\+Simulator}!get\+\_\+blaze@{get\+\_\+blaze}}
+\index{get\+\_\+blaze@{get\+\_\+blaze}!Matrix\+Simulator@{Matrix\+Simulator}}
+\subsubsection[{\texorpdfstring{get\+\_\+blaze()}{get_blaze()}}]{\setlength{\rightskip}{0pt plus 5cm}double Matrix\+Simulator\+::get\+\_\+blaze (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{class_matrix_simulator_abf10a6ad60e8fa959e41df6a1f07c82d}{}\label{class_matrix_simulator_abf10a6ad60e8fa959e41df6a1f07c82d}
+\index{Matrix\+Simulator@{Matrix\+Simulator}!get\+\_\+gpmm@{get\+\_\+gpmm}}
+\index{get\+\_\+gpmm@{get\+\_\+gpmm}!Matrix\+Simulator@{Matrix\+Simulator}}
+\subsubsection[{\texorpdfstring{get\+\_\+gpmm()}{get_gpmm()}}]{\setlength{\rightskip}{0pt plus 5cm}double Matrix\+Simulator\+::get\+\_\+gpmm (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{class_matrix_simulator_ab4e1e824d0e819fcf967d7d8b770de8a}{}\label{class_matrix_simulator_ab4e1e824d0e819fcf967d7d8b770de8a}
+\index{Matrix\+Simulator@{Matrix\+Simulator}!get\+\_\+transformation\+\_\+matrix@{get\+\_\+transformation\+\_\+matrix}}
+\index{get\+\_\+transformation\+\_\+matrix@{get\+\_\+transformation\+\_\+matrix}!Matrix\+Simulator@{Matrix\+Simulator}}
+\subsubsection[{\texorpdfstring{get\+\_\+transformation\+\_\+matrix(int order, double wavelength)}{get_transformation_matrix(int order, double wavelength)}}]{\setlength{\rightskip}{0pt plus 5cm}cv\+::\+Mat Matrix\+Simulator\+::get\+\_\+transformation\+\_\+matrix (
+\begin{DoxyParamCaption}
+\item[{int}]{order, }
+\item[{double}]{wavelength}
+\end{DoxyParamCaption}
+)}\hypertarget{class_matrix_simulator_a5bdb033cbabf36fdd7f57a92f65dbec6}{}\label{class_matrix_simulator_a5bdb033cbabf36fdd7f57a92f65dbec6}
+\index{Matrix\+Simulator@{Matrix\+Simulator}!load\+\_\+spectrograph\+\_\+model@{load\+\_\+spectrograph\+\_\+model}}
+\index{load\+\_\+spectrograph\+\_\+model@{load\+\_\+spectrograph\+\_\+model}!Matrix\+Simulator@{Matrix\+Simulator}}
+\subsubsection[{\texorpdfstring{load\+\_\+spectrograph\+\_\+model(std\+::string path, int fiber\+\_\+number)}{load_spectrograph_model(std::string path, int fiber_number)}}]{\setlength{\rightskip}{0pt plus 5cm}void Matrix\+Simulator\+::load\+\_\+spectrograph\+\_\+model (
+\begin{DoxyParamCaption}
+\item[{std\+::string}]{path, }
+\item[{int}]{fiber\+\_\+number}
+\end{DoxyParamCaption}
+)}\hypertarget{class_matrix_simulator_a9a9afb06c7285f20658092da61f65c36}{}\label{class_matrix_simulator_a9a9afb06c7285f20658092da61f65c36}
+Load spectrograph model from H\+DF file 
+\begin{DoxyParams}{Parameters}
+{\em path} & path to H\+DF file containing spectrograph model \\
+\hline
+{\em fiber\+\_\+number} & fiber to select \\
+\hline
+\end{DoxyParams}
+\index{Matrix\+Simulator@{Matrix\+Simulator}!prepare\+\_\+sources@{prepare\+\_\+sources}}
+\index{prepare\+\_\+sources@{prepare\+\_\+sources}!Matrix\+Simulator@{Matrix\+Simulator}}
+\subsubsection[{\texorpdfstring{prepare\+\_\+sources(std\+::vector$<$ Source $\ast$ $>$ sources)}{prepare_sources(std::vector< Source * > sources)}}]{\setlength{\rightskip}{0pt plus 5cm}void Matrix\+Simulator\+::prepare\+\_\+sources (
+\begin{DoxyParamCaption}
+\item[{std\+::vector$<$ {\bf Source} $\ast$ $>$}]{sources}
+\end{DoxyParamCaption}
+)}\hypertarget{class_matrix_simulator_a042e798c6f289100c88a656f71101502}{}\label{class_matrix_simulator_a042e798c6f289100c88a656f71101502}
+\index{Matrix\+Simulator@{Matrix\+Simulator}!read\+\_\+transformations@{read\+\_\+transformations}}
+\index{read\+\_\+transformations@{read\+\_\+transformations}!Matrix\+Simulator@{Matrix\+Simulator}}
+\subsubsection[{\texorpdfstring{read\+\_\+transformations(std\+::string path)}{read_transformations(std::string path)}}]{\setlength{\rightskip}{0pt plus 5cm}void Matrix\+Simulator\+::read\+\_\+transformations (
+\begin{DoxyParamCaption}
+\item[{std\+::string}]{path}
+\end{DoxyParamCaption}
+)}\hypertarget{class_matrix_simulator_a7d6123f82db49f9054228c31ba5dd44e}{}\label{class_matrix_simulator_a7d6123f82db49f9054228c31ba5dd44e}
+\index{Matrix\+Simulator@{Matrix\+Simulator}!save\+\_\+to\+\_\+file@{save\+\_\+to\+\_\+file}}
+\index{save\+\_\+to\+\_\+file@{save\+\_\+to\+\_\+file}!Matrix\+Simulator@{Matrix\+Simulator}}
+\subsubsection[{\texorpdfstring{save\+\_\+to\+\_\+file(std\+::string filename, bool downsample=true, bool bleed=true, bool overwrite=false)}{save_to_file(std::string filename, bool downsample=true, bool bleed=true, bool overwrite=false)}}]{\setlength{\rightskip}{0pt plus 5cm}void Matrix\+Simulator\+::save\+\_\+to\+\_\+file (
+\begin{DoxyParamCaption}
+\item[{std\+::string}]{filename, }
+\item[{bool}]{downsample = {\ttfamily true}, }
+\item[{bool}]{bleed = {\ttfamily true}, }
+\item[{bool}]{overwrite = {\ttfamily false}}
+\end{DoxyParamCaption}
+)}\hypertarget{class_matrix_simulator_ac7e48c2e271c13b09e5a1c55f6f477c8}{}\label{class_matrix_simulator_ac7e48c2e271c13b09e5a1c55f6f477c8}
+\index{Matrix\+Simulator@{Matrix\+Simulator}!set\+\_\+ccd@{set\+\_\+ccd}}
+\index{set\+\_\+ccd@{set\+\_\+ccd}!Matrix\+Simulator@{Matrix\+Simulator}}
+\subsubsection[{\texorpdfstring{set\+\_\+ccd(\+C\+C\+D $\ast$ccd)}{set_ccd(CCD *ccd)}}]{\setlength{\rightskip}{0pt plus 5cm}void Matrix\+Simulator\+::set\+\_\+ccd (
+\begin{DoxyParamCaption}
+\item[{{\bf C\+CD} $\ast$}]{ccd}
+\end{DoxyParamCaption}
+)}\hypertarget{class_matrix_simulator_a0741978f171e1c5f229c19de64042958}{}\label{class_matrix_simulator_a0741978f171e1c5f229c19de64042958}
+\index{Matrix\+Simulator@{Matrix\+Simulator}!set\+\_\+efficiencies@{set\+\_\+efficiencies}}
+\index{set\+\_\+efficiencies@{set\+\_\+efficiencies}!Matrix\+Simulator@{Matrix\+Simulator}}
+\subsubsection[{\texorpdfstring{set\+\_\+efficiencies(std\+::vector$<$ Efficiency $\ast$ $>$ \&efficiencies)}{set_efficiencies(std::vector< Efficiency * > &efficiencies)}}]{\setlength{\rightskip}{0pt plus 5cm}void Matrix\+Simulator\+::set\+\_\+efficiencies (
+\begin{DoxyParamCaption}
+\item[{std\+::vector$<$ {\bf Efficiency} $\ast$ $>$ \&}]{efficiencies}
+\end{DoxyParamCaption}
+)}\hypertarget{class_matrix_simulator_aed5d9befa4e4c4af5e6331a836d25e6c}{}\label{class_matrix_simulator_aed5d9befa4e4c4af5e6331a836d25e6c}
+\index{Matrix\+Simulator@{Matrix\+Simulator}!set\+\_\+order\+\_\+range@{set\+\_\+order\+\_\+range}}
+\index{set\+\_\+order\+\_\+range@{set\+\_\+order\+\_\+range}!Matrix\+Simulator@{Matrix\+Simulator}}
+\subsubsection[{\texorpdfstring{set\+\_\+order\+\_\+range(int min\+\_\+order, int max\+\_\+order)}{set_order_range(int min_order, int max_order)}}]{\setlength{\rightskip}{0pt plus 5cm}void Matrix\+Simulator\+::set\+\_\+order\+\_\+range (
+\begin{DoxyParamCaption}
+\item[{int}]{min\+\_\+order, }
+\item[{int}]{max\+\_\+order}
+\end{DoxyParamCaption}
+)}\hypertarget{class_matrix_simulator_a26d15d1dd2e1e8944e74e5f9f47dca76}{}\label{class_matrix_simulator_a26d15d1dd2e1e8944e74e5f9f47dca76}
+\index{Matrix\+Simulator@{Matrix\+Simulator}!set\+\_\+psfs@{set\+\_\+psfs}}
+\index{set\+\_\+psfs@{set\+\_\+psfs}!Matrix\+Simulator@{Matrix\+Simulator}}
+\subsubsection[{\texorpdfstring{set\+\_\+psfs(\+P\+S\+F $\ast$psfs)}{set_psfs(PSF *psfs)}}]{\setlength{\rightskip}{0pt plus 5cm}void Matrix\+Simulator\+::set\+\_\+psfs (
+\begin{DoxyParamCaption}
+\item[{{\bf P\+SF} $\ast$}]{psfs}
+\end{DoxyParamCaption}
+)}\hypertarget{class_matrix_simulator_ad31531aec0901325d6e01ebbd82b1da5}{}\label{class_matrix_simulator_ad31531aec0901325d6e01ebbd82b1da5}
+\index{Matrix\+Simulator@{Matrix\+Simulator}!set\+\_\+slit@{set\+\_\+slit}}
+\index{set\+\_\+slit@{set\+\_\+slit}!Matrix\+Simulator@{Matrix\+Simulator}}
+\subsubsection[{\texorpdfstring{set\+\_\+slit(\+Slit $\ast$slit)}{set_slit(Slit *slit)}}]{\setlength{\rightskip}{0pt plus 5cm}void Matrix\+Simulator\+::set\+\_\+slit (
+\begin{DoxyParamCaption}
+\item[{{\bf Slit} $\ast$}]{slit}
+\end{DoxyParamCaption}
+)}\hypertarget{class_matrix_simulator_afaf8acf533e2b0e0e440aabbeb6a4743}{}\label{class_matrix_simulator_afaf8acf533e2b0e0e440aabbeb6a4743}
+\index{Matrix\+Simulator@{Matrix\+Simulator}!set\+\_\+wavelength@{set\+\_\+wavelength}}
+\index{set\+\_\+wavelength@{set\+\_\+wavelength}!Matrix\+Simulator@{Matrix\+Simulator}}
+\subsubsection[{\texorpdfstring{set\+\_\+wavelength(int N)}{set_wavelength(int N)}}]{\setlength{\rightskip}{0pt plus 5cm}void Matrix\+Simulator\+::set\+\_\+wavelength (
+\begin{DoxyParamCaption}
+\item[{int}]{N}
+\end{DoxyParamCaption}
+)}\hypertarget{class_matrix_simulator_a516c57a6e2d27e249202c60bd0fb5cc6}{}\label{class_matrix_simulator_a516c57a6e2d27e249202c60bd0fb5cc6}
+\index{Matrix\+Simulator@{Matrix\+Simulator}!set\+\_\+wavelength@{set\+\_\+wavelength}}
+\index{set\+\_\+wavelength@{set\+\_\+wavelength}!Matrix\+Simulator@{Matrix\+Simulator}}
+\subsubsection[{\texorpdfstring{set\+\_\+wavelength(std\+::vector$<$ double $>$ wavelength)}{set_wavelength(std::vector< double > wavelength)}}]{\setlength{\rightskip}{0pt plus 5cm}void Matrix\+Simulator\+::set\+\_\+wavelength (
+\begin{DoxyParamCaption}
+\item[{std\+::vector$<$ double $>$}]{wavelength}
+\end{DoxyParamCaption}
+)}\hypertarget{class_matrix_simulator_a85e8651b0a540ae40b3352ee73ed1c11}{}\label{class_matrix_simulator_a85e8651b0a540ae40b3352ee73ed1c11}
+\index{Matrix\+Simulator@{Matrix\+Simulator}!simulate\+\_\+order@{simulate\+\_\+order}}
+\index{simulate\+\_\+order@{simulate\+\_\+order}!Matrix\+Simulator@{Matrix\+Simulator}}
+\subsubsection[{\texorpdfstring{simulate\+\_\+order(int order, cv\+::\+Mat \&slit\+\_\+image, cv\+::\+Mat \&output\+\_\+image, bool aberrations)}{simulate_order(int order, cv::Mat &slit_image, cv::Mat &output_image, bool aberrations)}}]{\setlength{\rightskip}{0pt plus 5cm}int Matrix\+Simulator\+::simulate\+\_\+order (
+\begin{DoxyParamCaption}
+\item[{int}]{order, }
+\item[{cv\+::\+Mat \&}]{slit\+\_\+image, }
+\item[{cv\+::\+Mat \&}]{output\+\_\+image, }
+\item[{bool}]{aberrations}
+\end{DoxyParamCaption}
+)}\hypertarget{class_matrix_simulator_a48920e35ea386faca140453878c4ed38}{}\label{class_matrix_simulator_a48920e35ea386faca140453878c4ed38}
+\index{Matrix\+Simulator@{Matrix\+Simulator}!simulate\+\_\+spectrum@{simulate\+\_\+spectrum}}
+\index{simulate\+\_\+spectrum@{simulate\+\_\+spectrum}!Matrix\+Simulator@{Matrix\+Simulator}}
+\subsubsection[{\texorpdfstring{simulate\+\_\+spectrum()}{simulate_spectrum()}}]{\setlength{\rightskip}{0pt plus 5cm}void Matrix\+Simulator\+::simulate\+\_\+spectrum (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{class_matrix_simulator_a92cbe25d3d5317dac8ded3d974710bbd}{}\label{class_matrix_simulator_a92cbe25d3d5317dac8ded3d974710bbd}
+\index{Matrix\+Simulator@{Matrix\+Simulator}!transform\+\_\+slit@{transform\+\_\+slit}}
+\index{transform\+\_\+slit@{transform\+\_\+slit}!Matrix\+Simulator@{Matrix\+Simulator}}
+\subsubsection[{\texorpdfstring{transform\+\_\+slit(cv\+::\+Mat \&slit\+\_\+image, cv\+::\+Mat \&transformation\+\_\+matrix, double weight)}{transform_slit(cv::Mat &slit_image, cv::Mat &transformation_matrix, double weight)}}]{\setlength{\rightskip}{0pt plus 5cm}cv\+::\+Mat Matrix\+Simulator\+::transform\+\_\+slit (
+\begin{DoxyParamCaption}
+\item[{cv\+::\+Mat \&}]{slit\+\_\+image, }
+\item[{cv\+::\+Mat \&}]{transformation\+\_\+matrix, }
+\item[{double}]{weight}
+\end{DoxyParamCaption}
+)}\hypertarget{class_matrix_simulator_a3016ecb082ba87ef7594928c14d74694}{}\label{class_matrix_simulator_a3016ecb082ba87ef7594928c14d74694}
+\index{Matrix\+Simulator@{Matrix\+Simulator}!transformation\+\_\+to\+\_\+file@{transformation\+\_\+to\+\_\+file}}
+\index{transformation\+\_\+to\+\_\+file@{transformation\+\_\+to\+\_\+file}!Matrix\+Simulator@{Matrix\+Simulator}}
+\subsubsection[{\texorpdfstring{transformation\+\_\+to\+\_\+file(std\+::string filename)}{transformation_to_file(std::string filename)}}]{\setlength{\rightskip}{0pt plus 5cm}void Matrix\+Simulator\+::transformation\+\_\+to\+\_\+file (
+\begin{DoxyParamCaption}
+\item[{std\+::string}]{filename}
+\end{DoxyParamCaption}
+)}\hypertarget{class_matrix_simulator_a8ce41368c573f2faba7e74a5756250e4}{}\label{class_matrix_simulator_a8ce41368c573f2faba7e74a5756250e4}
+
+
+\subsection{Member Data Documentation}
+\index{Matrix\+Simulator@{Matrix\+Simulator}!ccd@{ccd}}
+\index{ccd@{ccd}!Matrix\+Simulator@{Matrix\+Simulator}}
+\subsubsection[{\texorpdfstring{ccd}{ccd}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf C\+CD}$\ast$ Matrix\+Simulator\+::ccd}\hypertarget{class_matrix_simulator_a151ec381d921be1b5b30fef6430ceb91}{}\label{class_matrix_simulator_a151ec381d921be1b5b30fef6430ceb91}
+\index{Matrix\+Simulator@{Matrix\+Simulator}!efficiencies@{efficiencies}}
+\index{efficiencies@{efficiencies}!Matrix\+Simulator@{Matrix\+Simulator}}
+\subsubsection[{\texorpdfstring{efficiencies}{efficiencies}}]{\setlength{\rightskip}{0pt plus 5cm}std\+::vector$<${\bf Efficiency}$\ast$$>$ Matrix\+Simulator\+::efficiencies\hspace{0.3cm}{\ttfamily [private]}}\hypertarget{class_matrix_simulator_a05c00fb5164a5faa987da2642b899035}{}\label{class_matrix_simulator_a05c00fb5164a5faa987da2642b899035}
+\index{Matrix\+Simulator@{Matrix\+Simulator}!img@{img}}
+\index{img@{img}!Matrix\+Simulator@{Matrix\+Simulator}}
+\subsubsection[{\texorpdfstring{img}{img}}]{\setlength{\rightskip}{0pt plus 5cm}cv\+::\+Mat Matrix\+Simulator\+::img\hspace{0.3cm}{\ttfamily [private]}}\hypertarget{class_matrix_simulator_a90bcc13f784a69c54ad605ef77dcbbe8}{}\label{class_matrix_simulator_a90bcc13f784a69c54ad605ef77dcbbe8}
+\index{Matrix\+Simulator@{Matrix\+Simulator}!orders@{orders}}
+\index{orders@{orders}!Matrix\+Simulator@{Matrix\+Simulator}}
+\subsubsection[{\texorpdfstring{orders}{orders}}]{\setlength{\rightskip}{0pt plus 5cm}std\+::vector$<$int$>$ Matrix\+Simulator\+::orders}\hypertarget{class_matrix_simulator_a5524a9a77d30e2b396737260ec6f73f8}{}\label{class_matrix_simulator_a5524a9a77d30e2b396737260ec6f73f8}
+\index{Matrix\+Simulator@{Matrix\+Simulator}!psfs@{psfs}}
+\index{psfs@{psfs}!Matrix\+Simulator@{Matrix\+Simulator}}
+\subsubsection[{\texorpdfstring{psfs}{psfs}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf P\+SF}$\ast$ Matrix\+Simulator\+::psfs\hspace{0.3cm}{\ttfamily [private]}}\hypertarget{class_matrix_simulator_a4f8b1a0772c43203f1b06420c0d018fa}{}\label{class_matrix_simulator_a4f8b1a0772c43203f1b06420c0d018fa}
+\index{Matrix\+Simulator@{Matrix\+Simulator}!raw\+\_\+n@{raw\+\_\+n}}
+\index{raw\+\_\+n@{raw\+\_\+n}!Matrix\+Simulator@{Matrix\+Simulator}}
+\subsubsection[{\texorpdfstring{raw\+\_\+n}{raw_n}}]{\setlength{\rightskip}{0pt plus 5cm}int Matrix\+Simulator\+::raw\+\_\+n}\hypertarget{class_matrix_simulator_a2da306f4e998a609e9a9f26688d80949}{}\label{class_matrix_simulator_a2da306f4e998a609e9a9f26688d80949}
+\index{Matrix\+Simulator@{Matrix\+Simulator}!raw\+\_\+transformations@{raw\+\_\+transformations}}
+\index{raw\+\_\+transformations@{raw\+\_\+transformations}!Matrix\+Simulator@{Matrix\+Simulator}}
+\subsubsection[{\texorpdfstring{raw\+\_\+transformations}{raw_transformations}}]{\setlength{\rightskip}{0pt plus 5cm}std\+::map$<$int, std\+::vector$<${\bf raw\+\_\+transformation}$>$ $>$ Matrix\+Simulator\+::raw\+\_\+transformations\hspace{0.3cm}{\ttfamily [private]}}\hypertarget{class_matrix_simulator_a1266c67228a0fc2c1387c4e7454fe435}{}\label{class_matrix_simulator_a1266c67228a0fc2c1387c4e7454fe435}
+\index{Matrix\+Simulator@{Matrix\+Simulator}!sim\+\_\+efficiencies@{sim\+\_\+efficiencies}}
+\index{sim\+\_\+efficiencies@{sim\+\_\+efficiencies}!Matrix\+Simulator@{Matrix\+Simulator}}
+\subsubsection[{\texorpdfstring{sim\+\_\+efficiencies}{sim_efficiencies}}]{\setlength{\rightskip}{0pt plus 5cm}std\+::map$<$int, std\+::vector$<$double$>$ $>$ Matrix\+Simulator\+::sim\+\_\+efficiencies\hspace{0.3cm}{\ttfamily [private]}}\hypertarget{class_matrix_simulator_a6202de105f6c949a226b98bb048560c1}{}\label{class_matrix_simulator_a6202de105f6c949a226b98bb048560c1}
+\index{Matrix\+Simulator@{Matrix\+Simulator}!sim\+\_\+matrices@{sim\+\_\+matrices}}
+\index{sim\+\_\+matrices@{sim\+\_\+matrices}!Matrix\+Simulator@{Matrix\+Simulator}}
+\subsubsection[{\texorpdfstring{sim\+\_\+matrices}{sim_matrices}}]{\setlength{\rightskip}{0pt plus 5cm}std\+::map$<$int, std\+::vector$<$cv\+::\+Mat$>$ $>$ Matrix\+Simulator\+::sim\+\_\+matrices\hspace{0.3cm}{\ttfamily [private]}}\hypertarget{class_matrix_simulator_a4886dd70ef084bd73bb224c7f28897ee}{}\label{class_matrix_simulator_a4886dd70ef084bd73bb224c7f28897ee}
+\index{Matrix\+Simulator@{Matrix\+Simulator}!sim\+\_\+spectra@{sim\+\_\+spectra}}
+\index{sim\+\_\+spectra@{sim\+\_\+spectra}!Matrix\+Simulator@{Matrix\+Simulator}}
+\subsubsection[{\texorpdfstring{sim\+\_\+spectra}{sim_spectra}}]{\setlength{\rightskip}{0pt plus 5cm}std\+::map$<$int, std\+::vector$<$double$>$ $>$ Matrix\+Simulator\+::sim\+\_\+spectra\hspace{0.3cm}{\ttfamily [private]}}\hypertarget{class_matrix_simulator_aa3ddf31246c9f2be64ab12fe4b47e8af}{}\label{class_matrix_simulator_aa3ddf31246c9f2be64ab12fe4b47e8af}
+\index{Matrix\+Simulator@{Matrix\+Simulator}!sim\+\_\+wavelength@{sim\+\_\+wavelength}}
+\index{sim\+\_\+wavelength@{sim\+\_\+wavelength}!Matrix\+Simulator@{Matrix\+Simulator}}
+\subsubsection[{\texorpdfstring{sim\+\_\+wavelength}{sim_wavelength}}]{\setlength{\rightskip}{0pt plus 5cm}std\+::map$<$int, std\+::vector$<$double$>$ $>$ Matrix\+Simulator\+::sim\+\_\+wavelength\hspace{0.3cm}{\ttfamily [private]}}\hypertarget{class_matrix_simulator_aac8850d4461c6a7775dc44f6bdafb2e2}{}\label{class_matrix_simulator_aac8850d4461c6a7775dc44f6bdafb2e2}
+\index{Matrix\+Simulator@{Matrix\+Simulator}!slit@{slit}}
+\index{slit@{slit}!Matrix\+Simulator@{Matrix\+Simulator}}
+\subsubsection[{\texorpdfstring{slit}{slit}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Slit}$\ast$ Matrix\+Simulator\+::slit\hspace{0.3cm}{\ttfamily [private]}}\hypertarget{class_matrix_simulator_a5b054ede1af3c6e29296af6f2cd5e313}{}\label{class_matrix_simulator_a5b054ede1af3c6e29296af6f2cd5e313}
+\index{Matrix\+Simulator@{Matrix\+Simulator}!sources@{sources}}
+\index{sources@{sources}!Matrix\+Simulator@{Matrix\+Simulator}}
+\subsubsection[{\texorpdfstring{sources}{sources}}]{\setlength{\rightskip}{0pt plus 5cm}std\+::vector$<${\bf Source}$\ast$$>$ Matrix\+Simulator\+::sources\hspace{0.3cm}{\ttfamily [private]}}\hypertarget{class_matrix_simulator_abb3bc16d0336f6bbda99300ceccdf427}{}\label{class_matrix_simulator_abb3bc16d0336f6bbda99300ceccdf427}
+\index{Matrix\+Simulator@{Matrix\+Simulator}!spec\+\_\+info@{spec\+\_\+info}}
+\index{spec\+\_\+info@{spec\+\_\+info}!Matrix\+Simulator@{Matrix\+Simulator}}
+\subsubsection[{\texorpdfstring{spec\+\_\+info}{spec_info}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf spectrograph\+\_\+information} Matrix\+Simulator\+::spec\+\_\+info\hspace{0.3cm}{\ttfamily [private]}}\hypertarget{class_matrix_simulator_a3a1e3511ea01199d625b19f4add87b75}{}\label{class_matrix_simulator_a3a1e3511ea01199d625b19f4add87b75}
+\index{Matrix\+Simulator@{Matrix\+Simulator}!tr\+\_\+p@{tr\+\_\+p}}
+\index{tr\+\_\+p@{tr\+\_\+p}!Matrix\+Simulator@{Matrix\+Simulator}}
+\subsubsection[{\texorpdfstring{tr\+\_\+p}{tr_p}}]{\setlength{\rightskip}{0pt plus 5cm}std\+::map$<$int, tk\+::spline $>$ Matrix\+Simulator\+::tr\+\_\+p\hspace{0.3cm}{\ttfamily [private]}}\hypertarget{class_matrix_simulator_a8f9852337a1ab80f532ff69ae2b41b3b}{}\label{class_matrix_simulator_a8f9852337a1ab80f532ff69ae2b41b3b}
+\index{Matrix\+Simulator@{Matrix\+Simulator}!tr\+\_\+phi@{tr\+\_\+phi}}
+\index{tr\+\_\+phi@{tr\+\_\+phi}!Matrix\+Simulator@{Matrix\+Simulator}}
+\subsubsection[{\texorpdfstring{tr\+\_\+phi}{tr_phi}}]{\setlength{\rightskip}{0pt plus 5cm}std\+::map$<$int, tk\+::spline $>$ Matrix\+Simulator\+::tr\+\_\+phi\hspace{0.3cm}{\ttfamily [private]}}\hypertarget{class_matrix_simulator_ac892d19d1c68c6414b9a3c999205092b}{}\label{class_matrix_simulator_ac892d19d1c68c6414b9a3c999205092b}
+\index{Matrix\+Simulator@{Matrix\+Simulator}!tr\+\_\+q@{tr\+\_\+q}}
+\index{tr\+\_\+q@{tr\+\_\+q}!Matrix\+Simulator@{Matrix\+Simulator}}
+\subsubsection[{\texorpdfstring{tr\+\_\+q}{tr_q}}]{\setlength{\rightskip}{0pt plus 5cm}std\+::map$<$int, tk\+::spline $>$ Matrix\+Simulator\+::tr\+\_\+q\hspace{0.3cm}{\ttfamily [private]}}\hypertarget{class_matrix_simulator_a18bb49a4ca4363acce7e33382d578edb}{}\label{class_matrix_simulator_a18bb49a4ca4363acce7e33382d578edb}
+\index{Matrix\+Simulator@{Matrix\+Simulator}!tr\+\_\+r@{tr\+\_\+r}}
+\index{tr\+\_\+r@{tr\+\_\+r}!Matrix\+Simulator@{Matrix\+Simulator}}
+\subsubsection[{\texorpdfstring{tr\+\_\+r}{tr_r}}]{\setlength{\rightskip}{0pt plus 5cm}std\+::map$<$int, tk\+::spline $>$ Matrix\+Simulator\+::tr\+\_\+r\hspace{0.3cm}{\ttfamily [private]}}\hypertarget{class_matrix_simulator_a52d4a39c875373d76c0f7b9baf5f1e2f}{}\label{class_matrix_simulator_a52d4a39c875373d76c0f7b9baf5f1e2f}
+\index{Matrix\+Simulator@{Matrix\+Simulator}!tr\+\_\+tx@{tr\+\_\+tx}}
+\index{tr\+\_\+tx@{tr\+\_\+tx}!Matrix\+Simulator@{Matrix\+Simulator}}
+\subsubsection[{\texorpdfstring{tr\+\_\+tx}{tr_tx}}]{\setlength{\rightskip}{0pt plus 5cm}std\+::map$<$int, tk\+::spline $>$ Matrix\+Simulator\+::tr\+\_\+tx\hspace{0.3cm}{\ttfamily [private]}}\hypertarget{class_matrix_simulator_aa544354356e00fe4da0edcb30f37e6b4}{}\label{class_matrix_simulator_aa544354356e00fe4da0edcb30f37e6b4}
+\index{Matrix\+Simulator@{Matrix\+Simulator}!tr\+\_\+ty@{tr\+\_\+ty}}
+\index{tr\+\_\+ty@{tr\+\_\+ty}!Matrix\+Simulator@{Matrix\+Simulator}}
+\subsubsection[{\texorpdfstring{tr\+\_\+ty}{tr_ty}}]{\setlength{\rightskip}{0pt plus 5cm}std\+::map$<$int, tk\+::spline $>$ Matrix\+Simulator\+::tr\+\_\+ty\hspace{0.3cm}{\ttfamily [private]}}\hypertarget{class_matrix_simulator_a3d7f3962f4b2d2de111bc00539e0ba68}{}\label{class_matrix_simulator_a3d7f3962f4b2d2de111bc00539e0ba68}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+/home/stuermer/\+Repos/cpp/\+Echelle\+Simulator/include/\hyperlink{matrixsimulator_8h}{matrixsimulator.\+h}\item 
+/home/stuermer/\+Repos/cpp/\+Echelle\+Simulator/src/\hyperlink{matrixsimulator_8cpp}{matrixsimulator.\+cpp}\end{DoxyCompactItemize}

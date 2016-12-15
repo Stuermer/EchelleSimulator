@@ -1,0 +1,202 @@
+\hypertarget{class_ideal_etalon}{}\section{Ideal\+Etalon Class Reference}
+\label{class_ideal_etalon}\index{Ideal\+Etalon@{Ideal\+Etalon}}
+
+
+Implements the spectral density of an ideal fabry-\/perot etalon.  
+
+
+
+
+{\ttfamily \#include $<$source.\+h$>$}
+
+Inheritance diagram for Ideal\+Etalon\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_ideal_etalon}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{class_ideal_etalon_acde8c0bcfe454c60177b00116ed5ae7e}{Ideal\+Etalon} (double \hyperlink{class_ideal_etalon_a8f63e477f8637502ef97b2f45875f57a}{d}, double \hyperlink{class_ideal_etalon_a1b1004d0898c3a054ca9cf412813c9d5}{n}, double \hyperlink{class_ideal_etalon_adb01dc93fb40a0735b5ed00907ffe0fd}{theta}, double \hyperlink{class_ideal_etalon_ae545946e739c8079c0ced7f836180cd1}{R})
+\item 
+double \hyperlink{class_ideal_etalon_a07e0545a681973d6be2e51e14a8945ef}{F\+SR} ()
+\item 
+double \hyperlink{class_ideal_etalon_a4b5547956e9795be364365e4997050c7}{F} ()
+\item 
+double \hyperlink{class_ideal_etalon_a6ba6c6d89e88e646da38ec45d12dab09}{get\+\_\+spectral\+\_\+density} (double wavelength)
+\end{DoxyCompactItemize}
+\subsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static double \hyperlink{class_ideal_etalon_afc504294c3102f5a11de8cab99dc7943}{coefficient\+\_\+of\+\_\+finesse} (double \hyperlink{class_ideal_etalon_ae545946e739c8079c0ced7f836180cd1}{R})
+\item 
+static double \hyperlink{class_ideal_etalon_a18df1a0ca15f7d71763713f867cf3532}{T} (double wl, double \hyperlink{class_ideal_etalon_adb01dc93fb40a0735b5ed00907ffe0fd}{theta}, double \hyperlink{class_ideal_etalon_a8f63e477f8637502ef97b2f45875f57a}{d}, double \hyperlink{class_ideal_etalon_a1b1004d0898c3a054ca9cf412813c9d5}{n}, double \hyperlink{class_ideal_etalon_a93f909e0b51e64a057ac90985c5257fc}{cF})
+\end{DoxyCompactItemize}
+\subsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+double \hyperlink{class_ideal_etalon_a8f63e477f8637502ef97b2f45875f57a}{d}
+\item 
+double \hyperlink{class_ideal_etalon_a1b1004d0898c3a054ca9cf412813c9d5}{n}
+\item 
+double \hyperlink{class_ideal_etalon_adb01dc93fb40a0735b5ed00907ffe0fd}{theta}
+\item 
+double \hyperlink{class_ideal_etalon_ae545946e739c8079c0ced7f836180cd1}{R}
+\item 
+double \hyperlink{class_ideal_etalon_a93f909e0b51e64a057ac90985c5257fc}{cF}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Implements the spectral density of an ideal fabry-\/perot etalon. 
+
+An ideal Fabry-\/\+Perot etalon has a transmission function that only depends on the distance of the mirrors, the angle of incidence, the reflectivity of the mirrors and the refractive index of the medium between the mirrors. \[ s(\lambda) = \frac{1}{cF sin(\frac{\delta} {2})^2} \] (\begin{DoxySeeAlso}{See also}
+\hyperlink{class_ideal_etalon_a18df1a0ca15f7d71763713f867cf3532}{Ideal\+Etalon\+::\+T()})
+\end{DoxySeeAlso}
+It produces a comb-\/like spectrum that is has equidistant peaks in frequency.
+
+\begin{DoxyRefDesc}{Todo}
+\item[\hyperlink{todo__todo000001}{Todo}]implement \hyperlink{class_ideal_etalon_a07e0545a681973d6be2e51e14a8945ef}{F\+S\+R()}, \hyperlink{class_ideal_etalon_a4b5547956e9795be364365e4997050c7}{F()} and other static functions.\end{DoxyRefDesc}
+
+
+\subsection{Constructor \& Destructor Documentation}
+\index{Ideal\+Etalon@{Ideal\+Etalon}!Ideal\+Etalon@{Ideal\+Etalon}}
+\index{Ideal\+Etalon@{Ideal\+Etalon}!Ideal\+Etalon@{Ideal\+Etalon}}
+\subsubsection[{\texorpdfstring{Ideal\+Etalon(double d, double n, double theta, double R)}{IdealEtalon(double d, double n, double theta, double R)}}]{\setlength{\rightskip}{0pt plus 5cm}Ideal\+Etalon\+::\+Ideal\+Etalon (
+\begin{DoxyParamCaption}
+\item[{double}]{d, }
+\item[{double}]{n, }
+\item[{double}]{theta, }
+\item[{double}]{R}
+\end{DoxyParamCaption}
+)}\hypertarget{class_ideal_etalon_acde8c0bcfe454c60177b00116ed5ae7e}{}\label{class_ideal_etalon_acde8c0bcfe454c60177b00116ed5ae7e}
+Constructor.
+
+
+\begin{DoxyParams}{Parameters}
+{\em d} & mirror distance in mm \\
+\hline
+{\em n} & refractive index of the medium between mirrors \\
+\hline
+{\em theta} & angle of incidence \\
+\hline
+{\em R} & reflectivity of the mirrors \\
+\hline
+\end{DoxyParams}
+
+
+\subsection{Member Function Documentation}
+\index{Ideal\+Etalon@{Ideal\+Etalon}!coefficient\+\_\+of\+\_\+finesse@{coefficient\+\_\+of\+\_\+finesse}}
+\index{coefficient\+\_\+of\+\_\+finesse@{coefficient\+\_\+of\+\_\+finesse}!Ideal\+Etalon@{Ideal\+Etalon}}
+\subsubsection[{\texorpdfstring{coefficient\+\_\+of\+\_\+finesse(double R)}{coefficient_of_finesse(double R)}}]{\setlength{\rightskip}{0pt plus 5cm}double Ideal\+Etalon\+::coefficient\+\_\+of\+\_\+finesse (
+\begin{DoxyParamCaption}
+\item[{double}]{R}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [static]}}\hypertarget{class_ideal_etalon_afc504294c3102f5a11de8cab99dc7943}{}\label{class_ideal_etalon_afc504294c3102f5a11de8cab99dc7943}
+Calculates the coefficient of Finesse.
+
+\[ cF = \frac{4 R}{(1-R)^2} \]
+
+\begin{DoxyWarning}{Warning}
+This is not what is typically called the finesse of an etalon, but the coefficient of finesse.
+\end{DoxyWarning}
+
+\begin{DoxyParams}{Parameters}
+{\em R} & mirror reflectivity \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+coefficienct of finesse 
+\end{DoxyReturn}
+\index{Ideal\+Etalon@{Ideal\+Etalon}!F@{F}}
+\index{F@{F}!Ideal\+Etalon@{Ideal\+Etalon}}
+\subsubsection[{\texorpdfstring{F()}{F()}}]{\setlength{\rightskip}{0pt plus 5cm}double Ideal\+Etalon\+::F (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{class_ideal_etalon_a4b5547956e9795be364365e4997050c7}{}\label{class_ideal_etalon_a4b5547956e9795be364365e4997050c7}
+\index{Ideal\+Etalon@{Ideal\+Etalon}!F\+SR@{F\+SR}}
+\index{F\+SR@{F\+SR}!Ideal\+Etalon@{Ideal\+Etalon}}
+\subsubsection[{\texorpdfstring{F\+S\+R()}{FSR()}}]{\setlength{\rightskip}{0pt plus 5cm}double Ideal\+Etalon\+::\+F\+SR (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{class_ideal_etalon_a07e0545a681973d6be2e51e14a8945ef}{}\label{class_ideal_etalon_a07e0545a681973d6be2e51e14a8945ef}
+\index{Ideal\+Etalon@{Ideal\+Etalon}!get\+\_\+spectral\+\_\+density@{get\+\_\+spectral\+\_\+density}}
+\index{get\+\_\+spectral\+\_\+density@{get\+\_\+spectral\+\_\+density}!Ideal\+Etalon@{Ideal\+Etalon}}
+\subsubsection[{\texorpdfstring{get\+\_\+spectral\+\_\+density(double wavelength)}{get_spectral_density(double wavelength)}}]{\setlength{\rightskip}{0pt plus 5cm}double Ideal\+Etalon\+::get\+\_\+spectral\+\_\+density (
+\begin{DoxyParamCaption}
+\item[{double}]{wavelength}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}\hypertarget{class_ideal_etalon_a6ba6c6d89e88e646da38ec45d12dab09}{}\label{class_ideal_etalon_a6ba6c6d89e88e646da38ec45d12dab09}
+Spectral density at given wavelegnth.
+
+
+\begin{DoxyParams}{Parameters}
+{\em wavelength} & wavelength \mbox{[}micron\mbox{]} \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Spectral density at given wavelength 
+\end{DoxyReturn}
+
+
+Reimplemented from \hyperlink{class_source_a546ae8ec1ae47e888c74f146278e19af}{Source}.
+
+\index{Ideal\+Etalon@{Ideal\+Etalon}!T@{T}}
+\index{T@{T}!Ideal\+Etalon@{Ideal\+Etalon}}
+\subsubsection[{\texorpdfstring{T(double wl, double theta, double d, double n, double c\+F)}{T(double wl, double theta, double d, double n, double cF)}}]{\setlength{\rightskip}{0pt plus 5cm}double Ideal\+Etalon\+::T (
+\begin{DoxyParamCaption}
+\item[{double}]{wl, }
+\item[{double}]{theta, }
+\item[{double}]{d, }
+\item[{double}]{n, }
+\item[{double}]{cF}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [static]}}\hypertarget{class_ideal_etalon_a18df1a0ca15f7d71763713f867cf3532}{}\label{class_ideal_etalon_a18df1a0ca15f7d71763713f867cf3532}
+Transmission function of an ideal etalon. \[ T(\lambda) = \frac{1}{cF sin(\frac{\delta} {2})^2} \], where \[ \delta \left( \frac{2\pi}{\lambda} \right) 2nlcos(\Theta) \], is the phase difference and $ F $ is the coefficient of finesse\+: \[ cF = \frac{4R}{(1-R)^2} \]
+
+
+\begin{DoxyParams}{Parameters}
+{\em wl} & wavelength \mbox{[}micron\mbox{]} \\
+\hline
+{\em theta} & angle of incidence \mbox{[}rad\mbox{]} \\
+\hline
+{\em d} & mirror distance \mbox{[}mm\mbox{]} \\
+\hline
+{\em n} & refractive index \\
+\hline
+{\em cF} & coefficient of finesse \\
+\hline
+\end{DoxyParams}
+\begin{DoxySeeAlso}{See also}
+\hyperlink{class_ideal_etalon_afc504294c3102f5a11de8cab99dc7943}{Ideal\+Etalon\+::coefficient\+\_\+of\+\_\+finesse} 
+\end{DoxySeeAlso}
+\begin{DoxyReturn}{Returns}
+transmission at given wavelength 
+\end{DoxyReturn}
+
+
+\subsection{Member Data Documentation}
+\index{Ideal\+Etalon@{Ideal\+Etalon}!cF@{cF}}
+\index{cF@{cF}!Ideal\+Etalon@{Ideal\+Etalon}}
+\subsubsection[{\texorpdfstring{cF}{cF}}]{\setlength{\rightskip}{0pt plus 5cm}double Ideal\+Etalon\+::cF\hspace{0.3cm}{\ttfamily [private]}}\hypertarget{class_ideal_etalon_a93f909e0b51e64a057ac90985c5257fc}{}\label{class_ideal_etalon_a93f909e0b51e64a057ac90985c5257fc}
+\index{Ideal\+Etalon@{Ideal\+Etalon}!d@{d}}
+\index{d@{d}!Ideal\+Etalon@{Ideal\+Etalon}}
+\subsubsection[{\texorpdfstring{d}{d}}]{\setlength{\rightskip}{0pt plus 5cm}double Ideal\+Etalon\+::d\hspace{0.3cm}{\ttfamily [private]}}\hypertarget{class_ideal_etalon_a8f63e477f8637502ef97b2f45875f57a}{}\label{class_ideal_etalon_a8f63e477f8637502ef97b2f45875f57a}
+\index{Ideal\+Etalon@{Ideal\+Etalon}!n@{n}}
+\index{n@{n}!Ideal\+Etalon@{Ideal\+Etalon}}
+\subsubsection[{\texorpdfstring{n}{n}}]{\setlength{\rightskip}{0pt plus 5cm}double Ideal\+Etalon\+::n\hspace{0.3cm}{\ttfamily [private]}}\hypertarget{class_ideal_etalon_a1b1004d0898c3a054ca9cf412813c9d5}{}\label{class_ideal_etalon_a1b1004d0898c3a054ca9cf412813c9d5}
+\index{Ideal\+Etalon@{Ideal\+Etalon}!R@{R}}
+\index{R@{R}!Ideal\+Etalon@{Ideal\+Etalon}}
+\subsubsection[{\texorpdfstring{R}{R}}]{\setlength{\rightskip}{0pt plus 5cm}double Ideal\+Etalon\+::R\hspace{0.3cm}{\ttfamily [private]}}\hypertarget{class_ideal_etalon_ae545946e739c8079c0ced7f836180cd1}{}\label{class_ideal_etalon_ae545946e739c8079c0ced7f836180cd1}
+\index{Ideal\+Etalon@{Ideal\+Etalon}!theta@{theta}}
+\index{theta@{theta}!Ideal\+Etalon@{Ideal\+Etalon}}
+\subsubsection[{\texorpdfstring{theta}{theta}}]{\setlength{\rightskip}{0pt plus 5cm}double Ideal\+Etalon\+::theta\hspace{0.3cm}{\ttfamily [private]}}\hypertarget{class_ideal_etalon_adb01dc93fb40a0735b5ed00907ffe0fd}{}\label{class_ideal_etalon_adb01dc93fb40a0735b5ed00907ffe0fd}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+/home/stuermer/\+Repos/cpp/\+Echelle\+Simulator/include/\hyperlink{source_8h}{source.\+h}\item 
+/home/stuermer/\+Repos/cpp/\+Echelle\+Simulator/src/\hyperlink{source_8cpp}{source.\+cpp}\end{DoxyCompactItemize}

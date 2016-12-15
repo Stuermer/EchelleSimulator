@@ -1,0 +1,139 @@
+\hypertarget{class_c_s_v_iterator}{}\section{C\+S\+V\+Iterator Class Reference}
+\label{class_c_s_v_iterator}\index{C\+S\+V\+Iterator@{C\+S\+V\+Iterator}}
+
+
+{\ttfamily \#include $<$csv\+\_\+reader.\+h$>$}
+
+\subsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+typedef std\+::input\+\_\+iterator\+\_\+tag \hyperlink{class_c_s_v_iterator_a1e8e34ec6798b67292c1b1b9bf18e8f6}{iterator\+\_\+category}
+\item 
+typedef \hyperlink{class_c_s_v_row}{C\+S\+V\+Row} \hyperlink{class_c_s_v_iterator_a86931db4489064aa95164fee9123d40e}{value\+\_\+type}
+\item 
+typedef std\+::size\+\_\+t \hyperlink{class_c_s_v_iterator_a2decbf132c26754c9a32402b7bc9848f}{difference\+\_\+type}
+\item 
+typedef \hyperlink{class_c_s_v_row}{C\+S\+V\+Row} $\ast$ \hyperlink{class_c_s_v_iterator_a23ee3d00badf18d56739868b4f0c0240}{pointer}
+\item 
+typedef \hyperlink{class_c_s_v_row}{C\+S\+V\+Row} \& \hyperlink{class_c_s_v_iterator_a4f99b48a9e06dec230dda0b073d07d9e}{reference}
+\end{DoxyCompactItemize}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{class_c_s_v_iterator_a5e1ec4423e05bf23c4209f3089d8e0b2}{C\+S\+V\+Iterator} (std\+::istream \&str)
+\item 
+\hyperlink{class_c_s_v_iterator_a8c3e1708c84d80dc8b51822547f2c2aa}{C\+S\+V\+Iterator} ()
+\item 
+\hyperlink{class_c_s_v_iterator}{C\+S\+V\+Iterator} \& \hyperlink{class_c_s_v_iterator_a5bac2b8aaf235c2ee1b0b2b9da9b3399}{operator++} ()
+\item 
+\hyperlink{class_c_s_v_iterator}{C\+S\+V\+Iterator} \hyperlink{class_c_s_v_iterator_ab3f320940c36f5524865b349e6d1b36b}{operator++} (int)
+\item 
+\hyperlink{class_c_s_v_row}{C\+S\+V\+Row} const \& \hyperlink{class_c_s_v_iterator_a0577e6c41cd7f595762f84736d751c38}{operator$\ast$} () const 
+\item 
+\hyperlink{class_c_s_v_row}{C\+S\+V\+Row} const $\ast$ \hyperlink{class_c_s_v_iterator_aea83ae54c091c545a462d4152e06bf5f}{operator-\/$>$} () const 
+\item 
+bool \hyperlink{class_c_s_v_iterator_a75dbe096c1a074b74dadd7ab2283f3e9}{operator==} (\hyperlink{class_c_s_v_iterator}{C\+S\+V\+Iterator} const \&rhs)
+\item 
+bool \hyperlink{class_c_s_v_iterator_a4ba4b13be1e878cfd1a9c9e6d69f9a62}{operator!=} (\hyperlink{class_c_s_v_iterator}{C\+S\+V\+Iterator} const \&rhs)
+\end{DoxyCompactItemize}
+\subsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+std\+::istream $\ast$ \hyperlink{class_c_s_v_iterator_abb34432d545dcb80447b020fe8a47cad}{m\+\_\+str}
+\item 
+\hyperlink{class_c_s_v_row}{C\+S\+V\+Row} \hyperlink{class_c_s_v_iterator_a051522e4a6e5097f0348869455c2eddd}{m\+\_\+row}
+\end{DoxyCompactItemize}
+
+
+\subsection{Member Typedef Documentation}
+\index{C\+S\+V\+Iterator@{C\+S\+V\+Iterator}!difference\+\_\+type@{difference\+\_\+type}}
+\index{difference\+\_\+type@{difference\+\_\+type}!C\+S\+V\+Iterator@{C\+S\+V\+Iterator}}
+\subsubsection[{\texorpdfstring{difference\+\_\+type}{difference_type}}]{\setlength{\rightskip}{0pt plus 5cm}typedef std\+::size\+\_\+t {\bf C\+S\+V\+Iterator\+::difference\+\_\+type}}\hypertarget{class_c_s_v_iterator_a2decbf132c26754c9a32402b7bc9848f}{}\label{class_c_s_v_iterator_a2decbf132c26754c9a32402b7bc9848f}
+\index{C\+S\+V\+Iterator@{C\+S\+V\+Iterator}!iterator\+\_\+category@{iterator\+\_\+category}}
+\index{iterator\+\_\+category@{iterator\+\_\+category}!C\+S\+V\+Iterator@{C\+S\+V\+Iterator}}
+\subsubsection[{\texorpdfstring{iterator\+\_\+category}{iterator_category}}]{\setlength{\rightskip}{0pt plus 5cm}typedef std\+::input\+\_\+iterator\+\_\+tag {\bf C\+S\+V\+Iterator\+::iterator\+\_\+category}}\hypertarget{class_c_s_v_iterator_a1e8e34ec6798b67292c1b1b9bf18e8f6}{}\label{class_c_s_v_iterator_a1e8e34ec6798b67292c1b1b9bf18e8f6}
+\index{C\+S\+V\+Iterator@{C\+S\+V\+Iterator}!pointer@{pointer}}
+\index{pointer@{pointer}!C\+S\+V\+Iterator@{C\+S\+V\+Iterator}}
+\subsubsection[{\texorpdfstring{pointer}{pointer}}]{\setlength{\rightskip}{0pt plus 5cm}typedef {\bf C\+S\+V\+Row}$\ast$ {\bf C\+S\+V\+Iterator\+::pointer}}\hypertarget{class_c_s_v_iterator_a23ee3d00badf18d56739868b4f0c0240}{}\label{class_c_s_v_iterator_a23ee3d00badf18d56739868b4f0c0240}
+\index{C\+S\+V\+Iterator@{C\+S\+V\+Iterator}!reference@{reference}}
+\index{reference@{reference}!C\+S\+V\+Iterator@{C\+S\+V\+Iterator}}
+\subsubsection[{\texorpdfstring{reference}{reference}}]{\setlength{\rightskip}{0pt plus 5cm}typedef {\bf C\+S\+V\+Row}\& {\bf C\+S\+V\+Iterator\+::reference}}\hypertarget{class_c_s_v_iterator_a4f99b48a9e06dec230dda0b073d07d9e}{}\label{class_c_s_v_iterator_a4f99b48a9e06dec230dda0b073d07d9e}
+\index{C\+S\+V\+Iterator@{C\+S\+V\+Iterator}!value\+\_\+type@{value\+\_\+type}}
+\index{value\+\_\+type@{value\+\_\+type}!C\+S\+V\+Iterator@{C\+S\+V\+Iterator}}
+\subsubsection[{\texorpdfstring{value\+\_\+type}{value_type}}]{\setlength{\rightskip}{0pt plus 5cm}typedef {\bf C\+S\+V\+Row} {\bf C\+S\+V\+Iterator\+::value\+\_\+type}}\hypertarget{class_c_s_v_iterator_a86931db4489064aa95164fee9123d40e}{}\label{class_c_s_v_iterator_a86931db4489064aa95164fee9123d40e}
+
+
+\subsection{Constructor \& Destructor Documentation}
+\index{C\+S\+V\+Iterator@{C\+S\+V\+Iterator}!C\+S\+V\+Iterator@{C\+S\+V\+Iterator}}
+\index{C\+S\+V\+Iterator@{C\+S\+V\+Iterator}!C\+S\+V\+Iterator@{C\+S\+V\+Iterator}}
+\subsubsection[{\texorpdfstring{C\+S\+V\+Iterator(std\+::istream \&str)}{CSVIterator(std::istream &str)}}]{\setlength{\rightskip}{0pt plus 5cm}C\+S\+V\+Iterator\+::\+C\+S\+V\+Iterator (
+\begin{DoxyParamCaption}
+\item[{std\+::istream \&}]{str}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{class_c_s_v_iterator_a5e1ec4423e05bf23c4209f3089d8e0b2}{}\label{class_c_s_v_iterator_a5e1ec4423e05bf23c4209f3089d8e0b2}
+\index{C\+S\+V\+Iterator@{C\+S\+V\+Iterator}!C\+S\+V\+Iterator@{C\+S\+V\+Iterator}}
+\index{C\+S\+V\+Iterator@{C\+S\+V\+Iterator}!C\+S\+V\+Iterator@{C\+S\+V\+Iterator}}
+\subsubsection[{\texorpdfstring{C\+S\+V\+Iterator()}{CSVIterator()}}]{\setlength{\rightskip}{0pt plus 5cm}C\+S\+V\+Iterator\+::\+C\+S\+V\+Iterator (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{class_c_s_v_iterator_a8c3e1708c84d80dc8b51822547f2c2aa}{}\label{class_c_s_v_iterator_a8c3e1708c84d80dc8b51822547f2c2aa}
+
+
+\subsection{Member Function Documentation}
+\index{C\+S\+V\+Iterator@{C\+S\+V\+Iterator}!operator"!=@{operator"!=}}
+\index{operator"!=@{operator"!=}!C\+S\+V\+Iterator@{C\+S\+V\+Iterator}}
+\subsubsection[{\texorpdfstring{operator"!=(\+C\+S\+V\+Iterator const \&rhs)}{operator!=(CSVIterator const &rhs)}}]{\setlength{\rightskip}{0pt plus 5cm}bool C\+S\+V\+Iterator\+::operator!= (
+\begin{DoxyParamCaption}
+\item[{{\bf C\+S\+V\+Iterator} const \&}]{rhs}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{class_c_s_v_iterator_a4ba4b13be1e878cfd1a9c9e6d69f9a62}{}\label{class_c_s_v_iterator_a4ba4b13be1e878cfd1a9c9e6d69f9a62}
+\index{C\+S\+V\+Iterator@{C\+S\+V\+Iterator}!operator$\ast$@{operator$\ast$}}
+\index{operator$\ast$@{operator$\ast$}!C\+S\+V\+Iterator@{C\+S\+V\+Iterator}}
+\subsubsection[{\texorpdfstring{operator$\ast$() const }{operator*() const }}]{\setlength{\rightskip}{0pt plus 5cm}{\bf C\+S\+V\+Row} const\& C\+S\+V\+Iterator\+::operator$\ast$ (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{class_c_s_v_iterator_a0577e6c41cd7f595762f84736d751c38}{}\label{class_c_s_v_iterator_a0577e6c41cd7f595762f84736d751c38}
+\index{C\+S\+V\+Iterator@{C\+S\+V\+Iterator}!operator++@{operator++}}
+\index{operator++@{operator++}!C\+S\+V\+Iterator@{C\+S\+V\+Iterator}}
+\subsubsection[{\texorpdfstring{operator++()}{operator++()}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf C\+S\+V\+Iterator}\& C\+S\+V\+Iterator\+::operator++ (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{class_c_s_v_iterator_a5bac2b8aaf235c2ee1b0b2b9da9b3399}{}\label{class_c_s_v_iterator_a5bac2b8aaf235c2ee1b0b2b9da9b3399}
+\index{C\+S\+V\+Iterator@{C\+S\+V\+Iterator}!operator++@{operator++}}
+\index{operator++@{operator++}!C\+S\+V\+Iterator@{C\+S\+V\+Iterator}}
+\subsubsection[{\texorpdfstring{operator++(int)}{operator++(int)}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf C\+S\+V\+Iterator} C\+S\+V\+Iterator\+::operator++ (
+\begin{DoxyParamCaption}
+\item[{int}]{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{class_c_s_v_iterator_ab3f320940c36f5524865b349e6d1b36b}{}\label{class_c_s_v_iterator_ab3f320940c36f5524865b349e6d1b36b}
+\index{C\+S\+V\+Iterator@{C\+S\+V\+Iterator}!operator-\/$>$@{operator-\/$>$}}
+\index{operator-\/$>$@{operator-\/$>$}!C\+S\+V\+Iterator@{C\+S\+V\+Iterator}}
+\subsubsection[{\texorpdfstring{operator-\/$>$() const }{operator->() const }}]{\setlength{\rightskip}{0pt plus 5cm}{\bf C\+S\+V\+Row} const$\ast$ C\+S\+V\+Iterator\+::operator-\/$>$ (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{class_c_s_v_iterator_aea83ae54c091c545a462d4152e06bf5f}{}\label{class_c_s_v_iterator_aea83ae54c091c545a462d4152e06bf5f}
+\index{C\+S\+V\+Iterator@{C\+S\+V\+Iterator}!operator==@{operator==}}
+\index{operator==@{operator==}!C\+S\+V\+Iterator@{C\+S\+V\+Iterator}}
+\subsubsection[{\texorpdfstring{operator==(\+C\+S\+V\+Iterator const \&rhs)}{operator==(CSVIterator const &rhs)}}]{\setlength{\rightskip}{0pt plus 5cm}bool C\+S\+V\+Iterator\+::operator== (
+\begin{DoxyParamCaption}
+\item[{{\bf C\+S\+V\+Iterator} const \&}]{rhs}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{class_c_s_v_iterator_a75dbe096c1a074b74dadd7ab2283f3e9}{}\label{class_c_s_v_iterator_a75dbe096c1a074b74dadd7ab2283f3e9}
+
+
+\subsection{Member Data Documentation}
+\index{C\+S\+V\+Iterator@{C\+S\+V\+Iterator}!m\+\_\+row@{m\+\_\+row}}
+\index{m\+\_\+row@{m\+\_\+row}!C\+S\+V\+Iterator@{C\+S\+V\+Iterator}}
+\subsubsection[{\texorpdfstring{m\+\_\+row}{m_row}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf C\+S\+V\+Row} C\+S\+V\+Iterator\+::m\+\_\+row\hspace{0.3cm}{\ttfamily [private]}}\hypertarget{class_c_s_v_iterator_a051522e4a6e5097f0348869455c2eddd}{}\label{class_c_s_v_iterator_a051522e4a6e5097f0348869455c2eddd}
+\index{C\+S\+V\+Iterator@{C\+S\+V\+Iterator}!m\+\_\+str@{m\+\_\+str}}
+\index{m\+\_\+str@{m\+\_\+str}!C\+S\+V\+Iterator@{C\+S\+V\+Iterator}}
+\subsubsection[{\texorpdfstring{m\+\_\+str}{m_str}}]{\setlength{\rightskip}{0pt plus 5cm}std\+::istream$\ast$ C\+S\+V\+Iterator\+::m\+\_\+str\hspace{0.3cm}{\ttfamily [private]}}\hypertarget{class_c_s_v_iterator_abb34432d545dcb80447b020fe8a47cad}{}\label{class_c_s_v_iterator_abb34432d545dcb80447b020fe8a47cad}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/home/stuermer/\+Repos/cpp/\+Echelle\+Simulator/include/\hyperlink{csv__reader_8h}{csv\+\_\+reader.\+h}\end{DoxyCompactItemize}

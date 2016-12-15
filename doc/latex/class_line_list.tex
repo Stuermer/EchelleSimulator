@@ -1,0 +1,120 @@
+\hypertarget{class_line_list}{}\section{Line\+List Class Reference}
+\label{class_line_list}\index{Line\+List@{Line\+List}}
+
+
+Implements line list spectrum.  
+
+
+
+
+{\ttfamily \#include $<$source.\+h$>$}
+
+Inheritance diagram for Line\+List\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_line_list}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{class_line_list_aa2d1b522deec10a431ad6eacc4c614fd}{Line\+List} (std\+::string linelist)
+\item 
+void \hyperlink{class_line_list_a24602f1ed3e346d6c06e788d00dae6e8}{read\+\_\+spectrum} (std\+::string linelist)
+\item 
+double \hyperlink{class_line_list_acb1e41d6120cf6bc0df2afaeb35a5aad}{get\+\_\+spectral\+\_\+density} (double wavelength)
+\item 
+std\+::vector$<$ double $>$ \hyperlink{class_line_list_aa51704a60f48389c06c583d2a4cc6733}{get\+\_\+spectrum} (std\+::vector$<$ double $>$ wavelength)
+\item 
+std\+::vector$<$ double $>$ \hyperlink{class_line_list_acfc2f92ac90099e4d4a2d3f2fcac47ef}{get\+\_\+wavelength} ()
+\end{DoxyCompactItemize}
+\subsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+std\+::map$<$ double, double $>$ \hyperlink{class_line_list_af8d4ea58795d9cc4687a21884f2953b3}{data}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Implements line list spectrum. 
+
+\subsection{Constructor \& Destructor Documentation}
+\index{Line\+List@{Line\+List}!Line\+List@{Line\+List}}
+\index{Line\+List@{Line\+List}!Line\+List@{Line\+List}}
+\subsubsection[{\texorpdfstring{Line\+List(std\+::string linelist)}{LineList(std::string linelist)}}]{\setlength{\rightskip}{0pt plus 5cm}Line\+List\+::\+Line\+List (
+\begin{DoxyParamCaption}
+\item[{std\+::string}]{linelist}
+\end{DoxyParamCaption}
+)}\hypertarget{class_line_list_aa2d1b522deec10a431ad6eacc4c614fd}{}\label{class_line_list_aa2d1b522deec10a431ad6eacc4c614fd}
+
+
+\subsection{Member Function Documentation}
+\index{Line\+List@{Line\+List}!get\+\_\+spectral\+\_\+density@{get\+\_\+spectral\+\_\+density}}
+\index{get\+\_\+spectral\+\_\+density@{get\+\_\+spectral\+\_\+density}!Line\+List@{Line\+List}}
+\subsubsection[{\texorpdfstring{get\+\_\+spectral\+\_\+density(double wavelength)}{get_spectral_density(double wavelength)}}]{\setlength{\rightskip}{0pt plus 5cm}double Line\+List\+::get\+\_\+spectral\+\_\+density (
+\begin{DoxyParamCaption}
+\item[{double}]{wavelength}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}\hypertarget{class_line_list_acb1e41d6120cf6bc0df2afaeb35a5aad}{}\label{class_line_list_acb1e41d6120cf6bc0df2afaeb35a5aad}
+This function returns the spectral density at a given wavelength. It is the essential function for all subclasses. \begin{DoxySeeAlso}{See also}
+\hyperlink{class_source_ab5d90ab3a4cfb8403803d88ce8b9f0f8}{Source\+::get\+\_\+spectrum()} will use this function to integrate over it to retreive a spectrum for a given wavelength vector. 
+\end{DoxySeeAlso}
+
+\begin{DoxyParams}{Parameters}
+{\em wavelength} & wavelength \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+spectral density 
+\end{DoxyReturn}
+
+
+Reimplemented from \hyperlink{class_source_a546ae8ec1ae47e888c74f146278e19af}{Source}.
+
+\index{Line\+List@{Line\+List}!get\+\_\+spectrum@{get\+\_\+spectrum}}
+\index{get\+\_\+spectrum@{get\+\_\+spectrum}!Line\+List@{Line\+List}}
+\subsubsection[{\texorpdfstring{get\+\_\+spectrum(std\+::vector$<$ double $>$ wavelength)}{get_spectrum(std::vector< double > wavelength)}}]{\setlength{\rightskip}{0pt plus 5cm}std\+::vector$<$ double $>$ Line\+List\+::get\+\_\+spectrum (
+\begin{DoxyParamCaption}
+\item[{std\+::vector$<$ double $>$}]{wavelength}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}\hypertarget{class_line_list_aa51704a60f48389c06c583d2a4cc6733}{}\label{class_line_list_aa51704a60f48389c06c583d2a4cc6733}
+Returns spectrum at given wavelength
+
+This function returns the integrated spectral density for a given wavelength vector. 
+\begin{DoxyParams}{Parameters}
+{\em wavelength} & wavelength vector \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+spectrum at given wavelength 
+\end{DoxyReturn}
+
+
+Reimplemented from \hyperlink{class_source_ab5d90ab3a4cfb8403803d88ce8b9f0f8}{Source}.
+
+\index{Line\+List@{Line\+List}!get\+\_\+wavelength@{get\+\_\+wavelength}}
+\index{get\+\_\+wavelength@{get\+\_\+wavelength}!Line\+List@{Line\+List}}
+\subsubsection[{\texorpdfstring{get\+\_\+wavelength()}{get_wavelength()}}]{\setlength{\rightskip}{0pt plus 5cm}std\+::vector$<$ double $>$ Line\+List\+::get\+\_\+wavelength (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{class_line_list_acfc2f92ac90099e4d4a2d3f2fcac47ef}{}\label{class_line_list_acfc2f92ac90099e4d4a2d3f2fcac47ef}
+\index{Line\+List@{Line\+List}!read\+\_\+spectrum@{read\+\_\+spectrum}}
+\index{read\+\_\+spectrum@{read\+\_\+spectrum}!Line\+List@{Line\+List}}
+\subsubsection[{\texorpdfstring{read\+\_\+spectrum(std\+::string linelist)}{read_spectrum(std::string linelist)}}]{\setlength{\rightskip}{0pt plus 5cm}void Line\+List\+::read\+\_\+spectrum (
+\begin{DoxyParamCaption}
+\item[{std\+::string}]{linelist}
+\end{DoxyParamCaption}
+)}\hypertarget{class_line_list_a24602f1ed3e346d6c06e788d00dae6e8}{}\label{class_line_list_a24602f1ed3e346d6c06e788d00dae6e8}
+
+
+\subsection{Member Data Documentation}
+\index{Line\+List@{Line\+List}!data@{data}}
+\index{data@{data}!Line\+List@{Line\+List}}
+\subsubsection[{\texorpdfstring{data}{data}}]{\setlength{\rightskip}{0pt plus 5cm}std\+::map$<$double, double$>$ Line\+List\+::data\hspace{0.3cm}{\ttfamily [private]}}\hypertarget{class_line_list_af8d4ea58795d9cc4687a21884f2953b3}{}\label{class_line_list_af8d4ea58795d9cc4687a21884f2953b3}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+/home/stuermer/\+Repos/cpp/\+Echelle\+Simulator/include/\hyperlink{source_8h}{source.\+h}\item 
+/home/stuermer/\+Repos/cpp/\+Echelle\+Simulator/src/\hyperlink{source_8cpp}{source.\+cpp}\end{DoxyCompactItemize}
