@@ -2,13 +2,25 @@ import numpy as np
 import matplotlib.pyplot as plt
 import scipy.misc
 import tables
+from astropy.io import fits
 
-h5file = tables.open_file('../FIES.hdf')
+h5file = tables.open_file('../MaroonX.hdf')
+# h5file2 = tables.open_file('../FIES2.hdf')
 data = h5file.root.image
+# data2 = h5file2.root.image
+# data = np.array(data)+np.array(data2)
 
 plt.figure()
 plt.imshow(data, interpolation='None', vmin=0.)
+
+plt.figure()
+plt.plot(data[:,1024])
 plt.show()
+
+#
+# hdu = fits.PrimaryHDU()
+# hdu.data = data
+# hdu.writeto('FIES_format.fits')
 
 # d = np.genfromtxt('../transform.csv', delimiter=";")
 #

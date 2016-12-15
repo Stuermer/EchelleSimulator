@@ -1,7 +1,5 @@
 doc/html/
 doc/latex/
 *.dat
-data/
 build/
 release/
-

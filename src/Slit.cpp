@@ -26,8 +26,8 @@ void Slit::set_slit(double w, double h, int slit_sampling){
     }
     #else
     {
-        this->slit_image = cv::Mat::zeros(round(this->h_px), this->w_px, CV_64F);
-        cv::circle(this->slit_image, cv::Point2d(5.,5.), 5, 1., -1);
+        this->slit_image = cv::Mat::ones(round(this->h_px), this->w_px, CV_64F);
+//        cv::circle(this->slit_image, cv::Point2d(50.,50.), 50., 1., -1);
     }
     #endif
 }

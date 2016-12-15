@@ -25,7 +25,7 @@ int main(int argc, char *argv[])
     auto duration = duration_cast<microseconds>( t2 - t1 ).count()/1000000.;
     std::cout << "Duration: "  << duration << std::endl;
 
-    simulator.save_to_file("../FIES.hdf", true, false, true);
+    simulator.save_to_file("../MaroonX.hdf", true, false, true);
 
     return 0;
 }

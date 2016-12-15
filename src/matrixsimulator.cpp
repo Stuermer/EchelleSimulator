@@ -484,7 +484,7 @@ int MatrixSimulator::simulate_order(int order, cv::Mat& slit_image, cv::Mat& out
             //print_transformation_matrix(tr);
             output_image.rowRange(ty_int, ty_int + n_rows).colRange(tx_int, tx_int+n_cols) += tmp;
 //            cv::namedWindow( "Display window", cv::WINDOW_AUTOSIZE );// Create a window for display.
-//            cv::imshow( "Display window", tmp );
+
 //            show_cv_matrix(tmp, "SlitImage");
 //            cv::waitKey(5);
             // tmp.copyTo(img.rowRange(ty_int, ty_int + n_rows).colRange(tx_int, tx_int+n_cols));
