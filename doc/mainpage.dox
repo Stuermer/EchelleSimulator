@@ -4,7 +4,7 @@
 This documentation is divided in the following sections:
 - \subpage intro
 - \subpage concept "General concept"
-- \subpage install "Installation"
+- \subpage installation "Installation"
 - \subpage usage "Usage"
 - \subpage examples "Examples"
 - \subpage classes "Class documentation"
