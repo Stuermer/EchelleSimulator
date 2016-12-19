@@ -93,12 +93,14 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><p>The basic idea is that for a specific wavelength, the response of the spectrograph to a certain input illumination can be described by a 3x3 transformation matrix and a subsequent convolution with a point spread function (<a class="el" href="class_p_s_f.html" title="Class handles point spread functions. ">PSF</a>). Both, the transformation matrices and the PSFs are therefore wavelength dependent. It is reasonable to assume that along a single echelle order, the PSFs and transformation parameters will vary smoothly. If we know the matrices and PSFs for a sufficient large number of wavelength, we can interpolate between them for arbitrary wavelength.</p>
-<h2>Transformation matrices</h2>
+<p>The input of a spectrograph is either a fiber (or multiple fibers) or a slit, but can in either case be represented by a 2D array with a certain illumination. The illumination pattern is always confined within a rectangular bounding box. The mapping of this rectangular array and the spectrograph detector is described by a transformation matrix. </p><h2>Transformation matrices</h2>
 <p>At a monochromatic wavelength, the information about the mapping of the input slit / fiber onto the detector of the spectrograph can be described by a 3x3 transformation matrix. In principle there are two geometric transformation we could choose from: Affine and projective transformation. While the latter is more general, we found that affine transformations are sufficiently accurate to describe the spectrograph optics. Affine transformation parameters also give an intuitive insight in what happens across an order, because they can be expressed in terms of rotation( <img class="formulaInl" alt="$\Theta$" src="form_53.png"/>), shear ( <img class="formulaInl" alt="$shear$" src="form_54.png"/>), scaling in both directions ( <img class="formulaInl" alt="$sx$" src="form_55.png"/> and <img class="formulaInl" alt="$sy$" src="form_56.png"/> ) and translation ( <img class="formulaInl" alt="$tx$" src="form_57.png"/> and <img class="formulaInl" alt="$ty$" src="form_58.png"/> ) .</p>
 <p>There is no unique definition of how do compose an affine transformation matrix, we will use the following:</p>
 <p class="formulaDsp">
 <img class="formulaDsp" alt="\[ M_{\lambda} = \begin{pmatrix} sx \cdot \cos(\Theta) &amp; -sy \cdot \sin(\Theta+shear) &amp; tx \\ sx \cdot \sin(\Theta) &amp; sy \cdot \cos(\Theta+shear) &amp; ty \\ 0 &amp; 0 &amp; 1 \end{pmatrix} \]" src="form_52.png"/>
 </p>
+<p>We choose to calculate the wavelength dependent transformation parameters by tracing the 4 corner points as well as the center of the input field (i.e. fiber/slit) through ZEMAX and obtain the transformation matrices. In principle the matrices could also come from an analytical description, as long as it delivers a 3x3 matrix for a given order and wavelength.</p>
+<p>Using the ZEMAX model makes sure that the best optical description available is used to generate the matrices.</p>
 <p>As an example, we plot the scale parameter in x-direction (dispersion direction) as a function of wavelength for the MaroonX spectrograph. Data of the same echelle order are connected by a line. The anamorphic magnification of the spectrograph is directly reflected by an increase of <em>sx</em> across each order. On the right plot we see <em>sx</em> for order 100. Note that the increase of <em>sx</em> with wavelength is not a linear, but a smooth function.</p>
 
 <!DOCTYPE html>
@@ -155,7 +157,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div>
 </div>
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Dec 16 2016 13:43:05 for Echelle++ by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Dec 19 2016 17:42:14 for Echelle++ by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.11
 </small></address>

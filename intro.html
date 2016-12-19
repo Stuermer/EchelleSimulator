@@ -93,8 +93,9 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><p>Echelle spectrographs are named after its main optical component - an <em>Echelle</em> <em>grating</em> (from French échelle). They are used to obtain high-resolution, cross-dispersed spectra and are widely used in astronomy.</p>
-<p>Echelle gratings have a large ruling spacing and are used in high diffraction order allowing for a high spectral resolution. Spectra of different diffraction orders are overlapping and a second component - a so called <em>cross</em> <em>disperser</em> - is used to seperate the individual orders. Compared to an echelle grating, the dispersion of the cross disperser is low and a typical choice is a low dispersion grating, a prism or a grism.</p>
-<p>On the whole, an echelle spectrograph produces a 2D spectrum, where the positions of a certain wavelength depends on details of the spectrograph optics, its echelle parameters and its cross disperser.</p>
+<p>Echelle gratings have a large ruling spacing and are used in high diffraction order allowing for a high spectral resolution. Spectra of different diffraction orders are overlapping and a second component - a so called <em>cross</em> <em>disperser</em> - is used to seperate the individual diffraction orders. Compared to an echelle grating, the dispersion of the cross disperser is low and a typical choice is a low dispersion grating, a prism or a grism.</p>
+<p>On the whole, an echelle spectrograph produces a 2D spectrum with a complex mapping between wavelength and position on the detector. It depends on the details of the spectrograph optics, mainly the echelle grating parameters and the cross disperser parameters, but also on second order effects like camera distortions and aberrations.</p>
+<p>As an example, here we plot the echelle format of the MaroonX spectrograph. Each data point marks the center of a spectral line calculated for 50 equally spaced wavelengths per order.</p>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -144,7 +145,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div>
 </div>
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Dec 16 2016 13:43:05 for Echelle++ by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Dec 19 2016 17:42:14 for Echelle++ by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.11
 </small></address>

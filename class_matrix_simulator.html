@@ -95,12 +95,16 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pub-attribs">Public Attributes</a> &#124;
+<a href="#pri-methods">Private Member Functions</a> &#124;
 <a href="#pri-attribs">Private Attributes</a> &#124;
 <a href="class_matrix_simulator-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">MatrixSimulator Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p>class handels spectrum simulation  
+ <a href="class_matrix_simulator.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="matrixsimulator_8h_source.html">matrixsimulator.h</a>&gt;</code></p>
 <table class="memberdecls">
@@ -112,8 +116,6 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a7d6123f82db49f9054228c31ba5dd44e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5bdb033cbabf36fdd7f57a92f65dbec6"><td class="memItemLeft" align="right" valign="top">cv::Mat&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_matrix_simulator.html#a5bdb033cbabf36fdd7f57a92f65dbec6">get_transformation_matrix</a> (int order, double wavelength)</td></tr>
 <tr class="separator:a5bdb033cbabf36fdd7f57a92f65dbec6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa584302cfbfc8d5f02f184282bd60584"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_matrix_simulator.html#aa584302cfbfc8d5f02f184282bd60584">calc_splines</a> ()</td></tr>
-<tr class="separator:aa584302cfbfc8d5f02f184282bd60584"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a516c57a6e2d27e249202c60bd0fb5cc6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_matrix_simulator.html#a516c57a6e2d27e249202c60bd0fb5cc6">set_wavelength</a> (int N)</td></tr>
 <tr class="separator:a516c57a6e2d27e249202c60bd0fb5cc6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a85e8651b0a540ae40b3352ee73ed1c11"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_matrix_simulator.html#a85e8651b0a540ae40b3352ee73ed1c11">set_wavelength</a> (std::vector&lt; double &gt; wavelength)</td></tr>
@@ -155,12 +157,15 @@ Public Member Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:a5524a9a77d30e2b396737260ec6f73f8"><td class="memItemLeft" align="right" valign="top">std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_matrix_simulator.html#a5524a9a77d30e2b396737260ec6f73f8">orders</a></td></tr>
-<tr class="separator:a5524a9a77d30e2b396737260ec6f73f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2da306f4e998a609e9a9f26688d80949"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_matrix_simulator.html#a2da306f4e998a609e9a9f26688d80949">raw_n</a></td></tr>
 <tr class="separator:a2da306f4e998a609e9a9f26688d80949"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a151ec381d921be1b5b30fef6430ceb91"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_c_c_d.html">CCD</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_matrix_simulator.html#a151ec381d921be1b5b30fef6430ceb91">ccd</a></td></tr>
 <tr class="separator:a151ec381d921be1b5b30fef6430ceb91"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-methods"></a>
+Private Member Functions</h2></td></tr>
+<tr class="memitem:aa584302cfbfc8d5f02f184282bd60584"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_matrix_simulator.html#aa584302cfbfc8d5f02f184282bd60584">calc_splines</a> ()</td></tr>
+<tr class="separator:aa584302cfbfc8d5f02f184282bd60584"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
@@ -196,10 +201,15 @@ Private Attributes</h2></td></tr>
 <tr class="separator:a4f8b1a0772c43203f1b06420c0d018fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5b054ede1af3c6e29296af6f2cd5e313"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_slit.html">Slit</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_matrix_simulator.html#a5b054ede1af3c6e29296af6f2cd5e313">slit</a></td></tr>
 <tr class="separator:a5b054ede1af3c6e29296af6f2cd5e313"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5524a9a77d30e2b396737260ec6f73f8"><td class="memItemLeft" align="right" valign="top">std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_matrix_simulator.html#a5524a9a77d30e2b396737260ec6f73f8">orders</a></td></tr>
+<tr class="separator:a5524a9a77d30e2b396737260ec6f73f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3a1e3511ea01199d625b19f4add87b75"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structspectrograph__information.html">spectrograph_information</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_matrix_simulator.html#a3a1e3511ea01199d625b19f4add87b75">spec_info</a></td></tr>
 <tr class="separator:a3a1e3511ea01199d625b19f4add87b75"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>class handels spectrum simulation </p>
+<p>This class is the main class of Echelle++, it handels the transformation matrix generation and spectrum simulation. </p>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a class="anchor" id="ae3feb47ab98f917ad0b8b4b53d1b34aa"></a>
 <div class="memitem">
 <div class="memproto">
@@ -212,6 +222,7 @@ Private Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Constructor </p>
 
 </div>
 </div>
@@ -229,6 +240,12 @@ Private Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Adds an efficiency profile. This is used to add efficiency curves for various components of the spectrograph. You can add several profiles - they will all be multiplied for the final spectrum simulation, in order to account for the total efficiency of the spectreograph. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">eff</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -245,6 +262,12 @@ Private Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Sets the 1D input spectrum source that shall be simulated. See class::Source for more details. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">src</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -260,12 +283,16 @@ Private Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Calculate transformation matrices for all wavelength that are used for the spectrum simulation. </p>
 
 </div>
 </div>
 <a class="anchor" id="aa584302cfbfc8d5f02f184282bd60584"></a>
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">void MatrixSimulator::calc_splines </td>
@@ -274,7 +301,13 @@ Private Attributes</h2></td></tr>
           <td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
+<p>Calculates spline interpolation across each order for each transformation parameters. </p>
 
 </div>
 </div>
@@ -331,6 +364,15 @@ Private Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Returns 2x3 transformation matrix for given order and wavelength; For affine transformation the lower row of the transformation matrix is always 0,0,1. OpenCv requires therefore only a 2x3 transformation matrix for the affine warping. ToDo: raise error when order, wavelength combination is not in the model</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">order</td><td>echelle diffraction order </td></tr>
+    <tr><td class="paramname">wavelength</td><td>wavelength [micrometer] </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>2x3 transformation matrix </dd></dl>
 
 </div>
 </div>
@@ -396,6 +438,12 @@ Private Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>reads in spectrograph model from HDF file. Please check documentation of PyEchelle to get more information about the proper file format. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">path</td><td>filepath to HDF file </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -450,6 +498,12 @@ Private Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Sets the <a class="el" href="class_c_c_d.html" title="class representing a CCD detector ">CCD</a> that shall be used for the simulation. See CD for more details </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">ccd</td><td><a class="el" href="class_c_c_d.html" title="class representing a CCD detector ">CCD</a> used for simulation </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -492,6 +546,13 @@ Private Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>sets order range for the simulation in case only subset of the order shall be simulated. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">min_order</td><td>minimum echelle order </td></tr>
+    <tr><td class="paramname">max_order</td><td>maximum echelle order </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -508,6 +569,12 @@ Private Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Sets Point spread function that shall be used for simulation. See <a class="el" href="class_p_s_f.html" title="Class handles point spread functions. ">PSF</a> for more details </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">psfs</td><td>PSFs used for simulation. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -524,6 +591,12 @@ Private Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Sets the input slit that shall be used for the simulation. See slit for more details </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">slit</td><td>Input slit used for simulation </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -540,6 +613,13 @@ Private Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Set wavelength steps per order</p>
+<p>This sets the wavelength steps per order that are used for simulation. Usually the input spectrum will be integrated between the borders of each wavelength step. Make sure this number is sufficiently high. As a rule of thumb, take the number of pixels in dispersion direction, divide it by the average pixel sampling and multiply it by 5. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">N</td><td>number of wavelength steps per order. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -556,6 +636,13 @@ Private Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Set wavelength for simulation directly.</p>
+<p>This sets the wavelength at which the spectrum is simulated directly. This can be useful when simulating emission lines from a emission lamp or for high finesse etalon or laser frequency comb spectra. In these cases - when the linewidths of the simulated spectrum is completely unresolved by the spectrograph - it is not necessary to integrate the input spectrum in fixed wavelength bins. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">wavelength</td><td>wavelength array [micrometers] </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -594,6 +681,16 @@ Private Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Simulates a single order. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">order</td><td>echelle order </td></tr>
+    <tr><td class="paramname">slit_image</td><td>input illumination distribution </td></tr>
+    <tr><td class="paramname">output_image</td><td>destination image </td></tr>
+    <tr><td class="paramname">aberrations</td><td>true if <a class="el" href="class_p_s_f.html" title="Class handles point spread functions. ">PSF</a> convolution shall be done </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd></dd></dl>
 
 </div>
 </div>
@@ -609,6 +706,7 @@ Private Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Simulate the entire spectrum. </p>
 
 </div>
 </div>
@@ -641,6 +739,15 @@ Private Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Transforms an input image with a certain transformation matrix and a global weight. The global weight will usually be the intensity of the input spectrum at this wavelength, multiplied by the efficiency of the spectrograph at that wavelength. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">slit_image</td><td>input illumination distribution </td></tr>
+    <tr><td class="paramname">transformation_matrix</td><td>2x3 affine transformation matrix </td></tr>
+    <tr><td class="paramname">weight</td><td>global weight </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd></dd></dl>
 
 </div>
 </div>
@@ -716,11 +823,19 @@ Private Attributes</h2></td></tr>
 <a class="anchor" id="a5524a9a77d30e2b396737260ec6f73f8"></a>
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">std::vector&lt;int&gt; MatrixSimulator::orders</td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
 </div>
@@ -1050,7 +1165,7 @@ Private Attributes</h2></td></tr>
 </div>
 </div>
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Dec 16 2016 13:43:06 for Echelle++ by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Dec 19 2016 17:42:15 for Echelle++ by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.11
 </small></address>
