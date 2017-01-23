@@ -157,7 +157,7 @@ double interpolate(const std::map<double,double> &data,
     return delta*i->second +(1-delta)*l->second;
 }
 
-//int save_to_fits(const std::string filename, cv::Mat img){
+//int save_to_hdf(const std::string filename, cv::Mat img){
 //    std::auto_ptr<CCfits::FITS> pFits(0);
 //
 //    long naxis    =   2;

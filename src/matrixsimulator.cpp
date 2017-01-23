@@ -593,10 +593,13 @@ void MatrixSimulator::add_source(Source *src) {
     this->sources.push_back(src);
 }
 
-void MatrixSimulator::save_to_file(std::string filename, bool downsample, bool bleed, bool overwrite) {
-    this->ccd->save_to_file(filename, downsample, bleed, overwrite);
+void MatrixSimulator::save_to_hdf(std::string filename, bool downsample, bool bleed, bool overwrite) {
+    this->ccd->save_to_hdf(filename, downsample, bleed, overwrite);
 }
 
+void MatrixSimulator::save_to_fits(std::string filename, bool downsample, bool bleed, bool overwrite) {
+    this->ccd->save_to_fits(filename, downsample, bleed, overwrite);
+}
 void MatrixSimulator::transformation_to_file(std::string filename) {
     std::ofstream myfile;
     myfile.open(filename);

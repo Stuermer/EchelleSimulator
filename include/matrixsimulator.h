@@ -71,7 +71,8 @@ public:
 
 
     void prepare_sources(std::vector<Source *> sources);
-    void save_to_file(std::string filename, bool downsample=true, bool bleed=true, bool overwrite=false);
+    void save_to_hdf(std::string filename, bool downsample = true, bool bleed = true, bool overwrite = false);
+    void save_to_fits(std::string filename, bool downsample = true, bool bleed = true, bool overwrite = false);
     void transformation_to_file(std::string filename);
     CCD * ccd;
     double get_blaze();

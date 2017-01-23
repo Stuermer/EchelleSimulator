@@ -30,7 +30,8 @@ public:
      */
     CCD(int Nx, int Ny, int oversampling, int data_type);
     ~CCD();
-    void save_to_file(std::string filename, bool downsample=true, bool bleed=true, bool overwrite=false);
+    void save_to_hdf(std::string filename, bool downsample = true, bool bleed = true, bool overwrite = false);
+    void save_to_fits(std::string filename, bool downsample = true, bool bleed = true, bool overwrite = false);
 
     cv::Mat get_image(bool downsample=true, bool bleed=true);
     //overload + operator

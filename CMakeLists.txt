@@ -13,9 +13,9 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/src/CMakeModules
 #INCLUDE("${CMAKE_SOURCE_DIR}/src/CMakeModules/FindCCFITS.cmake")
 #set (LINK_LIBS ${LINK_LIBS} ${CCFITS_LIBRARIES})
 
-#find_package(CCFITS REQUIRED)
+find_package(CCFITS REQUIRED)
 # Install stage
-#INSTALL_FILES("${CMAKE_ROOT}/Modules" FILES "${CMAKE_SOURCE_DIR}/FindCCOIFITS.cmake")
+INSTALL_FILES("${CMAKE_ROOT}/Modules" FILES "${CMAKE_SOURCE_DIR}/FindCCOIFITS.cmake")
 
 FIND_LIBRARY(CCFITS_LIB CCfits /usr/lib/x86_64-linux-gnu)
 
@@ -25,7 +25,7 @@ include_directories(SYSTEM ${HDF5_INCLUDE_DIRS} ${HDF5_HL_INCLUDE_DIR})
 include_directories(SYSTEM $OPENCV_INCLUDE_DIRS)
 include_directories(src)
 include_directories(include)
-set (LINK_LIBS ${LINK_LIBS} ${HDF5_LIBRARIES} ${HDF5_HL_LIBRARIES} ${CCFITS_LIB})
+set (LINK_LIBS ${LINK_LIBS} ${HDF5_LIBRARIES} ${HDF5_HL_LIBRARIES} ${CCFITS_LIB} ${CFITSIO_LIBRARY})
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
  set(CMAKE_CXX_FLAGS_RELEASE  "${CMAKE_C_FLAGS} -fopenmp -O3")

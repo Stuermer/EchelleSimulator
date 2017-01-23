@@ -5,6 +5,7 @@
 #include <opencv2/imgproc.hpp>
 #include "CCD.h"
 #include "hdf5opencv.h"
+#include <CCfits/CCfits>
 
 CCD::CCD(int Nx, int Ny, int oversampling, int data_type) :Nx(Nx), Ny(Ny), oversampling(oversampling) {
 
@@ -24,12 +25,54 @@ CCD::CCD(int Nx, int Ny, int oversampling, int data_type) :Nx(Nx), Ny(Ny), overs
 
 }
 
-void CCD::save_to_file(std::string filename, bool downsample, bool bleed, bool overwrite) {
+void CCD::save_to_hdf(std::string filename, bool downsample, bool bleed, bool overwrite) {
     cv::Mat res = this->get_image(downsample, bleed);
     hdf5opencv::hdf5save(filename.c_str(), "image", res, overwrite);
     // MatToFile(res, filename);
 }
 
+void CCD::save_to_fits(std::string filename, bool downsample, bool bleed, bool overwrite) {
+    cv::Mat res = this->get_image(downsample, bleed);
+    long naxis    =   2;
+    long naxes[2] = { res.cols, res.rows };
+    std::auto_ptr<CCfits::FITS> pFits(0);
+    if (overwrite){
+        remove(filename.c_str());
+    }
+    try
+    {
+        // overwrite existing file if the file already exists.
+
+        const std::string fileName(filename.c_str());
+
+        // Create a new FITS object, specifying the data type and axes for the primary
+        // image. Simultaneously create the corresponding file.
+
+        // this image is unsigned short data, demonstrating the cfitsio extension
+        // to the FITS standard.
+
+        pFits.reset( new CCfits::FITS(filename, FLOAT_IMG , naxis , naxes ) );
+    }
+    catch (CCfits::FITS::CantCreate)
+    {
+        // ... or not, as the case may be.
+        std::cout<<"Can't create FITS file."<< std::endl;
+    }
+    long nelements(1);
+    nelements = std::accumulate(&naxes[0],&naxes[naxis],1,std::multiplies<long>());
+    long  fpixel(1);
+    std::valarray<double> data_array(nelements);
+    for (int i=0; i<res.rows; ++i){
+        for (int j=0; j<res.cols; ++j){
+            data_array[j*Nx+i] = res.at<double>(j,i);
+        }
+
+    }
+
+    pFits->pHDU().write(fpixel, nelements, data_array);
+    pFits->flush();
+
+}
 CCD::~CCD() {
 
 }
