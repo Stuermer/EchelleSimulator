@@ -19,7 +19,7 @@ simulator.add_source(&cs); //add source to simulator
 
 simulator.simulate_spectrum(); //simulate echelle spectra 
 
-simulator.save_to_fits("../image2.hdf", true, true, true); //save echelle spectrum to file
+simulator.save_to_fits("../image2.fit", true, true, true); //save echelle spectrum to file
 
 return 0;
 }
