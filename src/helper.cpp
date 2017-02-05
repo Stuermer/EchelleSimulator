@@ -136,6 +136,24 @@ void print_cv_matrix_info(cv::Mat img, std::string imagename="Image") {
 
 }
 
+double wrap_rads(double r)
+{
+    while ( r > M_PI ) {
+        r -= 2 * M_PI;
+    }
+
+    while ( r <= -M_PI ) {
+        r += 2 * M_PI;
+    }
+
+    return r;
+}
+
+void create_fits_file(std::string filename){
+
+    CCfits::FITS infile(filename.c_str(), CCfits::Write);
+
+};
 
 double interpolate(const std::map<double,double> &data,
                     double x)
@@ -215,7 +233,7 @@ herr_t file_info(hid_t loc_id, const char *name, const H5L_info_t *linfo, void *
 //    group = H5Gopen2(loc_id, name, H5P_DEFAULT);
 
     group_names->push_back(name);
-    std::cout << "Name : " << name << std::endl;
+//    std::cout << "Name : " << name << std::endl;
 //    H5Gclose(group);
     return 0;
 }

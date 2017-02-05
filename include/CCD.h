@@ -10,6 +10,7 @@
 #include "hdf5.h"
 #include <string>
 #include <ml.h>
+
 #ifdef USE_GPU
 #include "opencv2/gpu/gpu.hpp"
 #endif
@@ -29,37 +30,41 @@ public:
      * @return CCD
      */
     CCD(int Nx, int Ny, int oversampling, int data_type);
+
     ~CCD();
+
     void save_to_hdf(std::string filename, bool downsample = true, bool bleed = true, bool overwrite = false);
+
     void save_to_fits(std::string filename, bool downsample = true, bool bleed = true, bool overwrite = false);
 
-    cv::Mat get_image(bool downsample=true, bool bleed=true);
-    //overload + operator
-    static void do_bleed(cv::Mat & input, double limit);
+    cv::Mat get_image(bool downsample = true, bool bleed = true);
 
-    #ifdef USE_GPU
+    //overload + operator
+    static void do_bleed(cv::Mat &input, double limit);
+
+#ifdef USE_GPU
     CCD operator+(const CCD & ccd){
         cv::gpu::add(this->data, ccd.data, this->data);
     }
-    #else
-    CCD operator+(const CCD & ccd){
-    this->data += ccd.data;
-    }
-    #endif
+#else
 
-    #ifdef USE_GPU
-        cv::gpu::GpuMat data;
-        bool use_gpu = true;
-    #else
-        cv::Mat data;
-            bool use_gpu = false;
-    #endif
+    CCD operator+(const CCD &ccd) {
+        this->data += ccd.data;
+    }
+
+#endif
+
+#ifdef USE_GPU
+    cv::gpu::GpuMat data;
+    bool use_gpu = true;
+#else
+    cv::Mat data;
+    bool use_gpu = false;
+#endif
 
 
 private:
     int Nx, Ny, oversampling;
-
-
 
 
 };

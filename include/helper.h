@@ -23,7 +23,7 @@
  * @param vec vector to be saved
  * @param filename path to output file
  */
-void vectorToFile(std::vector<double> const& vec, std::string const& filename);
+void vectorToFile(std::vector<double> const &vec, std::string const &filename);
 
 /*!
  * Saves an OpenCV matrix to a text file
@@ -33,7 +33,7 @@ void vectorToFile(std::vector<double> const& vec, std::string const& filename);
  * @param image matrix to be saved
  * @param filename path to output file
  */
-void MatToFile(cv::Mat& image, std::string const& filename);
+void MatToFile(cv::Mat &image, std::string const &filename);
 
 /*!
  * Decomposes a 2x3 affine transformation matrix into its underlying geometric components.
@@ -91,9 +91,20 @@ void show_cv_matrix(cv::Mat img, std::string windowname);
  */
 void print_cv_matrix_info(cv::Mat img, std::string imagename);
 
+/**
+ * Wraps an angle around [-pi, pi]
+ * @param r in radian
+ * @return wrapped angle
+ */
+double wrap_rads(double r);
 
-double interpolate(const std::map<double,double> &data,
-                    double x);
+/**
+ * Creates fits file
+ * @param filename
+ */
+void create_fits_file(std::string filename);
+
+double interpolate(const std::map<double, double> &data, double x);
 
 herr_t file_info(hid_t loc_id, const char *name, const H5L_info_t *linfo, void *opdata);
 

@@ -8,6 +8,10 @@
 
 class noise {
 public:
+    /**
+     * Adds poisson noise (=photon noise) to the image.
+     * @param image image where to add poisson noise
+     */
     static void add_poisson(cv::Mat& image);
 
 };

@@ -42,20 +42,59 @@ public:
     virtual cv::Mat get_PSF(int order, double wavelength) = 0;
 };
 
+/**
+ * \class PSF_ZEMAX
+ * \brief class representing a PSF as computed by ZEMAX
+ *
+ * Zemax returns a 2D array with a calculated Huygens PSF. It is usually saved in the spectrograph model.
+ */
 class PSF_ZEMAX : public PSF{
 public:
+    /**
+     * Creator
+     * @param filename filename of the spectrograph model
+     * @param fiber_number fiber number for the PSF model
+     */
     PSF_ZEMAX(std::string filename, int fiber_number);
     cv::Mat get_PSF(int order, double wavelength);
-    cv::Mat interpolate_PSF(cv::Mat psf1, cv::Mat psf2, double w1, double w2, double w);
 private:
+    /**
+     * Interpolates between neighboring PSFs as a simple linear sum
+     * @param psf1 first PSF
+     * @param psf2 second PSF
+     * @param w1 first PSF wavelength
+     * @param w2 second PSF wavelength
+     * @param w wavelength to use for calculating PSF
+     * @return
+     */
+    cv::Mat interpolate_PSF(cv::Mat psf1, cv::Mat psf2, double w1, double w2, double w);
     std::map< int, std::vector<PSFdata> > psfs;
 
 };
 
+/**
+ * \class PSF_gaussian
+ * \brief Class representing a gaussian PSF
+ *
+ * This class handels gaussian like PSF functions.
+ */
 class PSF_gaussian : public PSF{
 public:
+    /**
+     * Creator
+     * @param sigma Sigma of the gaussian in (oversampled) pixel
+     * @param aperture size of the gaussian kernel (in number of oversampled pixels)
+     */
     PSF_gaussian(double sigma, double aperture=3.);
+
+    /**
+     * Returns gaussian PSF, independently of order and wavelength
+     * @param order echelle order
+     * @param wavelength  wavelength in microns
+     * @return
+     */
     cv::Mat get_PSF(int order, double wavelength);
+
 private:
     double sigma;
     int ksize;

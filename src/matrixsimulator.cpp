@@ -6,11 +6,13 @@
 // #include <string>
 // #include <stdlib.h>
 #include "H5Cpp.h"
-
+#include <math.h>
 // using namespace std
 #include "helper.h"
 #include <opencv2/imgproc.hpp>
 #include <hdf5_hl.h>
+#include <CCfits/CCfits>
+#include <CCfits/FITS.h>
 
 #ifdef USE_GPU
 #include "opencv2/gpu/gpu.hpp"
@@ -37,24 +39,32 @@ MatrixSimulator::MatrixSimulator()
 {
 }
 
-void MatrixSimulator::load_spectrograph_model(std::string path, int fiber_number)
-{
+void MatrixSimulator::load_spectrograph_model(std::string path, int fiber_number, bool keep_ccd) {
     const H5std_string filename(path);
+    this->efficiencies.clear();
+    this->orders.clear();
+    this->raw_transformations.clear();
+    this->sim_wavelength.clear();
+    this->sim_spectra.clear();
+    this->sim_efficiencies.clear();
+    this->sim_matrices.clear();
+
     // open file readonly
-    H5::H5File * h5file = new H5::H5File(filename, H5F_ACC_RDONLY);
+    H5::H5File *h5file = new H5::H5File(filename, H5F_ACC_RDONLY);
 
     // read in spectrograph information
-    H5::Group *spec = new H5::Group (h5file->openGroup("Spectrograph"));
+    H5::Group *spec = new H5::Group(h5file->openGroup("Spectrograph"));
     H5::Attribute *attr = new H5::Attribute(spec->openAttribute("blaze"));
-    H5::DataType  *type = new H5::DataType(attr->getDataType());
+    H5::DataType *type = new H5::DataType(attr->getDataType());
     double blaze, gpmm = 0;
     attr->read(*type, &blaze);
     spec->openAttribute("gpmm").read(*type, &gpmm);
-    this->spec_info.blaze=blaze;
-    this->spec_info.gpmm=gpmm;
+    this->spec_info.blaze = blaze;
+    this->spec_info.gpmm = gpmm;
 
     // read in field information and transformations and PSFs
-    H5::Group *fiber = new H5::Group (h5file->openGroup("fiber_"+std::to_string(fiber_number)));
+    H5::Group *fiber = new H5::Group(h5file->openGroup("fiber_" + std::to_string(fiber_number)));
+    this->fiber_number = fiber_number;
     attr = new H5::Attribute(fiber->openAttribute("field_height"));
     type = new H5::DataType(attr->getDataType());
     double field_height, field_width = 0;
@@ -74,36 +84,34 @@ void MatrixSimulator::load_spectrograph_model(std::string path, int fiber_number
 
     std::vector<std::string> group_names;
     herr_t idx = H5Literate(fiber->getId(), H5_INDEX_NAME, H5_ITER_INC, NULL, file_info, &group_names);
-    size_t dst_size = sizeof( transformation_hdf );
-    size_t dst_offset[7] = { HOFFSET(transformation_hdf, rotation),
-                             HOFFSET(transformation_hdf, scale_x),
-                             HOFFSET(transformation_hdf, scale_y),
-                             HOFFSET(transformation_hdf, shear),
-                             HOFFSET(transformation_hdf, translation_x),
-                             HOFFSET(transformation_hdf, translation_y),
-                             HOFFSET(transformation_hdf, wavelength) };
-    size_t dst_sizes[7] = { sizeof(float),sizeof(float),sizeof(float),sizeof(float),sizeof(float),sizeof(float),sizeof(float)};
+    size_t dst_size = sizeof(transformation_hdf);
+    size_t dst_offset[7] = {HOFFSET(transformation_hdf, rotation),
+                            HOFFSET(transformation_hdf, scale_x),
+                            HOFFSET(transformation_hdf, scale_y),
+                            HOFFSET(transformation_hdf, shear),
+                            HOFFSET(transformation_hdf, translation_x),
+                            HOFFSET(transformation_hdf, translation_y),
+                            HOFFSET(transformation_hdf, wavelength)};
+    size_t dst_sizes[7] = {sizeof(float), sizeof(float), sizeof(float), sizeof(float), sizeof(float), sizeof(float),
+                           sizeof(float)};
 
     bool file_contains_psfs = false;
 
-    for(auto gn: group_names)
-    {
-        if (gn.find("psf") == std::string::npos)
-        {
+    for (auto gn: group_names) {
+        if (gn.find("psf") == std::string::npos) {
             transformation_hdf data[number_of_points];
-            std::string tablename = "fiber_"+std::to_string(fiber_number)+"/"+gn;
+            std::string tablename = "fiber_" + std::to_string(fiber_number) + "/" + gn;
             int order = std::stoi(gn.substr(5));
             herr_t read = H5TBread_table(h5file->getId(), tablename.c_str(), dst_size, dst_offset, dst_sizes, &data);
-            std::cout << order<< "\t" <<read<< "\t" << data[0].translation_x << std::endl;
-            for(int i=0; i<number_of_points; ++i)
-            {
+//            std::cout << order << "\t" << read << "\t" << data[0].translation_x << std::endl;
+            for (int i = 0; i < number_of_points; ++i) {
                 raw_transformation t;
                 t.wavelength = data[i].wavelength;
                 std::vector<double> result;
                 // return <sx, sy, shear, rot, tx ,ty>
                 result.push_back(data[i].scale_x);
                 result.push_back(data[i].scale_y);
-                result.push_back(data[i].shear);
+                result.push_back(wrap_rads(data[i].shear));
                 result.push_back(data[i].rotation);
                 result.push_back(data[i].translation_x);
                 result.push_back(data[i].translation_y);
@@ -112,38 +120,38 @@ void MatrixSimulator::load_spectrograph_model(std::string path, int fiber_number
                 t.order = order;
                 this->raw_transformations[order].push_back(t);
             }
-            std::sort(this->raw_transformations[order].begin(),this->raw_transformations[order].end(), [](const raw_transformation &x, const raw_transformation &y){ return (x.wavelength < y.wavelength);});
+            std::sort(this->raw_transformations[order].begin(), this->raw_transformations[order].end(),
+                      [](const raw_transformation &x, const raw_transformation &y) {
+                          return (x.wavelength < y.wavelength);
+                      });
 
 
-        }
-        else{
+        } else {
             file_contains_psfs = true;
         }
     }
 
-
-
-    for(auto imap: this->raw_transformations)
+    for (auto imap: this->raw_transformations)
         this->orders.push_back(imap.first);
     this->calc_splines();
 
+    if (!keep_ccd) {
+        // read in CCD information
+        H5::Group *ccd = new H5::Group(h5file->openGroup("CCD"));
+        attr = new H5::Attribute(ccd->openAttribute("Nx"));
+        type = new H5::DataType(attr->getDataType());
+        int Nx = 0;
+        int Ny = 0;
+        int pixelsize = 0;
 
-    // read in CCD information
-    H5::Group *ccd = new H5::Group (h5file->openGroup("CCD"));
-    attr = new H5::Attribute(ccd->openAttribute("Nx"));
-    type = new H5::DataType(attr->getDataType());
-    int Nx = 0;
-    int Ny = 0;
-    int pixelsize = 0;
+        attr->read(*type, &Nx);
 
-    attr->read(*type, &Nx);
+        ccd->openAttribute("Ny").read(*type, &Ny);
+        ccd->openAttribute("pixelsize").read(*type, &pixelsize);
 
-    ccd->openAttribute("Ny").read(*type, &Ny);
-    ccd->openAttribute("pixelsize").read(*type, &pixelsize);
-
-    this->ccd = new CCD(Nx, Ny, oversampling, this->slit->slit_image.type());
-    delete ccd;
-
+        this->ccd = new CCD(Nx, Ny, oversampling, this->slit->slit_image.type());
+        delete ccd;
+    }
 
 
     delete type;
@@ -154,8 +162,6 @@ void MatrixSimulator::load_spectrograph_model(std::string path, int fiber_number
     if (file_contains_psfs){
             this->psfs = new PSF_ZEMAX(path, fiber_number);
         }
-
-
 }
 
 void MatrixSimulator::read_transformations(std::string path)
@@ -253,6 +259,8 @@ void MatrixSimulator::calc_splines(){
 
 void MatrixSimulator::set_wavelength(int N){
     this->sim_wavelength.clear();
+
+//#pragma omp parallel for
     for(auto o: this->orders)
     {
         double min_wl = this->raw_transformations[o].front().wavelength;
@@ -287,11 +295,12 @@ void MatrixSimulator::set_wavelength(std::vector<double> wavelength){
 }
 
 void MatrixSimulator::calc_sim_matrices(){
-    std::cout << "Calculate Matrices " << std::endl;
+    std::cout << "Calculate Matrices ..." << std::endl;
+    this->sim_matrices.clear();
 #pragma omp parallel for
     for(int o=this->orders.front(); o<this->orders.back()+1; ++o)
     {
-        std::cout<< o << std::endl;
+//        std::cout<< o << std::endl;
         for(auto w: this->sim_wavelength[o])
         {
             this->sim_matrices[o].push_back(this->get_transformation_matrix(o, w));
@@ -514,7 +523,7 @@ void MatrixSimulator::simulate_spectrum()
 
     this->prepare_sources(this->sources);
     //cv::Mat img = cv::Mat::zeros(4096*3, 4096*3, slit_image.type());
-#pragma omp parallel for
+    #pragma omp parallel for
     for(int o=this->orders.front(); o<this->orders.back()+1; ++o){
         this->simulate_order(o, this->slit->slit_image, this->ccd->data, false);
     }
@@ -523,6 +532,7 @@ void MatrixSimulator::simulate_spectrum()
 
 void MatrixSimulator::set_efficiencies(std::vector<Efficiency *> &efficiencies)
 {
+    std::cout<<"Set Efficiencies ... " << std::endl;
     for(auto& o : this->orders)
     {
         this->sim_efficiencies.insert(std::pair<int, std::vector<double> > (o, std::vector<double> (this->sim_wavelength[o].size(), 1.0)));
@@ -536,7 +546,7 @@ void MatrixSimulator::set_efficiencies(std::vector<Efficiency *> &efficiencies)
                 this->sim_efficiencies[o][i] *= sim_eff[i];
             }
         }
-        std::cout << "Efficiency " << o << std::endl;
+//        std::cout << "Efficiency " << o << std::endl;
         // this->sim_efficiencies[o] = total_eff;
     }
 }
@@ -551,11 +561,13 @@ void MatrixSimulator::set_order_range(int min_order, int max_order) {
 }
 
 void MatrixSimulator::prepare_sources(std::vector<Source *> sources) {
-    std::cout<<"Prepare sources" << std::endl;
+    std::cout<<"Prepare sources ..." << std::endl;
     this->sim_spectra.clear();
-    for(auto const& o: this->orders)
+//    #pragma omp parallel for
+    for(auto it =this->orders.begin(); it<this->orders.end(); ++it)
     {
-        std::cout << "Order " << o << std::endl;
+        int o = *it;
+//        std::cout << "Order " << o << std::endl;
         if ( this->sim_wavelength.count(o) > 0 ){
             this->sim_spectra.insert(std::pair<int, std::vector<double> > (o, std::vector<double>(this->sim_wavelength[o].size())));
             for(auto& s : sources)
@@ -567,7 +579,6 @@ void MatrixSimulator::prepare_sources(std::vector<Source *> sources) {
                 }
             }
         }
-
     }
 
 }
@@ -600,6 +611,27 @@ void MatrixSimulator::save_to_hdf(std::string filename, bool downsample, bool bl
 void MatrixSimulator::save_to_fits(std::string filename, bool downsample, bool bleed, bool overwrite) {
     this->ccd->save_to_fits(filename, downsample, bleed, overwrite);
 }
+
+void MatrixSimulator::save_1d_to_fits(std::string filename) {
+    CCfits::FITS infile(filename.c_str(), CCfits::Write);
+    string hduName("1Dspectrum_Fiber_"+std::to_string(this->fiber_number));
+    int n_orders = this->orders.size();
+
+    CCfits::Table* newTable = infile.addTable(hduName,2);
+    for(auto const &o: this->orders)
+    {
+        newTable->addColumn(CCfits::Tdouble, "Order_"+std::to_string(o),this->sim_spectra[o].size(), "");
+        newTable->column("Order_"+std::to_string(o)).write(this->sim_spectra[o],1,2);
+        newTable->column("Order_"+std::to_string(o)).write(this->sim_wavelength[o],1,1);
+//        colName.push_back("Order_"+std::to_string(o));
+//        colForm.push_back(std::to_string(this->sim_spectra[o].size())+"D");
+//        colUnit.push_back("");
+    }
+
+//    CCfits::Table* newTable = infile.addTable().addTable(hduName,n_orders,colName,colForm,colUnit);
+
+}
+
 void MatrixSimulator::transformation_to_file(std::string filename) {
     std::ofstream myfile;
     myfile.open(filename);

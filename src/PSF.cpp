@@ -92,7 +92,7 @@ PSF_ZEMAX::PSF_ZEMAX(const std::string filename, int fiber_number) {
 
             std::vector<std::string> wl_names;
             std::string dt_path = gn;
-            std::cout<<dt_path<<std::endl;
+//            std::cout<<dt_path<<std::endl;
             H5::Group * wlGr = new H5::Group(rootGr->openGroup(dt_path));
 
 
@@ -209,7 +209,7 @@ cv::Mat PSF_ZEMAX::interpolate_PSF(cv::Mat psf1, cv::Mat psf2, double w1, double
 }
 
 PSF_gaussian::PSF_gaussian(double sigma, double aperture): sigma(sigma) {
-    this->ksize = ceil(sigma*3.)*2+1;
+    this->ksize = ceil(sigma*aperture)*2+1;
 
     //this->ksize = ksize%2==0 ? ksize+1 : ksize;
 

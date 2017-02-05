@@ -64,7 +64,7 @@ void CCD::save_to_fits(std::string filename, bool downsample, bool bleed, bool o
     std::valarray<double> data_array(nelements);
     for (int i=0; i<res.rows; ++i){
         for (int j=0; j<res.cols; ++j){
-            data_array[j*Nx+i] = res.at<double>(j,i);
+            data_array[j*res.cols+i] = res.at<double>(j,i);
         }
 
     }
@@ -79,16 +79,16 @@ CCD::~CCD() {
 
 cv::Mat CCD::get_image(bool downsample, bool bleed) {
     cv::Mat result;
-#ifdef  USE_GPU
-    {
-        this->data.download(result)
-    };
-#else
-    {
-        result = cv::Mat(Ny, Nx, this->data.type());
-    }
-#endif
     if (downsample){
+        #ifdef  USE_GPU
+                {
+                this->data.download(result)
+            };
+        #else
+                {
+                    result = cv::Mat(Ny, Nx, this->data.type());
+                }
+        #endif
         cv::resize(this->data, result, result.size(), cv::INTER_NEAREST);
     }
     else {
