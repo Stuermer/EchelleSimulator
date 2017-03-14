@@ -13,6 +13,12 @@
 #include <hdf5_hl.h>
 #include <CCfits/CCfits>
 #include <CCfits/FITS.h>
+//#include <curlpp/cURLpp.hpp>
+//#include <curlpp/Easy.hpp>
+//#include <curlpp/Options.hpp>
+
+#include <string>
+#include <fstream>
 
 #ifdef USE_GPU
 #include "opencv2/gpu/gpu.hpp"
@@ -39,7 +45,39 @@ MatrixSimulator::MatrixSimulator()
 {
 }
 
+//int download_spectrograph_model(){
+//    try
+//    {
+//        std::string url = "http://www.example.com/";
+//        std::ofstream out("output");
+//
+//        curlpp::Cleanup cleanup;
+//        curlpp::Easy request;
+//
+//        request.setOpt(new curlpp::options::Url(url));
+//        request.setOpt(new curlpp::options::WriteStream(&out));
+//
+//        request.perform();
+//    }
+//    catch( cURLpp::RuntimeError &e )
+//    {
+//        std::cerr << e.what() << std::endl;
+//        return 1;
+//    }
+//    catch( cURLpp::LogicError &e )
+//    {
+//        std::cerr << e.what() << std::endl;
+//        return 1;
+//    }
+//}
+
 void MatrixSimulator::load_spectrograph_model(std::string path, int fiber_number, bool keep_ccd) {
+    if (path.find('.hdf') != std::string::npos) {
+        std::cout << "found!" << '\n';
+    } else
+    {
+//        download_spectrograph_model()https://github.com/Stuermer/EchelleSimulator/blob/master/data/MaroonX.hdf
+    }
     const H5std_string filename(path);
     this->efficiencies.clear();
     this->orders.clear();
@@ -525,7 +563,7 @@ void MatrixSimulator::simulate_spectrum()
     //cv::Mat img = cv::Mat::zeros(4096*3, 4096*3, slit_image.type());
     #pragma omp parallel for
     for(int o=this->orders.front(); o<this->orders.back()+1; ++o){
-        this->simulate_order(o, this->slit->slit_image, this->ccd->data, false);
+        this->simulate_order(o, this->slit->slit_image, this->ccd->data, true);
     }
     //return img;
 }

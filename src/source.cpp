@@ -75,7 +75,7 @@ double Source::integral_s(double a, double b, int n) {
 }
 
 void Source::set_doppler_shift(double shift) {
-    this->shift = 1. + shift / 300000.;
+    this->shift = 1. + shift / 300000000.;
 }
 
 double Constant::get_spectral_density(double wavelength) {

@@ -66,3 +66,14 @@ double GratingEfficiency::calc_eff(double scalingfactor, int order, double alpha
 
 GratingEfficiency::GratingEfficiency(double scalingfactor, double alpha, double blaze, double gpmm)
         : scalingfactor(scalingfactor), alpha(alpha), blaze(blaze), gpmm(gpmm) {}
+
+ConstantEfficiency::ConstantEfficiency(double efficiency) : eff(efficiency){
+
+}
+
+std::vector<double> ConstantEfficiency::get_efficienct(int order, std::vector<double> wavelength) {
+    std::vector<double> res;
+    for(auto& w : wavelength)
+        res.push_back(this->eff);
+    return res;
+}

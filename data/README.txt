@@ -1,0 +1,2 @@
+In order to reduce the size of the github repository, all spectrograph models are excluded.
+To retrieve a spectrograph model, execute the appropriate python script. It will download the spectrograph file.

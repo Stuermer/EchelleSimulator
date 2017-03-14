@@ -32,6 +32,14 @@ public:
 private:
   
 };
+class ConstantEfficiency: public Efficiency
+{
+public:
+    ConstantEfficiency(double efficiency);
+    std::vector<double> get_efficienct(int order, std::vector<double> wavelength);
+private:
+    double eff;
+};
 
 class GratingEfficiency : public Efficiency
 {

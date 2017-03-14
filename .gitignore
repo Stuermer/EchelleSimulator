@@ -3,3 +3,4 @@ doc/latex/
 *.dat
 build/
 release/
+*.hdf

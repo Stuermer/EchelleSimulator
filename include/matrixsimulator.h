@@ -71,7 +71,6 @@ public:
      */
     void load_spectrograph_model(std::string path, int fiber_number, bool keep_ccd = false);
 
-
     void set_order_range(int min_order, int max_order);
 
     std::vector<int> orders;
@@ -83,7 +82,6 @@ public:
     void set_psfs(PSF *psfs);
 
     int raw_n;
-
 
     void prepare_sources(std::vector<Source *> sources);
 
