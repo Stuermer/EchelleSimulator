@@ -1,8 +1,9 @@
 #ifndef SLIT_H
 #define SLIT_H
 #include <opencv2/core.hpp>
-#include "opencv2/gpu/gpu.hpp"
-
+#ifdef USE_GPU
+    #include "opencv2/gpu/gpu.hpp"
+#endif
 
 /**
  * \class Slit

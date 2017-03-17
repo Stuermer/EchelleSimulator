@@ -27,6 +27,16 @@ void Slit::set_slit(double w, double h, int slit_sampling){
     #else
     {
         this->slit_image = cv::Mat::ones(round(this->h_px), this->w_px, CV_64F);
+
+//        cv::Point rook_points[1][3];
+//        rook_points[0][0] = cv::Point( 0., 0. );
+//        rook_points[0][1] = cv::Point( 0., this->h_px );
+//        rook_points[0][2] = cv::Point( this->w_px, this->h_px );
+//
+//        const cv::Point* ppt[1] = { rook_points[0] };
+//        int npt[] = { 3 };
+//
+//        cv::fillPoly(this->slit_image,ppt, npt,1.,1.,8);
 //        cv::circle(this->slit_image, cv::Point2d(50.,50.), 50., 1., -1);
     }
     #endif

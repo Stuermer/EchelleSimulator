@@ -54,7 +54,7 @@ public:
 
     int simulate_order(int order, cv::Mat &slit_image, cv::Mat &output_image, bool aberrations);
 
-    void simulate_spectrum();
+    void simulate_spectrum(bool aberrations);
 
     void set_efficiencies(std::vector<Efficiency *> &efficiencies);
 

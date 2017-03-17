@@ -395,35 +395,34 @@ double tmp_image_width(int cols, double sx)
 }
 
 cv::Mat MatrixSimulator::transform_slit(cv::Mat& slit_image, cv::Mat& transformation_matrix, double weight){
-    double sx, sy, a,b,c,d;
+    double a,b,c,d;
     a= transformation_matrix.at<double>(0,0);
     b= transformation_matrix.at<double>(1,0);
     c= transformation_matrix.at<double>(0,1);
     d= transformation_matrix.at<double>(1,1);
-    sx = sqrt(a*a+b*b);
-    sy = sqrt(c*c+d*d);
-//    int n_rows = abs(round(slit_image.rows * 1.5 * sy));
-//    int n_cols = abs(round(slit_image.cols * 4. * sx));
 
-    int n_rows = tmp_image_height(slit_image.rows, sy);
-    int n_cols = tmp_image_width(slit_image.cols, sx);
+    double x00 = transformation_matrix.at<double>(0,2);
+    double y00 = transformation_matrix.at<double>(1,2);
+    double x11 = a*this->slit->w_px+b*this->slit->h_px+x00;
+    double y11 = c*this->slit->w_px+d*this->slit->h_px+y00;
+
+    int xlu = std::min(floor(x00),floor(x11));
+    int ylu = std::min(floor(y00),floor(y11));
+    int xro = std::max(floor(x00),floor(x11));
+    int yro = std::max(floor(y00),floor(y11));
+
+    int n_rows = yro - ylu + 16;
+    int n_cols = xro - xlu + 16;
 
     cv::Mat tm = transformation_matrix.clone();
-    int tx_int = floor(tm.at<double>(0,2));
-    int ty_int = floor(tm.at<double>(1,2));
-    // Offset accounting for rotation / flipping of
-    // no rotation / flip
-    int offset_x = 0;
-    int offset_y = 0;
-    // 2 flips (=~180 deg rotation)
-    if (a<0 && d<0){
-        offset_x = (n_cols-16.);
-        offset_y = n_rows-16.;
-    }
 
-    tm.at<double>(0,2) += -tx_int + 8 + offset_x;
-    tm.at<double>(1,2) += -ty_int + 8 + offset_y;
-//    std::cout<< tm.at<double>(0,2) << "\t" << tm.at<double>(1,2) << std::endl;
+    int offset_x = xlu - 8;
+    int offset_y = ylu - 8;
+
+
+    tm.at<double>(0,2) -= offset_x;
+    tm.at<double>(1,2) -= offset_y;
+
     double det = cv::determinant(transformation_matrix.colRange(0,2));
     cv::Mat warp_dst;
     weight /= det;
@@ -502,24 +501,31 @@ int MatrixSimulator::simulate_order(int order, cv::Mat& slit_image, cv::Mat& out
             cv::filter2D(tmp, tmp, -1, psf, cvPoint(psf.cols/2, psf.rows/2));
         }
 
-        int tx_int = floor(tr.at<double>(0,2));
-        int ty_int = floor(tr.at<double>(1,2));
 
-        double sx, sy, a,b,c,d;
+        double a,b,c,d;
         a= tr.at<double>(0,0);
         b= tr.at<double>(1,0);
         c= tr.at<double>(0,1);
         d= tr.at<double>(1,1);
-        sx = sqrt(a*a+b*b);
-        sy = sqrt(c*c+d*d);
 
-//        int n_rows = abs(round(slit_image.rows * 1.5 * sy));
-//        int n_cols = abs(round(slit_image.cols * 4. * sx));
-        int n_rows = tmp_image_height(slit_image.rows, sy);
-        int n_cols = tmp_image_width(slit_image.cols, sx);
+        double x00 = tr.at<double>(0,2);
+        double y00 = tr.at<double>(1,2);
+        double x11 = a*this->slit->w_px+b*this->slit->h_px+x00;
+        double y11 = c*this->slit->w_px+d*this->slit->h_px+y00;
 
-        //int TSX = -tx_int + n_rows/2.;
-        //tm.at<double>(1,2) += -ty_int + n_cols * 0.9;
+        int xlu = std::min(floor(x00),floor(x11));
+        int ylu = std::min(floor(y00),floor(y11));
+        int xro = std::max(floor(x00),floor(x11));
+        int yro = std::max(floor(y00),floor(y11));
+
+        int n_rows = yro - ylu + 16;
+        int n_cols = xro - xlu + 16;
+
+        cv::Mat tm = tr.clone();
+
+        int tx_int = xlu - 8;
+        int ty_int = ylu - 8;
+
 
         int left_margin = std::max(0, tx_int);
         int right_margin = std::min(output_image.cols, tx_int+n_cols);
@@ -555,7 +561,7 @@ void MatrixSimulator::simulate_spectrum(cv::gpu::GpuMat& slit_image)
 }
 #endif
 
-void MatrixSimulator::simulate_spectrum()
+void MatrixSimulator::simulate_spectrum(bool aberrations)
 {
     this->set_efficiencies(this->efficiencies);
 
@@ -563,7 +569,7 @@ void MatrixSimulator::simulate_spectrum()
     //cv::Mat img = cv::Mat::zeros(4096*3, 4096*3, slit_image.type());
     #pragma omp parallel for
     for(int o=this->orders.front(); o<this->orders.back()+1; ++o){
-        this->simulate_order(o, this->slit->slit_image, this->ccd->data, true);
+        this->simulate_order(o, this->slit->slit_image, this->ccd->data, aberrations);
     }
     //return img;
 }
