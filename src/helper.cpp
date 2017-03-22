@@ -16,6 +16,7 @@
 //#include <CCfits>
 #include <CCfits/FITS.h>
 #include <CCfits/ExtHDU.h>
+#include <Eigen/Dense>
 
 void vectorToFile(std::vector<double> const& vec, std::string const& filename) {
   std::ofstream file(filename);
@@ -37,7 +38,7 @@ void MatToFile(cv::Mat& image, std::string const& filename){
   file.close();
 }
 
-std::vector<double> decompose_matrix(cv::Mat mat){
+std::vector<double> decompose_matrix(Matrix23f mat){
     std::vector<double> result;
     /*
      * Matrix looks like:
@@ -45,12 +46,12 @@ std::vector<double> decompose_matrix(cv::Mat mat){
      * d e ty
      */
 
-    double a = mat.at<double>(0,0);
-    double b = mat.at<double>(0,1);
-    double d = mat.at<double>(1,0);
-    double e = mat.at<double>(1,1);
-    double tx = mat.at<double>(0,2);
-    double ty = mat.at<double>(1,2);
+    double a = mat(0,0);
+    double b = mat(0,1);
+    double d = mat(1,0);
+    double e = mat(1,1);
+    double tx = mat(0,2);
+    double ty = mat(1,2);
     
     double sx = sqrt(a*a+d*d);
     double sy = sqrt(b*b+e*e);
@@ -73,22 +74,19 @@ std::vector<double> decompose_matrix(cv::Mat mat){
     return result;
 }
 
-cv::Mat compose_matrix(std::vector<double> parameters){
+Matrix23f compose_matrix(std::vector<double> parameters){
   double sx = parameters[0];
   double sy = parameters[1];
   double shear = parameters[2];
   double rot = parameters[3];
 
-  cv::Mat result = cv::Mat(2,3,CV_64FC1);
-    
-  result.at<double>(0,0) = sx*cos(rot);
-  result.at<double>(0,1) = -sy*sin(rot+shear);
-  result.at<double>(1,0) = sx*sin(rot);
-  result.at<double>(1,1) = sy*cos(rot+shear);
-  result.at<double>(0,2) = parameters[4];
-  result.at<double>(1,2) = parameters[5];
-
-  return result;
+  Matrix23f m;
+    m(0,0) = sx*cos(rot);
+    m(1,0) = sx*sin(rot);
+    m(1,1)= sy*cos(rot+shear);
+    m(0,2) = parameters[4];
+    m(1,2) = parameters[5];
+  return m;
 }
 
 std::vector<std::size_t> compute_sort_order(const std::vector<double> &v) {
@@ -118,9 +116,9 @@ void show_cv_matrix(cv::Mat img, std::string windowname="image") {
 
     // cv::cvtColor(img_show, img_show, CV_GRAY2RGB);
 
-     cv::namedWindow(windowname,CV_WINDOW_NORMAL);
+    cv::namedWindow(windowname,CV_WINDOW_NORMAL);
     cv::imshow(windowname, img_show);
-    cv::waitKey(1);
+    cv::waitKey(10);
 
 }
 

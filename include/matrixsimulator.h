@@ -12,11 +12,16 @@
 #include "PSF.h"
 #include "CCD.h"
 #include "Slit.h"
+#include <Eigen/Dense>
+
+struct point2d{
+    double x,y;
+};
 
 struct raw_transformation {
     int order;
     double wavelength;
-    cv::Mat transformation_matrix = cv::Mat(2, 3, CV_64FC1);
+    Matrix23f transformation_matrix;
     std::vector<double> decomposed_matrix;
 
 };
@@ -34,7 +39,13 @@ public:
 
     void read_transformations(std::string path);
 
-    cv::Mat get_transformation_matrix(int order, double wavelength);
+    /**
+     * Get affine transformation matrix at specific wavelength and order
+     * @param order echelle diffraction order
+     * @param wavelength wavelength in micron
+     * @return 2x3 affine transformation matrix
+     */
+    Matrix23f get_transformation_matrix(int order, double wavelength);
 
     void calc_splines();
 
@@ -115,6 +126,8 @@ public:
 
     int get_fiber_number();
 
+    int photon_order(int N_photons);
+
 private:
     cv::Mat img;
     int fiber_number;
@@ -125,7 +138,7 @@ private:
     std::vector<Source *> sources;
 
     std::map<int, std::vector<double> > sim_wavelength;
-    std::map<int, std::vector<cv::Mat> > sim_matrices;
+    std::map<int, std::vector<Matrix23f> > sim_matrices;
     std::map<int, std::vector<double> > sim_efficiencies;
     std::map<int, std::vector<double> > sim_spectra;
 
@@ -135,6 +148,8 @@ private:
     std::map<int, tk::spline> tr_phi;
     std::map<int, tk::spline> tr_tx;
     std::map<int, tk::spline> tr_ty;
+
+    std::map<int, std::vector<Eigen::Vector2f> > target_pos;
 
     PSF *psfs;
     Slit *slit;

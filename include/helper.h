@@ -15,6 +15,9 @@
 #include <cstdlib>
 #include "csv_reader.h"
 #include "H5Cpp.h"
+#include "Eigen/Dense"
+
+typedef Eigen::Matrix<float, 2, 3> Matrix23f;
 
 /*!
  * Saves vector to CSV File
@@ -51,7 +54,7 @@ void MatToFile(cv::Mat &image, std::string const &filename);
  * @param mat 2x3 transformation matrix
  * @return [sx, sy, shear, \f$ \phi \f$, tx, ty]
  */
-std::vector<double> decompose_matrix(cv::Mat mat);
+std::vector<double> decompose_matrix(Matrix23f mat);
 
 /*!
  * Composes 2x3 transformation matrix from shear, scale, rotation and translation parameters.
@@ -60,7 +63,7 @@ std::vector<double> decompose_matrix(cv::Mat mat);
  * @param parameters [sx, sy, shear, \f$ \phi \f$, tx, ty]
  * @return 2x3 transformation matrix
  */
-cv::Mat compose_matrix(std::vector<double> parameters);
+Matrix23f compose_matrix(std::vector<double> parameters);
 
 /*!
  * Calculates sorted index array of a given vector.

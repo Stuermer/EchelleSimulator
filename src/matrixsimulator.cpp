@@ -16,7 +16,6 @@
 //#include <curlpp/cURLpp.hpp>
 //#include <curlpp/Easy.hpp>
 //#include <curlpp/Options.hpp>
-
 #include <string>
 #include <fstream>
 
@@ -187,7 +186,7 @@ void MatrixSimulator::load_spectrograph_model(std::string path, int fiber_number
         ccd->openAttribute("Ny").read(*type, &Ny);
         ccd->openAttribute("pixelsize").read(*type, &pixelsize);
 
-        this->ccd = new CCD(Nx, Ny, oversampling, this->slit->slit_image.type());
+        this->ccd = new CCD(Nx, Ny, 1, this->slit->slit_image.type());
         delete ccd;
     }
 
@@ -214,13 +213,13 @@ void MatrixSimulator::read_transformations(std::string path)
         t.order = std::stoi((*loop)[0]);
         t.wavelength = std::stod(std::string((*loop)[1]));
 
-        t.transformation_matrix.at<double>(0,0) = std::stod((*loop)[2]);
-        t.transformation_matrix.at<double>(0,1) = std::stod((*loop)[3]);
-        t.transformation_matrix.at<double>(0,2)= std::stod((*loop)[4]);
+        t.transformation_matrix(0,0) = std::stod((*loop)[2]);
+        t.transformation_matrix(0,1) = std::stod((*loop)[3]);
+        t.transformation_matrix(0,2)= std::stod((*loop)[4]);
 
-        t.transformation_matrix.at<double>(1,0) = std::stod((*loop)[5]);
-        t.transformation_matrix.at<double>(1,1) = std::stod((*loop)[6]);
-        t.transformation_matrix.at<double>(1,2) = std::stod((*loop)[7]);
+        t.transformation_matrix(1,0) = std::stod((*loop)[5]);
+        t.transformation_matrix(1,1) = std::stod((*loop)[6]);
+        t.transformation_matrix(1,2) = std::stod((*loop)[7]);
 
         // std::cout << t.order << " " << t.wavelength << " " << t.transformation_matrix.at<double>(0,0) <<"\n";
         t.decomposed_matrix = decompose_matrix(t.transformation_matrix);
@@ -354,7 +353,7 @@ void MatrixSimulator::calc_sim_matrices(){
     }
 }
 
-cv::Mat MatrixSimulator::get_transformation_matrix(int o, double wavelength){
+Matrix23f MatrixSimulator::get_transformation_matrix(int o, double wavelength){
     std::vector<double> parameters;
     parameters.push_back(this->tr_p[o](wavelength));
     parameters.push_back(this->tr_q[o](wavelength));
@@ -479,6 +478,57 @@ int MatrixSimulator::simulate_order(int order, cv::gpu::GpuMat& slit_image, cv::
 }
 #endif
 
+int MatrixSimulator::photon_order(int N_photons) {
+    std::cout <<"Start tracing ..." <<std::endl;
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<> dis_slitx(0., this->slit->slit_sampling);
+    std::uniform_real_distribution<> dis_slity(0., this->slit->slit_sampling * this->slit->h/this->slit->w);
+
+    // global img
+    std::vector<uint16_t> img(this->ccd->data.rows * this->ccd->data.cols, 0);
+
+    #pragma omp parallel
+    {
+        // private img
+        std::vector<uint16_t> img_private(this->ccd->data.rows * this->ccd->data.cols, 0);
+        #pragma omp parallel for
+        for(int o=this->orders.front(); o<this->orders.back(); ++o) {
+            std::cout << "Order... " << o << std::endl;
+            double min_wl = this->raw_transformations[o].front().wavelength;
+            double max_wl = this->raw_transformations[o].back().wavelength;
+
+            std::uniform_real_distribution<> dis(min_wl, max_wl);
+
+            for (int i = 0; i < N_photons; ++i) {
+                double wl = dis(gen);
+                Matrix23f tm = this->get_transformation_matrix(o, wl);
+                float x = dis_slitx(gen);
+                float y = dis_slity(gen);
+
+                float newx = (tm(0, 0) * x + tm(0, 1) * y + tm(0, 2)) / 3.;
+                float newy = (tm(1, 0) * x + tm(1, 1) * y + tm(1, 2)) / 3.;
+
+                if (newx > 0 && newx < this->ccd->data.cols && newy > 0 && newy < this->ccd->data.rows)
+                    ++img_private[floor(newx) + floor(newy) * this->ccd->data.cols];
+                //                this->ccd->data.at<double>(floor(newy), floor(newx)) += 1.;
+
+            }
+        }
+        #pragma omp critical
+        {
+            for(int i=0; i<img_private.size(); ++i)
+                img[i] += img_private[i];
+        }
+
+    }
+
+    for(int xx=0; xx<this->ccd->data.cols; ++xx)
+        for(int yy=0; yy<this->ccd->data.rows; ++yy)
+            this->ccd->data.at<double>(xx,yy) += img[yy+xx*this->ccd->data.cols];
+
+}
+
 int MatrixSimulator::simulate_order(int order, cv::Mat& slit_image, cv::Mat& output_image, bool aberrations)
 {
 
@@ -488,10 +538,19 @@ int MatrixSimulator::simulate_order(int order, cv::Mat& slit_image, cv::Mat& out
 
     for(int i=0; i<n; ++i)
     {
-        cv::Mat tr = this->sim_matrices[order][i];
+        Matrix23f tr_eigen = this->sim_matrices[order][i];
+        cv::Mat tr = cv::Mat(2,3, CV_64FC1);
+        tr.at<double>(0,0) = tr_eigen(0,0);
+        tr.at<double>(0,1) = tr_eigen(0,1);
+        tr.at<double>(0,2) = tr_eigen(0,2);
+        tr.at<double>(1,0) = tr_eigen(1,0);
+        tr.at<double>(1,1) = tr_eigen(1,1);
+        tr.at<double>(1,2) = tr_eigen(1,2);
+
+
         double weight = this->sim_efficiencies[order][i];
         double wavelength = this->sim_wavelength[order][i];
-        weight *= this->sim_spectra[order][i];
+//        weight *= this->sim_spectra[order][i];
         cv::Mat tmp = transform_slit(slit_image, tr, weight);
 
         if (aberrations){
@@ -503,13 +562,13 @@ int MatrixSimulator::simulate_order(int order, cv::Mat& slit_image, cv::Mat& out
 
 
         double a,b,c,d;
-        a= tr.at<double>(0,0);
-        b= tr.at<double>(1,0);
-        c= tr.at<double>(0,1);
-        d= tr.at<double>(1,1);
+        a = tr_eigen(0,0);
+        b = tr_eigen(1,0);
+        c = tr_eigen(0,1);
+        d = tr_eigen(1,1);
 
-        double x00 = tr.at<double>(0,2);
-        double y00 = tr.at<double>(1,2);
+        double x00 = tr_eigen(0,2);
+        double y00 = tr_eigen(1,2);
         double x11 = a*this->slit->w_px+b*this->slit->h_px+x00;
         double y11 = c*this->slit->w_px+d*this->slit->h_px+y00;
 
@@ -521,7 +580,7 @@ int MatrixSimulator::simulate_order(int order, cv::Mat& slit_image, cv::Mat& out
         int n_rows = yro - ylu + 16;
         int n_cols = xro - xlu + 16;
 
-        cv::Mat tm = tr.clone();
+//        cv::Mat tm = tr.clone();
 
         int tx_int = xlu - 8;
         int ty_int = ylu - 8;
@@ -682,10 +741,10 @@ void MatrixSimulator::transformation_to_file(std::string filename) {
     for(auto const &o: this->orders)
     {
         for (auto const & wl: this->sim_wavelength[o]){
-            cv::Mat tm = this->get_transformation_matrix(o, wl);
-            std::vector<double> tmp;
-            tmp = decompose_matrix(tm);
-            myfile << o << ";" << wl << ";" << tmp[0] << ";" << tmp[1] << ";" << tmp[2] << ";" << tmp[3] << ";"<< tmp[4] << ";" << tmp[5] << std::endl;
+//            cv::Mat tm = this->get_transformation_matrix(o, wl);
+//            std::vector<double> tmp;
+//            tmp = decompose_matrix(tm);
+//            myfile << o << ";" << wl << ";" << tmp[0] << ";" << tmp[1] << ";" << tmp[2] << ";" << tmp[3] << ";"<< tmp[4] << ";" << tmp[5] << std::endl;
         }
     }
     myfile.close();
