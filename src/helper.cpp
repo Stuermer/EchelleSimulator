@@ -118,7 +118,7 @@ void show_cv_matrix(cv::Mat img, std::string windowname="image") {
 
     cv::namedWindow(windowname,CV_WINDOW_NORMAL);
     cv::imshow(windowname, img_show);
-    cv::waitKey(10);
+    cv::waitKey(10000);
 
 }
 
@@ -234,4 +234,30 @@ herr_t file_info(hid_t loc_id, const char *name, const H5L_info_t *linfo, void *
 //    std::cout << "Name : " << name << std::endl;
 //    H5Gclose(group);
     return 0;
+}
+
+int add_vector_parallel()
+{
+
+    int N_photons = 100;
+    std::vector<uint16_t> img(4096 * 4096, 0);
+    #pragma omp parallel
+    {
+        std::vector<uint16_t> img_private(4096 * 4096, 0);
+        #pragma omp parallel for
+        for(int o=0; o<100; ++o) {
+            std::cout << "Order... " << o << std::endl;
+            for (int i = 0; i < N_photons; ++i) {
+                ++img_private[i];
+            }
+        }
+        #pragma omp critical
+        {
+            for(int i=0; i<img_private.size(); ++i)
+                img[i] += img_private[i];
+        }
+    }
+    std::cout<< img[0];
+
+    return img[0];
 }

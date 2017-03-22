@@ -30,17 +30,18 @@ int main(int argc, char *argv[])
 
 //        simulator.set_wavelength(1000000);
         simulator.set_wavelength(cs.get_wavelength());
-        simulator.photon_order(1000000);
+        add_vector_parallel();
+//        simulator.photon_order(1000000);
 //        simulator.simulate_spectrum(false);
 
-        high_resolution_clock::time_point t2 = high_resolution_clock::now();
-        auto duration = duration_cast<microseconds>( t2 - t1 ).count()/1000000.;
-        std::cout << "Duration: "  << duration << std::endl;
+//        high_resolution_clock::time_point t2 = high_resolution_clock::now();
+//        auto duration = duration_cast<microseconds>( t2 - t1 ).count()/1000000.;
+//        std::cout << "Duration: "  << duration << std::endl;
 
 //        simulator.save_to_fits("../MaroonX.fit", true, false, true);
 //        simulator.save_1d_to_fits("../simulations/etalon_noblaze_tri.fit");
     }
-    simulator.save_to_fits("../simulations/et4.fit", false, false, true);
+//    simulator.save_to_fits("../simulations/et4.fit", false, false, true);
 
     return 0;
 }

@@ -111,5 +111,6 @@ double interpolate(const std::map<double, double> &data, double x);
 
 herr_t file_info(hid_t loc_id, const char *name, const H5L_info_t *linfo, void *opdata);
 
+int add_vector_parallel();
 //int save_to_fits(const std::string filename, cv::Mat img);
 #endif

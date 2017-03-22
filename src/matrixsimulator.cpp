@@ -488,10 +488,10 @@ int MatrixSimulator::photon_order(int N_photons) {
     // global img
     std::vector<uint16_t> img(this->ccd->data.rows * this->ccd->data.cols, 0);
 
-    #pragma omp parallel
-    {
-        // private img
-        std::vector<uint16_t> img_private(this->ccd->data.rows * this->ccd->data.cols, 0);
+//    #pragma omp parallel
+//    {
+//        // private img
+//        std::vector<uint16_t> img_private(this->ccd->data.rows * this->ccd->data.cols, 0);
         #pragma omp parallel for
         for(int o=this->orders.front(); o<this->orders.back(); ++o) {
             std::cout << "Order... " << o << std::endl;
@@ -510,18 +510,18 @@ int MatrixSimulator::photon_order(int N_photons) {
                 float newy = (tm(1, 0) * x + tm(1, 1) * y + tm(1, 2)) / 3.;
 
                 if (newx > 0 && newx < this->ccd->data.cols && newy > 0 && newy < this->ccd->data.rows)
-                    ++img_private[floor(newx) + floor(newy) * this->ccd->data.cols];
+                    img[floor(newx) + floor(newy) * this->ccd->data.cols] += 1;
                 //                this->ccd->data.at<double>(floor(newy), floor(newx)) += 1.;
 
             }
         }
-        #pragma omp critical
-        {
-            for(int i=0; i<img_private.size(); ++i)
-                img[i] += img_private[i];
-        }
+//        #pragma omp critical
+//        {
+//            for(int i=0; i<img_private.size(); ++i)
+//                img[i] += img_private[i];
+//        }
 
-    }
+//    }
 
     for(int xx=0; xx<this->ccd->data.cols; ++xx)
         for(int yy=0; yy<this->ccd->data.rows; ++yy)
