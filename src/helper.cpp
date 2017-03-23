@@ -236,28 +236,16 @@ herr_t file_info(hid_t loc_id, const char *name, const H5L_info_t *linfo, void *
     return 0;
 }
 
-int add_vector_parallel()
-{
+std::vector<float> random_from_2_distributions(std::vector<float> wl, std::vector<float> density1, std::vector<float> density2, int N_samples){
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::vector<float> result;
+    std::vector<float> combined_vec;
+    for(int i=0; i<density1.size(); ++i)
+        density1[i] *= density2[i];
 
-    int N_photons = 100;
-    std::vector<uint16_t> img(4096 * 4096, 0);
-    #pragma omp parallel
-    {
-        std::vector<uint16_t> img_private(4096 * 4096, 0);
-        #pragma omp parallel for
-        for(int o=0; o<100; ++o) {
-            std::cout << "Order... " << o << std::endl;
-            for (int i = 0; i < N_photons; ++i) {
-                ++img_private[i];
-            }
-        }
-        #pragma omp critical
-        {
-            for(int i=0; i<img_private.size(); ++i)
-                img[i] += img_private[i];
-        }
-    }
-    std::cout<< img[0];
-
-    return img[0];
+    std::piecewise_linear_distribution<> combined_dis(wl.begin(), wl.end(), combined_vec.begin());
+    for(int i=0; i<N_samples; ++i)
+        result.push_back(combined_dis(gen));
+    return result;
 }

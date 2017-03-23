@@ -111,6 +111,8 @@ double interpolate(const std::map<double, double> &data, double x);
 
 herr_t file_info(hid_t loc_id, const char *name, const H5L_info_t *linfo, void *opdata);
 
-int add_vector_parallel();
+
+std::vector<float> random_from_2_distributions(std::vector<float> wl, std::vector<float> density1, std::vector<float> density2, int N_samples);
+
 //int save_to_fits(const std::string filename, cv::Mat img);
 #endif

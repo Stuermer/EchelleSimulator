@@ -28,8 +28,8 @@ include_directories(include)
 set (LINK_LIBS ${LINK_LIBS} ${HDF5_LIBRARIES} ${HDF5_HL_LIBRARIES} ${CCFITS_LIB} ${CFITSIO_LIBRARY})
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-set(CMAKE_CXX_FLAGS_RELEASE  "${CMAKE_C_FLAGS} -fopenmp")
-set(CMAKE_CXX_FLAGS_RELEASE  "${CMAKE_C_FLAGS} -O3")
+#set(CMAKE_CXX_FLAGS_RELEASE  "${CMAKE_C_FLAGS} -fopenmp -O3")
+set(CMAKE_CXX_FLAGS_RELEASE  "${CMAKE_C_FLAGS} -pg")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/build")
 
 add_executable(echellesimulator src/main.cpp src/helper.cpp src/source.cpp src/efficiency.cpp src/Slit.cpp src/matrixsimulator.cpp src/noise.cpp src/PSF.cpp src/CCD.cpp src/hdf5opencv.cpp include/csv_reader.h)

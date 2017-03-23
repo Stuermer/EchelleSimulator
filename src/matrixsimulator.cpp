@@ -480,34 +480,86 @@ int MatrixSimulator::simulate_order(int order, cv::gpu::GpuMat& slit_image, cv::
 
 int MatrixSimulator::photon_order(int N_photons) {
     std::cout <<"Start tracing ..." <<std::endl;
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_real_distribution<> dis_slitx(0., this->slit->slit_sampling);
-    std::uniform_real_distribution<> dis_slity(0., this->slit->slit_sampling * this->slit->h/this->slit->w);
+
 
     // global img
     std::vector<uint16_t> img(this->ccd->data.rows * this->ccd->data.cols, 0);
 
 //    #pragma omp parallel
 //    {
-//        // private img
+//         private img
 //        std::vector<uint16_t> img_private(this->ccd->data.rows * this->ccd->data.cols, 0);
         #pragma omp parallel for
         for(int o=this->orders.front(); o<this->orders.back(); ++o) {
+            std::random_device rd;
+            std::default_random_engine gen(rd());
+            std::uniform_real_distribution<> dis_slitx(0., this->slit->slit_sampling);
+            std::uniform_real_distribution<> dis_slity(0., this->slit->slit_sampling * this->slit->h/this->slit->w);
             std::cout << "Order... " << o << std::endl;
             double min_wl = this->raw_transformations[o].front().wavelength;
             double max_wl = this->raw_transformations[o].back().wavelength;
 
-            std::uniform_real_distribution<> dis(min_wl, max_wl);
+            int N = 10000;
+            double dl = (max_wl - min_wl) / N;
+            std::vector<double> wl;
+            for(int i=0; i<N; ++i)
+            {
+                wl.push_back(min_wl+dl*i);
+            }
+
+            std::vector<double> specD;
+            std::vector<float> spec;
+            specD = this->sources[0]->get_spectrum(wl);
+
+            for(int j=0; j<specD.size(); ++j)
+                spec.push_back(float(specD[j]));
+
+            std::vector<double> totaleffD(wl.size(), 1.);
+            std::vector<float> eff;
+            for(auto& e : this->efficiencies)
+            {
+                std::vector<double> sim_eff = e->get_efficieny(o, wl);
+                for(int i=0; i<totaleffD.size(); ++i)
+                {
+                    totaleffD[i] *= sim_eff[i];
+                }
+            }
+
+            for(int k=0; k<totaleffD.size(); ++k)
+                eff.push_back(float(totaleffD[k]) * float(specD[k]));
+
+            std::piecewise_linear_distribution<> dis(wl.begin(), wl.end(), eff.begin());
+
+//            std::uniform_real_distribution<> dis(min_wl, max_wl);
 
             for (int i = 0; i < N_photons; ++i) {
                 double wl = dis(gen);
                 Matrix23f tm = this->get_transformation_matrix(o, wl);
+
+
                 float x = dis_slitx(gen);
                 float y = dis_slity(gen);
 
                 float newx = (tm(0, 0) * x + tm(0, 1) * y + tm(0, 2)) / 3.;
                 float newy = (tm(1, 0) * x + tm(1, 1) * y + tm(1, 2)) / 3.;
+
+                cv::Mat psf = this->psfs->get_PSF(o, wl);
+                std::uniform_int_distribution<> abr_x(0, psf.cols);
+                std::uniform_int_distribution<> abr_y(0, psf.rows);
+                double mx;
+                cv::minMaxIdx(psf,NULL, &mx);
+                std::uniform_real_distribution<> abr_z(0,mx);
+                float abx=0.;
+                float aby=0.;
+                float abz=1.;
+                while(abz > psf.at<double>(floor(aby), floor(abx))) {
+                    abx = abr_x(gen);
+                    aby = abr_y(gen);
+                    abz = abr_z(gen);
+                }
+//                std::cout<<(abx-psf.cols/2.)/3.<<"\t"<<(aby-psf.rows/2.)/3.<< std::endl;
+                newx += (abx-psf.cols/2.)/3.;
+                newy += (aby-psf.rows/2.)/3.;
 
                 if (newx > 0 && newx < this->ccd->data.cols && newy > 0 && newy < this->ccd->data.rows)
                     img[floor(newx) + floor(newy) * this->ccd->data.cols] += 1;
