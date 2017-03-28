@@ -167,6 +167,18 @@ cv::Mat PSF_ZEMAX::get_PSF(int order, double wavelength) {
                                  this->psfs[order][idx[0]].wavelength, this->psfs[order][idx[1]].wavelength, wavelength);
 }
 
+cv::Mat PSF_ZEMAX::get_PSF_nocut(int order, double wavelength) {
+    std::vector<double> distance;
+    for(auto& psf : this->psfs[order])
+    {
+        distance.push_back(psf.wavelength -wavelength );
+    }
+    std::vector<size_t > idx;
+    idx = compute_sort_order(distance);
+    return this->interpolate_PSF_nocut(this->psfs[order][idx[0]].psf, this->psfs[order][idx[1]].psf,
+                                 this->psfs[order][idx[0]].wavelength, this->psfs[order][idx[1]].wavelength, wavelength);
+}
+
 cv::Mat PSF_ZEMAX::interpolate_PSF(cv::Mat psf1, cv::Mat psf2, double w1, double w2, double w) {
     double p1 = fabs((w-w1)/(w2-w1));
     double p2 = fabs((w-w2)/(w2-w1));
@@ -206,6 +218,29 @@ cv::Mat PSF_ZEMAX::interpolate_PSF(cv::Mat psf1, cv::Mat psf2, double w1, double
 
     return comb_psf.rowRange(cenY-size_y, cenY+size_y).colRange(cenX-size_x, cenX+size_x);
 
+}
+
+cv::Mat PSF_ZEMAX::interpolate_PSF_nocut(cv::Mat psf1, cv::Mat psf2, double w1, double w2, double w) {
+    double p1 = fabs((w-w1)/(w2-w1));
+    double p2 = fabs((w-w2)/(w2-w1));
+    double p_sum = p1+p2;
+    p1 /= p_sum;
+    p2 /= p_sum;
+    cv::Mat comb_psf(psf1.rows, psf1.cols, psf1.type());
+    double psf1_total = cv::sum(psf1)[0];
+    double psf2_total = cv::sum(psf2)[0];
+
+    for(int i=0; i<comb_psf.rows; ++i){
+        const double * ptr1 = psf1.ptr<double>(i);
+        const double * ptr2 = psf2.ptr<double>(i);
+        double * ptr3 = comb_psf.ptr<double>(i);
+        for(int j=0; j< comb_psf.cols; ++j){
+            double val = (p2 * ptr1[j]/psf1_total + p1 * ptr2[j]/psf2_total);
+            ptr3[j] = val;
+        }
+    }
+
+    return comb_psf;
 }
 
 PSF_gaussian::PSF_gaussian(double sigma, double aperture): sigma(sigma) {

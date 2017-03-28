@@ -28,7 +28,8 @@ class Efficiency
 public:
     Efficiency();
     virtual ~Efficiency();
-    virtual std::vector<double> get_efficieny(int order, std::vector<double> wavelength);
+    virtual std::vector<double> get_efficieny(int order, std::vector<double> & wavelength);
+    virtual std::vector<double> get_efficieny(int order, std::vector<double> & wavelength, int N);
 private:
   
 };
@@ -36,7 +37,8 @@ class ConstantEfficiency: public Efficiency
 {
 public:
     ConstantEfficiency(double efficiency);
-    std::vector<double> get_efficienct(int order, std::vector<double> wavelength);
+    std::vector<double> get_efficienct(int order, std::vector<double> & wavelength);
+    std::vector<double> get_efficienct(int order, std::vector<double> & wavelength, int N);
 private:
     double eff;
 };
@@ -46,7 +48,8 @@ class GratingEfficiency : public Efficiency
 public:
     GratingEfficiency(double scalingfactor, double alpha, double blaze, double gpmm);
 
-    std::vector<double> get_efficieny(int order, std::vector<double> wavelength);
+    std::vector<double> get_efficieny(int order, std::vector<double> & wavelength);
+    std::vector<double> get_efficieny(int order, std::vector<double> & wavelength, int N);
 
 private:
   double scalingfactor=0.8;

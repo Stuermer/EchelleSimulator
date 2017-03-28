@@ -37,8 +37,6 @@ class MatrixSimulator {
 public:
     MatrixSimulator();
 
-    void read_transformations(std::string path);
-
     /**
      * Get affine transformation matrix at specific wavelength and order
      * @param order echelle diffraction order
@@ -128,9 +126,14 @@ public:
 
     int photon_order(int N_photons);
 
+    void prepare_psfs(int N);
+
 private:
     cv::Mat img;
     int fiber_number;
+    int n_orders;
+    double wavelength_limit_max = 0.; // will be overwritten by load_spectrograph model
+    double wavelength_limit_min = 100.; // will be overwritten by load_spectrograph model
 
     std::map<int, std::vector<raw_transformation> > raw_transformations;
 
@@ -140,7 +143,22 @@ private:
     std::map<int, std::vector<double> > sim_wavelength;
     std::map<int, std::vector<Matrix23f> > sim_matrices;
     std::map<int, std::vector<double> > sim_efficiencies;
-    std::map<int, std::vector<double> > sim_spectra;
+    std::map<int, std::vector<float> > sim_spectra;
+    std::map<int, std::vector<float> > sim_spectra_time_efficieny;
+
+    std::map<int, float > sim_total_efficiency_per_order;
+    std::map<int, std::vector<cv::Mat> > sim_psfs;
+    std::map<int, std::vector<double> > sim_psfs_wavelength;
+    std::map<int, double > sim_psfs_dwavelength;
+
+
+
+    //    std::map<int, std::map<float, std::vector<cv::Mat> > psf_lookup;
+//    std::vector<double> IP_wl;
+//    std::vector<float> INTERPOLATION_eff;
+//    std::map<int, std::vector<double>> IP_eff;
+//    std::map<int, float> Total_eff_per_order;
+//    std::vector<double> IP_total_eff;
 
     std::map<int, tk::spline> tr_p;
     std::map<int, tk::spline> tr_r;

@@ -42,8 +42,8 @@ std::vector<double> Source::get_spectral_density(std::vector<double> wavelength)
 double Source::get_spectral_density(double wavelength) {
     return 1.;
 }
-std::vector<double> Source::get_spectrum(std::vector<double> wavelength) {
-    std::vector<double> spectrum;
+std::vector<float> Source::get_spectrum(std::vector<double> wavelength) {
+    std::vector<float> spectrum;
     std::vector<double> diff;
 
     for(std::vector<int>::size_type i = 0; i != wavelength.size()-1; i++)
@@ -54,7 +54,7 @@ std::vector<double> Source::get_spectrum(std::vector<double> wavelength) {
 
     for(std::vector<int>::size_type i = 0; i != wavelength.size()-1; i++)
     {
-        double result = this->integral_s( this->shift*wavelength[i] - diff[i] / 2., this->shift*wavelength[i] + diff[i] / 2., this->integration_steps);
+        float result = this->integral_s( this->shift*wavelength[i] - diff[i] / 2., this->shift*wavelength[i] + diff[i] / 2., this->integration_steps);
         spectrum.push_back(result);
     }
 
@@ -65,9 +65,9 @@ void Source::set_integration_steps(int n) {
     this->integration_steps = n;
 }
 
-double Source::integral_s(double a, double b, int n) {
+float Source::integral_s(double a, double b, int n) {
         double step = (b - a) / n;  // width of each small rectangle
-        double area = 0.0;  // signed area
+        float area = 0.0;  // signed area
         for (int i = 0; i < n; i ++) {
             area += 10000000.* this->get_spectral_density(a + (i + 0.5) * step) * step; // sum up each small rectangle
         }
@@ -210,8 +210,8 @@ void LineList::read_spectrum(std::string linelist) {
 
 }
 
-std::vector<double> LineList::get_spectrum(std::vector<double> wavelength){
-    std::vector<double> spectrum;
+std::vector<float> LineList::get_spectrum(std::vector<double> wavelength){
+    std::vector<float> spectrum;
     for(auto const & wl: wavelength){
         double d = fabs(wl - this->data.begin()->first);
         for(auto iterator = ++this->data.begin(); iterator!= this->data.end(); ++iterator)

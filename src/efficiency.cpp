@@ -38,21 +38,37 @@ Efficiency::~Efficiency()
 
 }
 
-std::vector< double > Efficiency::get_efficieny(int order, std::vector<double> wavelength)
+std::vector< double > Efficiency::get_efficieny(int order, std::vector<double> & wavelength)
 {
     std::vector<double> res(wavelength.size(), 1.0);
     
     return res;
+}
 
+std::vector< double > Efficiency::get_efficieny(int order, std::vector<double> & wavelength, int N)
+{
+    std::vector<double> res(N, 1.0);
+
+    return res;
 }
 
 
-std::vector< double > GratingEfficiency::get_efficieny(int order, std::vector<double> wavelength)
+std::vector< double > GratingEfficiency::get_efficieny(int order, std::vector<double> & wavelength)
 {
   std::vector<double> res;  
   for(auto& w : wavelength)
     res.push_back(this->calc_eff(this->scalingfactor, order, deg2rad(this->alpha), deg2rad(this->blaze), w, this->gpmm));
   return res;
+}
+
+std::vector< double > GratingEfficiency::get_efficieny(int order, std::vector<double> & wavelength, int N)
+{
+    std::vector<double> res;
+//    for(auto& w : *wavelength)
+    for(std::vector<int>::size_type i = 0; i != N; i++)
+        res.push_back(this->calc_eff(this->scalingfactor, order, deg2rad(this->alpha), deg2rad(this->blaze), wavelength[i], this->gpmm));
+
+    return res;
 }
 
 double GratingEfficiency::calc_eff(double scalingfactor, int order, double alpha, double blaze, double wl, double gpmm)
@@ -71,7 +87,7 @@ ConstantEfficiency::ConstantEfficiency(double efficiency) : eff(efficiency){
 
 }
 
-std::vector<double> ConstantEfficiency::get_efficienct(int order, std::vector<double> wavelength) {
+std::vector<double> ConstantEfficiency::get_efficienct(int order, std::vector<double> & wavelength) {
     std::vector<double> res;
     for(auto& w : wavelength)
         res.push_back(this->eff);

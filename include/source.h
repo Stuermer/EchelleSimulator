@@ -44,7 +44,7 @@ public:
      * @param wavelength wavelength vector
      * @return spectrum at given wavelength
      */
-    virtual std::vector<double> get_spectrum(std::vector<double> wavelength);
+    virtual std::vector<float> get_spectrum(std::vector<double> wavelength);
 
     /*!
      * Applies a spectral shift on the spectrum to simulate radial velocity shifts.
@@ -76,7 +76,7 @@ private:
      * \todo This integrator should be replaved with a more accurate one. For highly unresolved spectra this integrator
      * might not be very precise.
      */
-    double integral_s(double a, double b, int n);
+    float integral_s(double a, double b, int n);
 
     double shift; ///< current doppler shift
     int integration_steps; ///< number of steps for the integrator
@@ -257,7 +257,7 @@ public:
     LineList(std::string linelist);
     void read_spectrum(std::string linelist);
     double get_spectral_density(double wavelength);
-    std::vector<double> get_spectrum(std::vector<double> wavelength);
+    std::vector<float> get_spectrum(std::vector<double> wavelength);
     std::vector<double> get_wavelength();
 private:
     std::map<double, double> data;
