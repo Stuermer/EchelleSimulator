@@ -132,24 +132,36 @@ private:
     cv::Mat img;
     int fiber_number;
     int n_orders;
+    int min_order;
+    int max_order;
     double wavelength_limit_max = 0.; // will be overwritten by load_spectrograph model
     double wavelength_limit_min = 100.; // will be overwritten by load_spectrograph model
 
     std::map<int, std::vector<raw_transformation> > raw_transformations;
+//    std::vector<std::vector<raw_transformation>> raw_transformations;
 
     std::vector<Efficiency *> efficiencies;
     std::vector<Source *> sources;
 
-    std::map<int, std::vector<double> > sim_wavelength;
-    std::map<int, std::vector<Matrix23f> > sim_matrices;
-    std::map<int, std::vector<double> > sim_efficiencies;
-    std::map<int, std::vector<float> > sim_spectra;
-    std::map<int, std::vector<float> > sim_spectra_time_efficieny;
+//    std::map<int, std::vector<double> > sim_wavelength;
+    std::vector<std::vector<double>> sim_wavelength;
+//    std::map<int, std::vector<Matrix23f> > sim_matrices;
+    std::vector<std::vector<Matrix23f>> sim_matrices;
+//    std::map<int, std::vector<double> > sim_efficiencies;
+    std::vector<std::vector<double>> sim_efficiencies;
+//    std::map<int, std::vector<float> > sim_spectra;
+    std::vector<std::vector<float>> sim_spectra;
+//    std::map<int, std::vector<float> > sim_spectra_time_efficieny;
+    std::vector<std::vector<float>> sim_spectra_time_efficieny;
 
-    std::map<int, float > sim_total_efficiency_per_order;
-    std::map<int, std::vector<cv::Mat> > sim_psfs;
-    std::map<int, std::vector<double> > sim_psfs_wavelength;
-    std::map<int, double > sim_psfs_dwavelength;
+//    std::map<int, float > sim_total_efficiency_per_order;
+    std::vector<float> sim_total_efficiency_per_order;
+//    std::map<int, std::vector<cv::Mat> > sim_psfs;
+    std::vector<std::vector<cv::Mat>> sim_psfs;
+//    std::map<int, std::vector<double> > sim_psfs_wavelength;
+    std::vector<std::vector<double>> sim_psfs_wavelength;
+//    std::map<int, double > sim_psfs_dwavelength;
+    std::vector<double> sim_psfs_dwavelength;
 
 
 
@@ -160,14 +172,20 @@ private:
 //    std::map<int, float> Total_eff_per_order;
 //    std::vector<double> IP_total_eff;
 
-    std::map<int, tk::spline> tr_p;
-    std::map<int, tk::spline> tr_r;
-    std::map<int, tk::spline> tr_q;
-    std::map<int, tk::spline> tr_phi;
-    std::map<int, tk::spline> tr_tx;
-    std::map<int, tk::spline> tr_ty;
+//    std::map<int, tk::spline> tr_p;
+    std::vector<tk::spline> tr_p;
+//    std::map<int, tk::spline> tr_r;
+    std::vector<tk::spline> tr_r;
+//    std::map<int, tk::spline> tr_q;
+    std::vector<tk::spline> tr_q;
+//    std::map<int, tk::spline> tr_phi;
+    std::vector<tk::spline> tr_phi;
+//    std::map<int, tk::spline> tr_tx;
+    std::vector<tk::spline> tr_tx;
+//    std::map<int, tk::spline> tr_ty;
+    std::vector<tk::spline> tr_ty;
 
-    std::map<int, std::vector<Eigen::Vector2f> > target_pos;
+//    std::map<int, std::vector<Eigen::Vector2f> > target_pos;
 
     PSF *psfs;
     Slit *slit;

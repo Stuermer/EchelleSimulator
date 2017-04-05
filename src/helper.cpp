@@ -118,7 +118,8 @@ void show_cv_matrix(cv::Mat img, std::string windowname="image") {
 
     cv::namedWindow(windowname,CV_WINDOW_NORMAL);
     cv::imshow(windowname, img_show);
-    cv::waitKey(10000);
+    cv::resizeWindow(windowname, 1024,1024);
+    cv::waitKey(1);
 
 }
 

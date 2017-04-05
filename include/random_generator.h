@@ -105,6 +105,12 @@ public:
 //        printf("Seeding with %i ...\n", seed);
     }
 
+    ~RG_uniform_float(){
+        checkCudaErrors(curandDestroyGenerator(this->prngGPU));
+        checkCudaErrors(cudaFree(this->d_Rand));
+        free(this->h_RandGPU);
+    }
+
     void alloc_mem(size_t size)
     {
         checkCudaErrors(cudaMalloc((void **)&d_Rand, size * sizeof(float)));

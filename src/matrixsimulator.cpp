@@ -19,7 +19,14 @@
 #include <string>
 #include <fstream>
 #include <chrono>
+#include <omp.h>
 #include "random_generator.h"
+
+
+#include <highfive/H5File.hpp>
+#include <highfive/H5DataSpace.hpp>
+#include <highfive/H5DataSet.hpp>
+
 
 #ifdef USE_GPU
 #include "opencv2/gpu/gpu.hpp"
@@ -147,6 +154,7 @@ void MatrixSimulator::load_spectrograph_model(std::string path, int fiber_number
             transformation_hdf data[number_of_points];
             std::string tablename = "fiber_" + std::to_string(fiber_number) + "/" + gn;
             int order = std::stoi(gn.substr(5));
+            this->orders.push_back(order);
             herr_t read = H5TBread_table(h5file->getId(), tablename.c_str(), dst_size, dst_offset, dst_sizes, &data);
 //            std::cout << order << "\t" << read << "\t" << data[0].translation_x << std::endl;
             for (int i = 0; i < number_of_points; ++i) {
@@ -180,8 +188,13 @@ void MatrixSimulator::load_spectrograph_model(std::string path, int fiber_number
         }
     }
 
-    for (auto imap: this->raw_transformations)
-        this->orders.push_back(imap.first);
+//    for (auto imap: this->raw_transformations)
+//        this->orders.push_back(imap.first);
+    std::sort(this->orders.begin(), this->orders.end());
+    this->min_order = * std::min_element(std::begin(this->orders), std::end(this->orders));
+    this->max_order = * std::max_element(std::begin(this->orders), std::end(this->orders));
+    this->n_orders = this->max_order - this->min_order;
+    std::cout<< "Read in "<< this->n_orders<< " Orders" << std::endl;
     this->calc_splines();
 
     if (!keep_ccd) {
@@ -223,7 +236,7 @@ double MatrixSimulator::get_gpmm() {
 }
 
 void MatrixSimulator::calc_splines(){
-    for(auto o: this->orders)
+    for(int o=0; o<this->orders.size(); ++o)
     {
         std::vector<double> wl;
         std::vector<double> p;
@@ -233,7 +246,7 @@ void MatrixSimulator::calc_splines(){
         std::vector<double> tx;
         std::vector<double> ty;
 
-        for(auto rt: this->raw_transformations[o])
+        for(auto rt: this->raw_transformations[o+this->min_order])
         {
             wl.push_back(rt.wavelength);
             p.push_back(rt.decomposed_matrix[0]);
@@ -245,27 +258,28 @@ void MatrixSimulator::calc_splines(){
         }
         tk::spline s_p;
         s_p.set_points(wl, p);
-        this->tr_p[o] = s_p;
+//        this->tr_p[o] = s_p;
+        this->tr_p.push_back(s_p);
 
         tk::spline s_q;
         s_q.set_points(wl, q);
-        this->tr_q[o] = s_q;
+        this->tr_q.push_back(s_q);
 
         tk::spline s_r;
         s_r.set_points(wl, r);
-        this->tr_r[o] = s_r;
+        this->tr_r.push_back(s_r);
 
         tk::spline s_phi;
         s_phi.set_points(wl, phi);
-        this->tr_phi[o] = s_phi;
+        this->tr_phi.push_back(s_phi);
 
         tk::spline s_tx;
         s_tx.set_points(wl, tx);
-        this->tr_tx[o] = s_tx;
+        this->tr_tx.push_back(s_tx);
 
         tk::spline s_ty;
         s_ty.set_points(wl, ty);
-        this->tr_ty[o] = s_ty;
+        this->tr_ty.push_back(s_ty);
 
     }
 
@@ -273,16 +287,18 @@ void MatrixSimulator::calc_splines(){
 
 void MatrixSimulator::set_wavelength(int N){
     this->sim_wavelength.clear();
+    for(int o=0; o<this->orders.size(); ++o)
+        this->sim_wavelength.push_back(std::vector<double>(N));
 
-//#pragma omp parallel for
-    for(auto o: this->orders)
+    #pragma omp parallel for
+    for(int o=0; o<this->orders.size(); ++o)
     {
-        double min_wl = this->raw_transformations[o].front().wavelength;
-        double max_wl = this->raw_transformations[o].back().wavelength;
+        double min_wl = this->raw_transformations[o+this->min_order].front().wavelength;
+        double max_wl = this->raw_transformations[o+this->min_order].back().wavelength;
         double dl = (max_wl - min_wl) / N;
         for(int i=0; i<N; ++i)
         {
-            this->sim_wavelength[o].push_back(min_wl+dl*i);
+            this->sim_wavelength[o][i] = min_wl+dl*i;
         }
     }
     this->calc_sim_matrices();
@@ -290,7 +306,7 @@ void MatrixSimulator::set_wavelength(int N){
 
 void MatrixSimulator::set_wavelength(std::vector<double> wavelength){
     this->sim_wavelength.clear();
-    for(auto o: this->orders)
+    for(int o=0; o<this->orders.size(); ++o)
     {
         double min_wl = this->raw_transformations[o].front().wavelength;
         double max_wl = this->raw_transformations[o].back().wavelength;
@@ -303,7 +319,8 @@ void MatrixSimulator::set_wavelength(std::vector<double> wavelength){
                 wl_in_order.push_back(wl);
             }
         }
-        this->sim_wavelength.insert(std::pair<int, std::vector<double>> (o, wl_in_order));
+        this->sim_wavelength.push_back(wl_in_order);
+//        this->sim_wavelength.insert(std::pair<int, std::vector<double>> (o, wl_in_order));
     }
     this->calc_sim_matrices();
 }
@@ -311,9 +328,10 @@ void MatrixSimulator::set_wavelength(std::vector<double> wavelength){
 void MatrixSimulator::calc_sim_matrices(){
     std::cout << "Calculate Matrices ..." << std::endl;
     this->sim_matrices.clear();
-#pragma omp parallel for
-    for(int o=this->orders.front(); o<this->orders.back()+1; ++o)
+//#pragma omp parallel for
+    for(int o=0; o<this->orders.size(); ++o)
     {
+        this->sim_matrices.push_back(std::vector<Matrix23f>(this->sim_wavelength[o].size()));
 //        std::cout<< o << std::endl;
         for(auto w: this->sim_wavelength[o])
         {
@@ -500,12 +518,12 @@ int MatrixSimulator::photon_order(int N_photons) {
     std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
 
     #pragma omp parallel for
-    for(std::vector<int>::iterator it = this->orders.begin(); it < this->orders.end(); it++){
-        int o = *it;
+    for(int o=0; o<this->orders.size(); ++o) {
         std::random_device rd;
         std::default_random_engine gen(rd());
 
-        std::piecewise_linear_distribution<> dis(this->sim_wavelength[o].begin(), this->sim_wavelength[o].end(), this->sim_spectra_time_efficieny[o].begin());
+        std::piecewise_linear_distribution<> dis(this->sim_wavelength[o].begin(), this->sim_wavelength[o].end(),
+                                                 this->sim_spectra_time_efficieny[o].begin());
 
 #ifdef USE_CUDA
         RG_uniform_float rgx = RG_uniform_float(devID);
@@ -586,11 +604,11 @@ int MatrixSimulator::photon_order(int N_photons) {
             std::uniform_real_distribution<> abr_y(0, this->sim_psfs[o][idx_psf].rows);
 //            double mx;
 //            cv::minMaxIdx(this->sim_psfs[o][idx_psf],NULL, &mx);
-            std::uniform_real_distribution<> abr_z(0,1);
-            float abx=abr_x(gen);
-            float aby=abr_y(gen);
-            float abz=abr_z(gen);
-            while(abz > this->sim_psfs[o][idx_psf].at<double>(floor(aby), floor(abx))) {
+            std::uniform_real_distribution<> abr_z(0, 1);
+            float abx = abr_x(gen);
+            float aby = abr_y(gen);
+            float abz = abr_z(gen);
+            while (abz > this->sim_psfs[o][idx_psf].at<double>(floor(aby), floor(abx))) {
                 abx = abr_x(gen);
                 aby = abr_y(gen);
                 abz = abr_z(gen);
@@ -598,14 +616,22 @@ int MatrixSimulator::photon_order(int N_photons) {
 //            std::cout<<(abx-this->sim_psfs[o][idx_psf].cols/2.)/3.<<"\t"<<(aby-this->sim_psfs[o][idx_psf].rows/2.)/3.<< std::endl;
 //            double abx = abr_x(gen);
 //            std::cout<<(abx-this->sim_psfs[o][idx_psf].cols/2.)/3.<<"\t"<<(aby-this->sim_psfs[o][idx_psf].rows/2.)/3.<< std::endl;
-            newx += (abx-this->sim_psfs[o][idx_psf].cols/2.)/3.;
-            newy += (aby-this->sim_psfs[o][idx_psf].rows/2.)/3.;
+            newx += (abx - this->sim_psfs[o][idx_psf].cols / 2.) / 3.;
+            newy += (aby - this->sim_psfs[o][idx_psf].rows / 2.) / 3.;
 
             if (newx > 0 && newx < this->ccd->data.cols && newy > 0 && newy < this->ccd->data.rows)
 //                img[floor(newx) + floor(newy) * this->ccd->data.cols] += 1;
-                            this->ccd->data.at<double>(floor(newy), floor(newx)) += 1.;
+                this->ccd->data.at<double>(floor(newy), floor(newx)) += 1.;
+
+            if (omp_get_thread_num() == 0) {
+            if (i % 50000 == 0) {
+                std::cout << i << std::endl;
+                show_cv_matrix(this->ccd->data, "data");
+            }
+        }
 
         }
+
     }
     std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::microseconds>( t2 - t1 ).count()/1000000.;
@@ -733,20 +759,20 @@ void MatrixSimulator::set_efficiencies(std::vector<Efficiency *> &efficiencies)
     std::cout<<"Set Efficiencies ... " << std::endl;
     std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
 
-    for(auto& o : this->orders) {
-        this->sim_efficiencies.insert(
-                std::pair<int, std::vector<double> >(o, std::vector<double>(this->sim_wavelength[o].size(), 1.0)));
-
-        this->sim_total_efficiency_per_order.insert(std::pair<int, float >(o, 0.));
+    for(int o=0; o<this->orders.size(); ++o) {
+        this->sim_efficiencies.push_back(std::vector<double> (this->sim_wavelength[o].size(), 1.));
+//        this->sim_efficiencies.insert(
+//                std::pair<int, std::vector<double> >(o, std::vector<double>(this->sim_wavelength[o].size(), 1.0)));
+        this->sim_total_efficiency_per_order.push_back(0.);
+//        this->sim_total_efficiency_per_order.insert(std::pair<int, float >(o, 0.));
     }
 
     #pragma omp parallel for
-    for(std::vector<int>::iterator it = this->orders.begin(); it < this->orders.end(); it++){
-        int o = *it;
+    for(int o=0; o<this->orders.size(); ++o){
         // std::vector<double> total_eff(this->sim_wavelength[o].size(), 1.0);
         for(auto& e : efficiencies)
         {
-            std::vector<double> sim_eff = e->get_efficieny(o, this->sim_wavelength[o]);
+            std::vector<double> sim_eff = e->get_efficieny(o+this->min_order, this->sim_wavelength[o]);
             for(int i=0; i<this->sim_efficiencies[o].size(); ++i)
             {
                 this->sim_efficiencies[o][i] *= sim_eff[i];
@@ -775,26 +801,28 @@ void MatrixSimulator::prepare_psfs(int N){
     std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
     std::cout << "Prepare PSFs ..." << std::endl;
 
-    for(auto const &o : this->orders){
-        this->sim_psfs.insert(
-                std::pair<int, std::vector<cv::Mat> >(o, std::vector<cv::Mat>(N)));
-        this->sim_psfs_wavelength.insert(
-                std::pair<int , std::vector<double> > (o, std::vector<double>(N)));
-        this->sim_psfs_dwavelength.insert(
-                std::pair<int, double>(o, 0.));
+    for(int o=0; o<this->orders.size(); ++o){
+        this->sim_psfs.push_back(std::vector<cv::Mat>(N));
+//        this->sim_psfs.insert(
+//                std::pair<int, std::vector<cv::Mat> >(o, std::vector<cv::Mat>(N)));
+        this->sim_psfs_wavelength.push_back(std::vector<double>(N));
+//        this->sim_psfs_wavelength.insert(
+//                std::pair<int , std::vector<double> > (o, std::vector<double>(N)));
+        this->sim_psfs_dwavelength.push_back(0.);
+//        this->sim_psfs_dwavelength.insert(
+//                std::pair<int, double>(o, 0.));
     }
 
 
     #pragma omp parallel for
-    for(std::vector<int>::iterator it = this->orders.begin(); it < this->orders.end(); it++) {
-        int o = *it;
-        double min_wl = this->raw_transformations[o].front().wavelength;
-        double max_wl = this->raw_transformations[o].back().wavelength;
+    for(int o=0; o<this->orders.size(); ++o){
+        double min_wl = this->raw_transformations[o+this->min_order].front().wavelength;
+        double max_wl = this->raw_transformations[o+this->min_order].back().wavelength;
         double dl = (max_wl - min_wl) / N;
         this->sim_psfs_dwavelength[o] = dl;
         for(int i =0; i<this->sim_psfs_wavelength[o].size(); ++i){
             this->sim_psfs_wavelength[o][i] = min_wl + i * dl;
-            cv::Mat psf = this->psfs->get_PSF(o, min_wl + i * dl);
+            cv::Mat psf = this->psfs->get_PSF(o+this->min_order, min_wl + i * dl);
             double maxVal;
 
             cv::minMaxLoc( psf, NULL, &maxVal, NULL, NULL );
@@ -814,17 +842,18 @@ void MatrixSimulator::prepare_sources(std::vector<Source *> sources) {
     std::cout << "Prepare sources ..." << std::endl;
     this->sim_spectra.clear();
     // allocate memory so we can use omp parallel for filling
-    for (auto const &o : this->orders) {
-    this->sim_spectra.insert(
-            std::pair<int, std::vector<float> >(o, std::vector<float>(this->sim_wavelength[o].size())));
-        this->sim_spectra_time_efficieny.insert(
-                std::pair<int, std::vector<float> >(o, std::vector<float>(this->sim_wavelength[o].size())));
+    for (int o=0; o<this->orders.size(); ++o) {
+        this->sim_spectra.push_back(std::vector<float>(this->sim_wavelength[o].size()));
+//    this->sim_spectra.insert(
+//            std::pair<int, std::vector<float> >(o, std::vector<float>(this->sim_wavelength[o].size())));
+        this->sim_spectra_time_efficieny.push_back(std::vector<float>(this->sim_wavelength[o].size()));
+//        this->sim_spectra_time_efficieny.insert(
+//                std::pair<int, std::vector<float> >(o, std::vector<float>(this->sim_wavelength[o].size())));
     }
 
     #pragma omp parallel for
-    for(std::vector<int>::iterator it = this->orders.begin(); it < this->orders.end(); it++) {
+    for(int o=0; o<this->orders.size(); ++o) {
         {
-            int o = *it;
             for (auto &s : sources) {
                 std::vector<float> spectrum = s->get_spectrum(this->sim_wavelength[o]);
                 for (int i = 0; i < spectrum.size(); ++i) {
