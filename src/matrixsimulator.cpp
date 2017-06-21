@@ -23,11 +23,6 @@
 #include "random_generator.h"
 
 
-#include <highfive/H5File.hpp>
-#include <highfive/H5DataSpace.hpp>
-#include <highfive/H5DataSet.hpp>
-
-
 #ifdef USE_GPU
 #include "opencv2/gpu/gpu.hpp"
 #endif
@@ -623,12 +618,12 @@ int MatrixSimulator::photon_order(int N_photons) {
 //                img[floor(newx) + floor(newy) * this->ccd->data.cols] += 1;
                 this->ccd->data.at<double>(floor(newy), floor(newx)) += 1.;
 
-            if (omp_get_thread_num() == 0) {
-            if (i % 50000 == 0) {
-                std::cout << i << std::endl;
-                show_cv_matrix(this->ccd->data, "data");
-            }
-        }
+//            if (omp_get_thread_num() == 0) {
+//            if (i % 50000 == 0) {
+//                std::cout << i << std::endl;
+//                show_cv_matrix(this->ccd->data, "data");
+ //           }
+ //       }
 
         }
 

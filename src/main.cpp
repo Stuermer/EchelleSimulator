@@ -32,7 +32,7 @@ int main(int argc, char *argv[])
 //        simulator.set_wavelength(cs.get_wavelength());
 //        add_vector_parallel();
 //        simulator.prepare_interpolation(1000000);
-        simulator.photon_order(100000);
+        simulator.photon_order(5000000);
 //        simulator.simulate_spectrum(false);
 
         high_resolution_clock::time_point t2 = high_resolution_clock::now();

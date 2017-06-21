@@ -17,6 +17,7 @@
 #include <CCfits/FITS.h>
 #include <CCfits/ExtHDU.h>
 #include <Eigen/Dense>
+#include <map>
 
 void vectorToFile(std::vector<double> const& vec, std::string const& filename) {
   std::ofstream file(filename);
@@ -29,13 +30,6 @@ void vectorToFile(std::vector<double> const& vec, std::string const& filename) {
   }
   file << std::endl;
   file.close();  
-}
-
-void MatToFile(cv::Mat& image, std::string const& filename){
-  std::ofstream file(filename);
-  
-  file << cv::format(image, "numpy") << std::endl;
-  file.close();
 }
 
 std::vector<double> decompose_matrix(Matrix23f mat){
@@ -103,23 +97,23 @@ std::vector<std::size_t> compute_sort_order(const std::vector<double> &v) {
 }
 
 void show_cv_matrix(cv::Mat img, std::string windowname="image") {
-    double minVal, maxVal;
+//    double minVal, maxVal;
 
-    cv::Mat img_show = img.clone();
+  //  cv::Mat img_show = img.clone();
 
 //    cv::Mat img_show = cv::Mat::zeros(512/3, 1024, img.type());
 //    cv::resize(img.rowRange(0, 512*3).colRange(0,4096*3), img_show, img_show.size(), cv::INTER_NEAREST);
 //
-    cv::minMaxLoc(img_show, &minVal, &maxVal); //find minimum and maximum intensities
+//    cv::minMaxLoc(img_show, &minVal, &maxVal); //find minimum and maximum intensities
 //    int ty = img_show.type();
-    img_show.convertTo(img_show,CV_8U,255.0/(maxVal - minVal), -minVal * 255.0/(maxVal - minVal));
+    //img_show.convertTo(img_show,CV_8U,255.0/(maxVal - minVal), -minVal * 255.0/(maxVal - minVal));
 
     // cv::cvtColor(img_show, img_show, CV_GRAY2RGB);
 
-    cv::namedWindow(windowname,CV_WINDOW_NORMAL);
-    cv::imshow(windowname, img_show);
-    cv::resizeWindow(windowname, 1024,1024);
-    cv::waitKey(1);
+//    cv::namedWindow(windowname,CV_WINDOW_NORMAL);
+  //  cv::imshow(windowname, img_show);
+   // cv::resizeWindow(windowname, 1024,1024);
+   // cv::waitKey(1);
 
 }
 
