@@ -4,3 +4,4 @@ doc/latex/
 build/
 release/
 *.hdf
+simulations/

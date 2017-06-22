@@ -3,7 +3,7 @@ project(echellesimulator)
 
 cmake_minimum_required(VERSION 2.8)
 #include_directories(/home/stuermer/)
-find_package( OpenCV REQUIRED HINTS /home/stuermer/libs/opencv/)
+find_package( OpenCV REQUIRED HINTS /data/CppLibs/opencv/)
 #add_definitions(-DUSE_GPU)
 set(CUDA_USE_STATIC_CUDA_RUNTIME OFF)
 
@@ -18,9 +18,9 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/src/CMakeModules
 #Install stage
 INSTALL_FILES("${CMAKE_ROOT}/Modules" FILES "${CMAKE_SOURCE_DIR}/FindCCOIFITS.cmake")
 
-FIND_LIBRARY(CCFITS_LIB CCfits /home/stuermer/libs/CCFits/usr/local/lib)
-include_directories(/home/stuermer/libs/CCFits/usr/local/include)
-include_directories(/home/stuermer/libs/opencv/include/opencv)
+FIND_LIBRARY(CCFITS_LIB CCfits /data/CppLibs/CCFits/usr/local/lib)
+include_directories(/data/CppLibs/CCFits/usr/local/include)
+include_directories(/data/CppLibs/opencv/include/opencv)
 
 #find_package(HDF5 COMPONENTS HL REQUIRED)
 find_package(HDF5 COMPONENTS C CXX HL REQUIRED)
@@ -35,7 +35,7 @@ include_directories(SYSTEM $OPENCV_INCLUDE_DIRS)
 include_directories(src)
 include_directories(include)
 #include_directories(/home/stuermer/libs/include)
-include_directories(/home/stuermer/Repos/eigen-eigen-67e894c6cd8f)
+include_directories(/data/CppLibs/eigen-eigen-67e894c6cd8f)
 #FIND_LIBRARY(HDF5_LIBRARIES hdf5 /home/stuermer/Repos/hdf5-1.8.18/src/.libs)
 #FIND_LIBRARY(HDF5_HL_LIBRARIES hdf5_hl /home/stuermer/Repos/hdf5-1.8.18/hl/src/.libs)
 #link_directories( ${HDF5_LIBRARY_DIRS} )

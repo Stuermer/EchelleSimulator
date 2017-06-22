@@ -10,7 +10,7 @@ int main(int argc, char *argv[])
     high_resolution_clock::time_point t1 = high_resolution_clock::now();
 
     MatrixSimulator simulator;
-    create_fits_file("../simulations/et7.fit");
+    create_fits_file("../simulations/et6.fit");
 
     for (int i=1; i<2; ++i){
         simulator.load_spectrograph_model(argv[1], i, i>1);
@@ -32,7 +32,7 @@ int main(int argc, char *argv[])
 //        simulator.set_wavelength(cs.get_wavelength());
 //        add_vector_parallel();
 //        simulator.prepare_interpolation(1000000);
-        simulator.photon_order(5000000);
+        simulator.photon_order(50000);
 //        simulator.simulate_spectrum(false);
 
         high_resolution_clock::time_point t2 = high_resolution_clock::now();
@@ -42,7 +42,7 @@ int main(int argc, char *argv[])
 //        simulator.save_to_fits("../MaroonX.fit", true, false, true);
 //        simulator.save_1d_to_fits("../simulations/etalon_noblaze_tri.fit");
     }
-    simulator.save_to_fits("../simulations/et7.fit", false, false, true);
+    simulator.save_to_fits("../simulations/et6.fit", false, false, true);
 
     return 0;
 }
