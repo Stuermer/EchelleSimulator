@@ -126,6 +126,8 @@ public:
 
     int photon_order(int N_photons);
 
+    int photon_order_artifical(int N_photons, double dl);
+
     void prepare_psfs(int N);
 
 private:

@@ -23,9 +23,9 @@
 #include "random_generator.h"
 
 
-#include <highfive/H5File.hpp>
-#include <highfive/H5DataSpace.hpp>
-#include <highfive/H5DataSet.hpp>
+//#include <highfive/H5File.hpp>
+//#include <highfive/H5DataSpace.hpp>
+//#include <highfive/H5DataSet.hpp>
 
 
 #ifdef USE_GPU
@@ -236,6 +236,13 @@ double MatrixSimulator::get_gpmm() {
 }
 
 void MatrixSimulator::calc_splines(){
+    this->tr_p.clear();
+    this->tr_q.clear();
+    this->tr_phi.clear();
+    this->tr_r.clear();
+    this->tr_tx.clear();
+    this->tr_ty.clear();
+
     for(int o=0; o<this->orders.size(); ++o)
     {
         std::vector<double> wl;
@@ -308,8 +315,8 @@ void MatrixSimulator::set_wavelength(std::vector<double> wavelength){
     this->sim_wavelength.clear();
     for(int o=0; o<this->orders.size(); ++o)
     {
-        double min_wl = this->raw_transformations[o].front().wavelength;
-        double max_wl = this->raw_transformations[o].back().wavelength;
+        double min_wl = this->raw_transformations[o+this->min_order].front().wavelength;
+        double max_wl = this->raw_transformations[o+this->min_order].back().wavelength;
         std::vector<double> wl_in_order;
 
         for (auto wl: wavelength)
@@ -501,6 +508,68 @@ static std::vector<int> generate_uniform_int(size_t size, int min, int max)
     return data;
 }
 
+int MatrixSimulator::photon_order_artifical(int N_photons, double dl)
+{
+    this->prepare_psfs(1000);
+    #pragma omp parallel for
+    for (int o=0; o<this->orders.size(); ++o)
+    {
+        std::random_device rd;
+        std::default_random_engine gen(rd());
+
+        for (double wl=this->raw_transformations[o+this->min_order].front().wavelength;
+                wl<this->raw_transformations[o+this->min_order].back().wavelength; wl = wl+dl)
+        {
+            std::cout<< o+this->min_order << "\t" << wl << std::endl;
+            Matrix23f tm = this->get_transformation_matrix(o, wl);
+            RG_uniform_real<double> rgx(0., this->slit->slit_sampling);
+            RG_uniform_real<double> rgy(0., this->slit->slit_sampling * this->slit->h / this->slit->w);
+            std::vector<double> rand_x = rgx.draw(N_photons);
+            std::vector<double> rand_y = rgy.draw(N_photons);
+            for (int i = 0; i < N_photons; ++i){
+                float x = rand_x[i];
+                float y = rand_y[i];
+                float newx = (tm(0, 0) * x + tm(0, 1) * y + tm(0, 2)) / 3.;
+                float newy = (tm(1, 0) * x + tm(1, 1) * y + tm(1, 2)) / 3.;
+
+                // lookup psf
+                int idx_psf = floor((wl - this->sim_wavelength[o].front()) / this->sim_psfs_dwavelength[o]);
+
+                std::uniform_real_distribution<> abr_x(0, this->sim_psfs[o][idx_psf].cols);
+                std::uniform_real_distribution<> abr_y(0, this->sim_psfs[o][idx_psf].rows);
+//            double mx;
+//            cv::minMaxIdx(this->sim_psfs[o][idx_psf],NULL, &mx);
+                std::uniform_real_distribution<> abr_z(0, 1);
+                float abx = abr_x(gen);
+                float aby = abr_y(gen);
+                float abz = abr_z(gen);
+                while (abz > this->sim_psfs[o][idx_psf].at<double>(floor(aby), floor(abx))) {
+                    abx = abr_x(gen);
+                    aby = abr_y(gen);
+                    abz = abr_z(gen);
+                }
+//            std::cout<<(abx-this->sim_psfs[o][idx_psf].cols/2.)/3.<<"\t"<<(aby-this->sim_psfs[o][idx_psf].rows/2.)/3.<< std::endl;
+//            double abx = abr_x(gen);
+//            std::cout<<(abx-this->sim_psfs[o][idx_psf].cols/2.)/3.<<"\t"<<(aby-this->sim_psfs[o][idx_psf].rows/2.)/3.<< std::endl;
+                newx += (abx - this->sim_psfs[o][idx_psf].cols / 2.) / 3.;
+                newy += (aby - this->sim_psfs[o][idx_psf].rows / 2.) / 3.;
+
+                if (newx > 0 && newx < this->ccd->data.cols && newy > 0 && newy < this->ccd->data.rows)
+//                img[floor(newx) + floor(newy) * this->ccd->data.cols] += 1;
+                    this->ccd->data.at<double>(floor(newy), floor(newx)) += 1.;
+
+//            if (omp_get_thread_num() == 0) {
+//            if (i % 50000 == 0) {
+//                std::cout << i << std::endl;
+//                show_cv_matrix(this->ccd->data, "data");
+//            }
+//        }
+
+            }
+        }
+
+    }
+}
 int MatrixSimulator::photon_order(int N_photons) {
     this->set_efficiencies(this->efficiencies);
 
@@ -512,7 +581,7 @@ int MatrixSimulator::photon_order(int N_photons) {
     int devID = findCudaDevice(0, (const char **) NULL);
 #endif
     // global img
-    std::vector<uint16_t> img(this->ccd->data.rows * this->ccd->data.cols, 0);
+//    std::vector<uint16_t> img(this->ccd->data.rows * this->ccd->data.cols, 0);
 
     std::cout <<"Start tracing ..." <<std::endl;
     std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
@@ -623,12 +692,12 @@ int MatrixSimulator::photon_order(int N_photons) {
 //                img[floor(newx) + floor(newy) * this->ccd->data.cols] += 1;
                 this->ccd->data.at<double>(floor(newy), floor(newx)) += 1.;
 
-            if (omp_get_thread_num() == 0) {
-            if (i % 50000 == 0) {
-                std::cout << i << std::endl;
-                show_cv_matrix(this->ccd->data, "data");
-            }
-        }
+//            if (omp_get_thread_num() == 0) {
+//            if (i % 50000 == 0) {
+//                std::cout << i << std::endl;
+//                show_cv_matrix(this->ccd->data, "data");
+//            }
+//        }
 
         }
 

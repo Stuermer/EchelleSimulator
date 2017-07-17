@@ -151,9 +151,6 @@ void PhoenixSpectrum::read_spectrum(std::string spectrum_file, std::string wavel
     wl.readAllKeys();
     wl.read(contents_wl);
 
-    // this doesn't print the data, just header info.
-    std::cout << wl << std::endl;
-
     long ax1(wl.axis(0));
     long min_idx=ax1;
     long max_idx=0;

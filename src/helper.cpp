@@ -83,6 +83,7 @@ Matrix23f compose_matrix(std::vector<double> parameters){
   Matrix23f m;
     m(0,0) = sx*cos(rot);
     m(1,0) = sx*sin(rot);
+    m(0,1) = -sy*sin(rot+shear);
     m(1,1)= sy*cos(rot+shear);
     m(0,2) = parameters[4];
     m(1,2) = parameters[5];

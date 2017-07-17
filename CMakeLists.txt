@@ -5,7 +5,7 @@ cmake_minimum_required(VERSION 2.8)
 set(CMAKE_CXX_STANDARD 11)
 find_package( OpenCV REQUIRED )
 #add_definitions(-DUSE_GPU)
-add_definitions(-DUSE_CUDA)
+#add_definitions(-DUSE_CUDA)
 
 find_package(CUDA QUIET REQUIRED)
 
@@ -36,6 +36,7 @@ FIND_LIBRARY(CCFITS_LIB CCfits /usr/lib/x86_64-linux-gnu)
 find_package(HDF5 COMPONENTS HL REQUIRED)
 
 include_directories(SYSTEM ${HDF5_INCLUDE_DIRS} ${HDF5_HL_INCLUDE_DIR})
+include_directories(/home/stuermer/Repos/cpp/HighFive/include/)
 include_directories(SYSTEM $OPENCV_INCLUDE_DIRS)
 include_directories(src)
 include_directories(include)
