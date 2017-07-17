@@ -16,6 +16,7 @@
 #include "csv_reader.h"
 #include "H5Cpp.h"
 #include "Eigen/Dense"
+#include <map>
 
 typedef Eigen::Matrix<float, 2, 3> Matrix23f;
 
@@ -27,16 +28,6 @@ typedef Eigen::Matrix<float, 2, 3> Matrix23f;
  * @param filename path to output file
  */
 void vectorToFile(std::vector<double> const &vec, std::string const &filename);
-
-/*!
- * Saves an OpenCV matrix to a text file
- *
- * This function saves a cv::Mat matrix to a text file. The file is essentially a CSV file, but the matrix is 'numpy'
- * style, which means that is begins with [ and ends with ] characters.
- * @param image matrix to be saved
- * @param filename path to output file
- */
-void MatToFile(cv::Mat &image, std::string const &filename);
 
 /*!
  * Decomposes a 2x3 affine transformation matrix into its underlying geometric components.
