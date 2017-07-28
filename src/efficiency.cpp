@@ -38,14 +38,14 @@ Efficiency::~Efficiency()
 
 }
 
-std::vector< double > Efficiency::get_efficieny(int order, std::vector<double> & wavelength)
+std::vector< double > Efficiency::get_efficiency(int order, std::vector<double> &wavelength)
 {
     std::vector<double> res(wavelength.size(), 1.0);
     
     return res;
 }
 
-std::vector< double > Efficiency::get_efficieny(int order, std::vector<double> & wavelength, int N)
+std::vector< double > Efficiency::get_efficiency(int order, std::vector<double> &wavelength, int N)
 {
     std::vector<double> res(N, 1.0);
 
@@ -53,7 +53,7 @@ std::vector< double > Efficiency::get_efficieny(int order, std::vector<double> &
 }
 
 
-std::vector< double > GratingEfficiency::get_efficieny(int order, std::vector<double> & wavelength)
+std::vector< double > GratingEfficiency::get_efficiency(int order, std::vector<double> &wavelength)
 {
   std::vector<double> res;  
   for(auto& w : wavelength)
@@ -61,7 +61,7 @@ std::vector< double > GratingEfficiency::get_efficieny(int order, std::vector<do
   return res;
 }
 
-std::vector< double > GratingEfficiency::get_efficieny(int order, std::vector<double> & wavelength, int N)
+std::vector< double > GratingEfficiency::get_efficiency(int order, std::vector<double> &wavelength, int N)
 {
     std::vector<double> res;
 //    for(auto& w : *wavelength)
@@ -87,9 +87,15 @@ ConstantEfficiency::ConstantEfficiency(double efficiency) : eff(efficiency){
 
 }
 
-std::vector<double> ConstantEfficiency::get_efficienct(int order, std::vector<double> & wavelength) {
+std::vector<double> ConstantEfficiency::get_efficiency(int order, std::vector<double> &wavelength) {
     std::vector<double> res;
     for(auto& w : wavelength)
+        res.push_back(this->eff);
+    return res;
+}
+std::vector<double> ConstantEfficiency::get_efficiency(int order, std::vector<double> &wavelength, int N) {
+    std::vector<double> res;
+    for(std::vector<int>::size_type i = 0; i != N; i++)
         res.push_back(this->eff);
     return res;
 }

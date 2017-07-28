@@ -3,6 +3,8 @@
 #include <fstream>
 #include <iterator>
 #include "spline.h"
+#include "Spectra.h"
+#include "Histogram.h"
 // #include <string>
 // #include <stdlib.h>
 #include "H5Cpp.h"
@@ -577,6 +579,26 @@ int MatrixSimulator::photon_order(int N_photons) {
 
     this->prepare_psfs(1000);
 
+
+    std::vector<Histogram> wl_s(orders.size());
+
+    //std::uniform_real_distribution<double> dis(0.0,1.0);
+    RG_uniform_real<double> dis(0,1);
+
+    #pragma omp parallel for
+    for(int o=0; o<this->orders.size(); ++o){
+
+        std::vector<double> a(sim_wavelength[o].begin(), sim_wavelength[o].end());
+        std::vector<double> b(sim_spectra_time_efficieny[o].begin(), sim_spectra_time_efficieny[o].end());
+        Histogram temp(a,b);
+
+        wl_s[o] = temp;
+
+        //std::vector<double> wavelength = wl_s[o].Sample(dis);
+
+    }
+
+
 #ifdef USE_CUDA
     int devID = findCudaDevice(0, (const char **) NULL);
 #endif
@@ -587,12 +609,19 @@ int MatrixSimulator::photon_order(int N_photons) {
     std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
 
     #pragma omp parallel for
+
     for(int o=0; o<this->orders.size(); ++o) {
         std::random_device rd;
         std::default_random_engine gen(rd());
 
-        std::piecewise_linear_distribution<> dis(this->sim_wavelength[o].begin(), this->sim_wavelength[o].end(),
-                                                 this->sim_spectra_time_efficieny[o].begin());
+       /* std::vector<double> a(sim_wavelength[o].begin(), sim_wavelength[o].end());
+        std::vector<double> b(sim_spectra_time_efficieny[o].begin(), sim_spectra_time_efficieny[o].end());
+
+        Histogram wl_s(a, b); */
+
+        //std::piecewise_linear_distribution<> dis(this->sim_wavelength[o].begin(), this->sim_wavelength[o].end(), this->sim_spectra_time_efficieny[o].begin());
+
+        ///vector<double> units = unit.draw(N_photons);
 
 #ifdef USE_CUDA
         RG_uniform_float rgx = RG_uniform_float(devID);
@@ -608,10 +637,14 @@ int MatrixSimulator::photon_order(int N_photons) {
         RG_uniform_real<double> rgy(0., this->slit->slit_sampling * this->slit->h / this->slit->w);
         std::vector<double> rand_x = rgx.draw(N_photons);
         std::vector<double> rand_y = rgy.draw(N_photons);
+        std::vector<double> rand_wl = dis.draw(N_photons);
+        //std::vector<double> rand_wl = dis.draw(N_photons);
 #endif
 
         for (int i = 0; i < N_photons; ++i) {
-            double wl = dis(gen);
+         //   double wl = wl_s[o].Sample(dis(gen));
+            //double wl = dis(gen);
+            double wl = wl_s[o].Sample(rand_wl[i]);
             Matrix23f tm = this->get_transformation_matrix(o, wl);
 
 //            float x = dis_slitx(gen);
@@ -677,6 +710,7 @@ int MatrixSimulator::photon_order(int N_photons) {
             float abx = abr_x(gen);
             float aby = abr_y(gen);
             float abz = abr_z(gen);
+            //cout<<o<<":"<<sim_psfs[o][idx_psf].cols<<":"<<sim_psfs[o][idx_psf].rows<<endl;
             while (abz > this->sim_psfs[o][idx_psf].at<double>(floor(aby), floor(abx))) {
                 abx = abr_x(gen);
                 aby = abr_y(gen);
@@ -841,7 +875,7 @@ void MatrixSimulator::set_efficiencies(std::vector<Efficiency *> &efficiencies)
         // std::vector<double> total_eff(this->sim_wavelength[o].size(), 1.0);
         for(auto& e : efficiencies)
         {
-            std::vector<double> sim_eff = e->get_efficieny(o+this->min_order, this->sim_wavelength[o]);
+            std::vector<double> sim_eff = e->get_efficiency(o+this->min_order, this->sim_wavelength[o]);
             for(int i=0; i<this->sim_efficiencies[o].size(); ++i)
             {
                 this->sim_efficiencies[o][i] *= sim_eff[i];
