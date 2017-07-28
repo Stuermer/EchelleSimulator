@@ -638,7 +638,6 @@ int MatrixSimulator::photon_order(int N_photons) {
         std::vector<double> rand_x = rgx.draw(N_photons);
         std::vector<double> rand_y = rgy.draw(N_photons);
         std::vector<double> rand_wl = dis.draw(N_photons);
-        //std::vector<double> rand_wl = dis.draw(N_photons);
 #endif
 
         for (int i = 0; i < N_photons; ++i) {
