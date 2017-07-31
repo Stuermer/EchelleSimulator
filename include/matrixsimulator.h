@@ -124,7 +124,7 @@ public:
 
     int get_fiber_number();
 
-    int photon_order(int N_photons);
+    int photon_order(double t, double area);
 
     int photon_order_artifical(int N_photons, double dl);
 

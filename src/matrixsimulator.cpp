@@ -572,27 +572,29 @@ int MatrixSimulator::photon_order_artifical(int N_photons, double dl)
 
     }
 }
-int MatrixSimulator::photon_order(int N_photons) {
+int MatrixSimulator::photon_order(double t, double area) {
     this->set_efficiencies(this->efficiencies);
 
     this->prepare_sources(this->sources);
 
     this->prepare_psfs(1000);
 
+    std::vector<Spectra> wl_s(orders.size());
+    std::vector<int> N_photons(orders.size());
 
-    std::vector<Histogram> wl_s(orders.size());
+    std::uniform_real_distribution<double> dis(0.0,1.0);
+    //RG_uniform_real<double> dis(0,1);
 
-    //std::uniform_real_distribution<double> dis(0.0,1.0);
-    RG_uniform_real<double> dis(0,1);
-
-    #pragma omp parallel for
+    //#pragma omp parallel for
     for(int o=0; o<this->orders.size(); ++o){
 
         std::vector<double> a(sim_wavelength[o].begin(), sim_wavelength[o].end());
         std::vector<double> b(sim_spectra_time_efficieny[o].begin(), sim_spectra_time_efficieny[o].end());
-        Histogram temp(a,b);
 
-        wl_s[o] = temp;
+        wl_s[o] = Spectra(a,b);
+
+        N_photons[o] = floor(wl_s[o].Calc_flux());
+        cout<<o<<":"<<N_photons[o]<<":"<<wl_s[o].Calc_flux()<<endl;
 
         //std::vector<double> wavelength = wl_s[o].Sample(dis);
 
@@ -635,15 +637,14 @@ int MatrixSimulator::photon_order(int N_photons) {
 #else
         RG_uniform_real<double> rgx(0., this->slit->slit_sampling);
         RG_uniform_real<double> rgy(0., this->slit->slit_sampling * this->slit->h / this->slit->w);
-        std::vector<double> rand_x = rgx.draw(N_photons);
-        std::vector<double> rand_y = rgy.draw(N_photons);
-        std::vector<double> rand_wl = dis.draw(N_photons);
+        std::vector<double> rand_x = rgx.draw(N_photons[o]);
+        std::vector<double> rand_y = rgy.draw(N_photons[o]);
+        //std::vector<double> rand_wl = dis.draw(N_photons);
 #endif
 
-        for (int i = 0; i < N_photons; ++i) {
-         //   double wl = wl_s[o].Sample(dis(gen));
-            //double wl = dis(gen);
-            double wl = wl_s[o].Sample(rand_wl[i]);
+        for (int i = 0; i < N_photons[o]; ++i) {
+            double wl = wl_s[o].Sample(dis(gen));
+            //double wl = wl_s[o].Sample(rand_wl[i]);
             Matrix23f tm = this->get_transformation_matrix(o, wl);
 
 //            float x = dis_slitx(gen);

@@ -82,6 +82,7 @@ Histogram::Histogram(vector<double> events, vector<double> weights){
     intensity=weights;
     length=events.size();
     Create_cdf();
+
 }
 
 //This constructor is different from the rest

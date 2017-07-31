@@ -20,7 +20,7 @@ public:
     //Filters the spectra and adds the result as an object
     //Technically deprecated because of Pass_filter
 
-    const double v_zp=866000.0; //The reference flux is obtained by integrating vega
+    double v_zp=866000.0; //The reference flux is obtained by integrating vega
                                 // over a bessel filter and has units photons/cm^2/s
 
     double magnitude;
@@ -47,7 +47,7 @@ public:
 
 };
 
-Spectra::Spectra(){
+Spectra::Spectra():Histogram(){
 
 }
 

@@ -34,7 +34,8 @@ int main(int argc, char *argv[])
 //        add_vector_parallel();
 //        simulator.prepare_interpolation(1000000);
 
-        simulator.photon_order(1000000);
+        //simulator.photon_order(1000000);
+          simulator.photon_order(1, 1);
 //        simulator.photon_order_artifical(50000,0.0002);
 //        simulator.simulate_spectrum(false);
 
