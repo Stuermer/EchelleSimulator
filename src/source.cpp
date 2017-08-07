@@ -54,7 +54,9 @@ std::vector<float> Source::get_spectrum(std::vector<double> wavelength) {
 
     for(std::vector<int>::size_type i = 0; i != wavelength.size()-1; i++)
     {
-        float result = this->integral_s( this->shift*wavelength[i] - diff[i] / 2., this->shift*wavelength[i] + diff[i] / 2., this->integration_steps);
+        double a = this->shift*wavelength[i] - diff[i] / 2.;
+        double b = this->shift*wavelength[i] + diff[i] / 2.;
+        float result = float(this->integral_s( a, b, this->integration_steps) / diff[i]);
         spectrum.push_back(result);
     }
 
@@ -65,11 +67,11 @@ void Source::set_integration_steps(int n) {
     this->integration_steps = n;
 }
 
-float Source::integral_s(double a, double b, int n) {
-        double step = (b - a) / n;  // width of each small rectangle
-        float area = 0.0;  // signed area
+double Source::integral_s(double a, double b, int n) {
+        double step = (b-a) / n;  // width of each small rectangle
+        double area = 0.0;  // signed area
         for (int i = 0; i < n; i ++) {
-            area += 10000000.* this->get_spectral_density(a + (i + 0.5) * step) * step; // sum up each small rectangle
+            area += this->get_spectral_density(a + (i + 0.5) * step) * step; // sum up each small rectangle
         }
         return area;
 }
@@ -83,15 +85,15 @@ double Constant::get_spectral_density(double wavelength) {
 }
 
 Constant::Constant(double value) {
-    this->value = value;
+    this->value = value; // uW per um (micro watts per micro meter)
 }
 
 Constant::Constant() {
-    this->value = 1.0;
+    this->value = 1.0 ; // uW per um (micro watts per micro meter)
 
 }
 
-IdealEtalon::IdealEtalon(double d, double n, double theta, double R) : d(d/1000.), n(n), theta(theta), R(R) {
+/* IdealEtalon::IdealEtalon(double d, double n, double theta, double R) : d(d/1000.), n(n), theta(theta), R(R) {
     this->cF = this->coefficient_of_finesse(R);
 }
 
@@ -117,6 +119,7 @@ double IdealEtalon::get_spectral_density(double wavelength) {
     return res;
 }
 
+ */
 
 Blackbody::Blackbody(double T): T(T){};
 
@@ -126,8 +129,8 @@ double Blackbody::planck(const double& T, const double& wavelength) {
     const double 	kBoltzmann = 1.3806504e-23;
     double a = 2.0 * hPlanck * speedOfLight*speedOfLight;
     double b = hPlanck * speedOfLight / (wavelength * kBoltzmann * T);
-    double intensity = a / (pow(wavelength,5) * (exp(b) - 1.0));
-    return intensity;
+    double intensity = (9.06E-17) * a / (pow(wavelength,5) * (exp(b) - 1.0)); //the factor is the solid angle extended by the stellar object
+    return intensity;                                                       //it's equal to pi*(r/d)^2 where r is the stellar radius and d is the distance
 }
 
 double Blackbody::get_spectral_density(double wavelength) {

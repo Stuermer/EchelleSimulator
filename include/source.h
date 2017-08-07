@@ -76,7 +76,7 @@ private:
      * \todo This integrator should be replaved with a more accurate one. For highly unresolved spectra this integrator
      * might not be very precise.
      */
-    float integral_s(double a, double b, int n);
+    double integral_s(double a, double b, int n);
 
     double shift; ///< current doppler shift
     int integration_steps; ///< number of steps for the integrator

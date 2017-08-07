@@ -575,12 +575,12 @@ int MatrixSimulator::photon_order_artifical(int N_photons, double dl)
 int MatrixSimulator::photon_order(double t, double area) {
     this->set_efficiencies(this->efficiencies);
 
-    this->prepare_sources(this->sources);
+    this->prepare_sources(this->sources); //put area eventually in sources
 
     this->prepare_psfs(1000);
 
     std::vector<Spectra> wl_s(orders.size());
-    std::vector<int> N_photons(orders.size());
+    std::vector<double> N_photons(orders.size());
 
     std::uniform_real_distribution<double> dis(0.0,1.0);
     //RG_uniform_real<double> dis(0,1);
@@ -588,13 +588,15 @@ int MatrixSimulator::photon_order(double t, double area) {
     //#pragma omp parallel for
     for(int o=0; o<this->orders.size(); ++o){
 
-        std::vector<double> a(sim_wavelength[o].begin(), sim_wavelength[o].end());
-        std::vector<double> b(sim_spectra_time_efficieny[o].begin(), sim_spectra_time_efficieny[o].end());
+        std::vector<double> a(sim_wavelength[o].begin(), sim_wavelength[o].end()); //units are um
+        std::vector<double> b(sim_spectra_time_efficieny[o].begin(), sim_spectra_time_efficieny[o].end()); //units are uW per um
 
         wl_s[o] = Spectra(a,b);
 
-        N_photons[o] = floor(wl_s[o].Calc_flux());
+        //units are assumed to be t=[s], area=[m^2], wl_s.dflux=[Num of Photons]/([s] * [m^2] * [um]), wl_s.Calc_flux = [Num of Photons]/([s]*[m^2])
+        N_photons[o] = t*area*wl_s[o].Calc_flux();
         cout<<o<<":"<<N_photons[o]<<":"<<wl_s[o].Calc_flux()<<endl;
+        //cout<<sim_wavelength[o][0]<<":"<<sim_wavelength[o][9999]<<endl;
 
         //std::vector<double> wavelength = wl_s[o].Sample(dis);
 

@@ -22,8 +22,8 @@ int main(int argc, char *argv[])
         simulator.add_efficiency(&ge);
 //        simulator.add_efficiency(&ee);
 
-//        Blackbody cs = Blackbody(3500.);
-        Constant cs = Constant(1000000.);
+          Blackbody cs = Blackbody(9602.);
+//        Constant cs = Constant(10E-8);
 //        PhoenixSpectrum cs = PhoenixSpectrum("/data/work/template/7125_0_lte03200-5.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_2.fits",
 //        "/data/work/template/WAVE_PHOENIX-ACES-AGSS-COND-2011.fits",0.45, 0.85);
 //        IdealEtalon cs = IdealEtalon(5., 1., 0., 0.95);

@@ -20,8 +20,8 @@ public:
     //Filters the spectra and adds the result as an object
     //Technically deprecated because of Pass_filter
 
-    double v_zp=866000.0; //The reference flux is obtained by integrating vega
-                                // over a bessel filter and has units photons/cm^2/s
+    double v_zp=8660006000.0; //The reference flux is obtained by integrating vega
+                                // over a bessel filter and has units photons/m^2/s
 
     double magnitude;
 
@@ -122,13 +122,20 @@ Spectra Spectra::Pass_filter(Histogram filter){
 }
 
 void Spectra::Create_dflux(){
+    //0.503 is for assuming intensity is erg/s/cm^2/cm
+    //and that event is in A
+
+    //5.03*10^12 is for assuming intensity is uW/m^2/um
+    //and that event is in um
+
+    double ch_factor = 5.03E12;
+
     for(int i=0; i<length; i++){
-        dflux.push_back(intensity[i]*(0.503)*(event[i]));
-        //0.503 is for assuming intensity is erg/s/cm^2/cm
-        //and that event is in A
+        dflux.push_back(intensity[i]*(ch_factor)*(event[i]));
+
     }
 
-    dflux.push_back(intensity[length-1]*(0.503)*event[length-1]);
+    dflux.push_back(intensity[length-1]*(ch_factor)*event[length-1]);
 
     return;
 }
