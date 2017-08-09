@@ -216,14 +216,14 @@ public:
      * Constructor
      * @param T Temperature [K]
      */
-    Blackbody(double T);
+    Blackbody(double T, double mag);
     /*!
      * Planck function for spectral density of a blackbody with Temperature T
      * @param T Temperature [K]
      * @param wavelength wavelength [m]
      * @return spectral density
      */
-    static double planck(const double& T, const double& wavelength);
+    static double planck(const double& T, const double& wavelength, const double s_val);
     /*!
      * spectral density of a blackbody
      * \f[
@@ -233,8 +233,15 @@ public:
      * @return spectral density of a blackbody at given wavelength
      */
     double get_spectral_density(double wavelength);
+
+    void scale_spectral_density();
+
 private:
     double T; ///< Temperature [K]
+    double mag; //Star magnitude
+    double v_zp=8660006000.0; //The reference flux is obtained by integrating vega
+    // over a bessel filter and has units photons/m^2/s
+    double s_val  = v_zp;
 };
 
 class PhoenixSpectrum : public Source{

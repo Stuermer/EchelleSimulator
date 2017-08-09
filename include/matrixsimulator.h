@@ -12,6 +12,7 @@
 #include "PSF.h"
 #include "CCD.h"
 #include "Slit.h"
+#include "telescope.h"
 #include <Eigen/Dense>
 
 struct point2d{
@@ -69,6 +70,8 @@ public:
 
     void add_efficiency(Efficiency *eff);
 
+    void add_telescope(Telescope *telescope);
+
     void add_source(Source *src);
 
     /**
@@ -124,7 +127,7 @@ public:
 
     int get_fiber_number();
 
-    int photon_order(double t, double area);
+    int photon_order(double t);
 
     int photon_order_artifical(int N_photons, double dl);
 
@@ -144,6 +147,7 @@ private:
 
     std::vector<Efficiency *> efficiencies;
     std::vector<Source *> sources;
+    Telescope telescope;
 
 //    std::map<int, std::vector<double> > sim_wavelength;
     std::vector<std::vector<double>> sim_wavelength;

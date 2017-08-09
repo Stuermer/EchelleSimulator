@@ -15,14 +15,17 @@ int main(int argc, char *argv[])
         high_resolution_clock::time_point t1 = high_resolution_clock::now();
         simulator.load_spectrograph_model(argv[1], i, i>1);
         std::cout<< "Fiber " << i << std::endl;
-
+        Telescope Gemini = Telescope();
         GratingEfficiency ge = GratingEfficiency(0.8, simulator.get_blaze(), simulator.get_blaze(), simulator.get_gpmm());
-//        EtalonEfficiency ee = EtalonEfficiency(5.,1.,0., 0.95);
+//        EtalonEfficiency ee = EtalonEfficiency(10.,1.,0., 0.95);
 //        ConstantEfficiency ge = ConstantEfficiency(1.);
         simulator.add_efficiency(&ge);
+        simulator.add_telescope(&Gemini);
 //        simulator.add_efficiency(&ee);
 
-          Blackbody cs = Blackbody(9602.);
+          Blackbody cs = Blackbody(9602., 1.);
+
+
 //        Constant cs = Constant(10E-8);
 //        PhoenixSpectrum cs = PhoenixSpectrum("/data/work/template/7125_0_lte03200-5.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_2.fits",
 //        "/data/work/template/WAVE_PHOENIX-ACES-AGSS-COND-2011.fits",0.45, 0.85);
@@ -37,7 +40,7 @@ int main(int argc, char *argv[])
 //        simulator.prepare_interpolation(1000000);
 
         //simulator.photon_order(1000000);
-          simulator.photon_order(1, 1);
+          simulator.photon_order(1);
 //        simulator.photon_order_artifical(50000,0.0002);
 //        simulator.simulate_spectrum(false);
 

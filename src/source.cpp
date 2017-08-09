@@ -121,20 +121,41 @@ double IdealEtalon::get_spectral_density(double wavelength) {
 
  */
 
-Blackbody::Blackbody(double T): T(T){};
+Blackbody::Blackbody(double T, double mag): T(T), mag(mag){
 
-double Blackbody::planck(const double& T, const double& wavelength) {
+    scale_spectral_density();
+
+};
+
+double Blackbody::planck(const double& T, const double& wavelength, const double s_val) {
     const double 	hPlanck = 6.62606896e-34;
     const double 	speedOfLight = 2.99792458e8;
     const double 	kBoltzmann = 1.3806504e-23;
     double a = 2.0 * hPlanck * speedOfLight*speedOfLight;
     double b = hPlanck * speedOfLight / (wavelength * kBoltzmann * T);
-    double intensity = (9.06E-17) * a / (pow(wavelength,5) * (exp(b) - 1.0)); //the factor is the solid angle extended by the stellar object
+    double intensity = (s_val) * a / (pow(wavelength,5) * (exp(b) - 1.0)); //the factor is the solid angle extended by the stellar object
     return intensity;                                                       //it's equal to pi*(r/d)^2 where r is the stellar radius and d is the distance
 }
 
 double Blackbody::get_spectral_density(double wavelength) {
-    return this->planck(this->T, wavelength/1E6);
+    return this->planck(this->T, wavelength/1E6, s_val);
+}
+
+void Blackbody::scale_spectral_density(){
+
+    double a = 0;
+    double b = 10000;
+    int n =10000;
+    double step = (b-a) / n;  // width of each small rectangle
+    double area = 0.0;  // signed area
+    for (int i = 0; i < n; i ++) {
+        area += this->get_spectral_density(a + (i + 0.5) * step) * step; // sum up each small rectangle
+    }
+
+    std::cout<<area;
+
+    s_val = pow(10, mag/(-2.5))*v_zp/area;
+
 }
 
 

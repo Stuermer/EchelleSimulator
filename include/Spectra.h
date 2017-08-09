@@ -123,7 +123,7 @@ Spectra Spectra::Pass_filter(Histogram filter){
 
 void Spectra::Create_dflux(){
     //0.503 is for assuming intensity is erg/s/cm^2/cm
-    //and that event is in A
+    //and that event~(wavelength) is in A
 
     //5.03*10^12 is for assuming intensity is uW/m^2/um
     //and that event is in um

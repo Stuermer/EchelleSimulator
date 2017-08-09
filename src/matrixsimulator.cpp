@@ -237,6 +237,9 @@ double MatrixSimulator::get_gpmm() {
     return this->spec_info.gpmm;
 }
 
+void MatrixSimulator::add_telescope(Telescope *telescope) {
+    this->telescope = *telescope;
+}
 void MatrixSimulator::calc_splines(){
     this->tr_p.clear();
     this->tr_q.clear();
@@ -572,7 +575,7 @@ int MatrixSimulator::photon_order_artifical(int N_photons, double dl)
 
     }
 }
-int MatrixSimulator::photon_order(double t, double area) {
+int MatrixSimulator::photon_order(double t) {
     this->set_efficiencies(this->efficiencies);
 
     this->prepare_sources(this->sources); //put area eventually in sources
@@ -586,6 +589,7 @@ int MatrixSimulator::photon_order(double t, double area) {
     //RG_uniform_real<double> dis(0,1);
 
     //#pragma omp parallel for
+
     for(int o=0; o<this->orders.size(); ++o){
 
         std::vector<double> a(sim_wavelength[o].begin(), sim_wavelength[o].end()); //units are um
@@ -594,8 +598,10 @@ int MatrixSimulator::photon_order(double t, double area) {
         wl_s[o] = Spectra(a,b);
 
         //units are assumed to be t=[s], area=[m^2], wl_s.dflux=[Num of Photons]/([s] * [m^2] * [um]), wl_s.Calc_flux = [Num of Photons]/([s]*[m^2])
-        N_photons[o] = t*area*wl_s[o].Calc_flux();
-        cout<<o<<":"<<N_photons[o]<<":"<<wl_s[o].Calc_flux()<<endl;
+        N_photons[o] = 1000000;
+        //this->telescope->get_area();
+        //t*area*wl_s[o].Calc_flux()
+        cout<<o<<" \t "<<N_photons[o]<<" \t "<<wl_s[o].Calc_flux() <<endl;
         //cout<<sim_wavelength[o][0]<<":"<<sim_wavelength[o][9999]<<endl;
 
         //std::vector<double> wavelength = wl_s[o].Sample(dis);
@@ -644,8 +650,10 @@ int MatrixSimulator::photon_order(double t, double area) {
         //std::vector<double> rand_wl = dis.draw(N_photons);
 #endif
 
+        //#pragma omp parallel for
+
         for (int i = 0; i < N_photons[o]; ++i) {
-            double wl = wl_s[o].Sample(dis(gen));
+            double wl = wl_s[o].event[1];
             //double wl = wl_s[o].Sample(rand_wl[i]);
             Matrix23f tm = this->get_transformation_matrix(o, wl);
 
@@ -962,7 +970,7 @@ void MatrixSimulator::prepare_sources(std::vector<Source *> sources) {
             for (auto &s : sources) {
                 std::vector<float> spectrum = s->get_spectrum(this->sim_wavelength[o]);
                 for (int i = 0; i < spectrum.size(); ++i) {
-                    this->sim_spectra[o][i] = spectrum[i];
+                    this->sim_spectra[o][i] = spectrum[i] * telescope.get_area();
                     this->sim_spectra_time_efficieny[o][i] = spectrum[i] * this->sim_efficiencies[o][i];
                 }
             }
