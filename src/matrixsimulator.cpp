@@ -643,18 +643,20 @@ int MatrixSimulator::photon_order(double t) {
         float x_mul = this->slit->slit_sampling;
         float y_mul = this->slit->slit_sampling * this->slit->h / this->slit->w;
 #else
-        RG_uniform_real<double> rgx(0., this->slit->slit_sampling);
-        RG_uniform_real<double> rgy(0., this->slit->slit_sampling * this->slit->h / this->slit->w);
-        std::vector<double> rand_x = rgx.draw(N_photons[o]);
-        std::vector<double> rand_y = rgy.draw(N_photons[o]);
+        std::uniform_real_distribution<double> rgx(0., this->slit->slit_sampling);
+        std::uniform_real_distribution<double> rgy(0., this->slit->slit_sampling * this->slit->h / this->slit->w);
+        //RG_uniform_real<double> rgx(0., this->slit->slit_sampling);
+        //RG_uniform_real<double> rgy(0., this->slit->slit_sampling * this->slit->h / this->slit->w);
+        //std::vector<double> rand_x = rgx.draw(N_photons[o]);
+        //std::vector<double> rand_y = rgy.draw(N_photons[o]);
         //std::vector<double> rand_wl = dis.draw(N_photons);
 #endif
 
         //#pragma omp parallel for
 
         for (int i = 0; i < N_photons[o]; ++i) {
-            double wl = wl_s[o].event[1];
-            //double wl = wl_s[o].Sample(rand_wl[i]);
+            //double wl = wl_s[o].event[dis(gen)];
+            double wl = wl_s[o].Sample(dis(gen));
             Matrix23f tm = this->get_transformation_matrix(o, wl);
 
 //            float x = dis_slitx(gen);
@@ -663,8 +665,10 @@ int MatrixSimulator::photon_order(double t) {
             float x = rand_x[i]*x_mul;
             float y = rand_y[i]*y_mul;
 #else
-            float x = rand_x[i];
-            float y = rand_y[i];
+            //float x = rand_x[i];
+            //float y = rand_y[i];
+            float x = rgx(gen);
+            float y = rgy(gen);
 #endif
 
             float newx = (tm(0, 0) * x + tm(0, 1) * y + tm(0, 2)) / 3.;
@@ -971,6 +975,7 @@ void MatrixSimulator::prepare_sources(std::vector<Source *> sources) {
                 std::vector<float> spectrum = s->get_spectrum(this->sim_wavelength[o]);
                 for (int i = 0; i < spectrum.size(); ++i) {
                     this->sim_spectra[o][i] = spectrum[i] * telescope.get_area();
+                    //cout<<this->sim_spectra[o][i]<<":"<<spectrum[i]<<endl;
                     this->sim_spectra_time_efficieny[o][i] = spectrum[i] * this->sim_efficiencies[o][i];
                 }
             }

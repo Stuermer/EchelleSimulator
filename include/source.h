@@ -223,7 +223,7 @@ public:
      * @param wavelength wavelength [m]
      * @return spectral density
      */
-    static double planck(const double& T, const double& wavelength, const double s_val);
+    double planck(const double& T, const double& wavelength);
     /*!
      * spectral density of a blackbody
      * \f[
@@ -231,6 +231,9 @@ public:
      * \f]
      * @param wavelength wavelength [micron]
      * @return spectral density of a blackbody at given wavelength
+     * @param mag is the apparent magnitude of the source
+     * @param v_zp is the reference flux used to adjust the flux
+     * @param s_val is the scaling factor to adjust the flux
      */
     double get_spectral_density(double wavelength);
 
@@ -241,16 +244,31 @@ private:
     double mag; //Star magnitude
     double v_zp=8660006000.0; //The reference flux is obtained by integrating vega
     // over a bessel filter and has units photons/m^2/s
-    double s_val  = v_zp;
+    double s_val  = 1000;
 };
 
 class PhoenixSpectrum : public Source{
 public:
-    PhoenixSpectrum(std::string spectrum_file, std::string wavelength_file, const double& min_wavelength, const double& max_wavelength);
-    void read_spectrum(std::string spectrum_file, std::string wavelength_file, const double& min_wavelength, const double& max_wavelength);
+    PhoenixSpectrum(std::string spectrum_file, std::string wavelength_file, const double& min_wavelength, const double& max_wavelength, double mag);
+    /*!
+     * read in the spectrum from file between min_wavelength and max_wavelength
+     * @param spectrum_file file path of spectrum
+     * @param wavelength_file file path of wavelength
+     * @param min_wavelength minimum wavelength in micrometer
+     * @param max_wavelength maximum wavelength in micrometer
+     * @param mag is the apparent magnitude of the source
+     * @param v_zp is the reference flux used to adjust the flux
+     * @param s_val is the scaling factor to adjust the flux
+     */
+    void read_spectrum(std::string spectrum_file, std::string wavelength_file, const double& min_wavelength, const double& max_wavelength, double mag);
     double get_spectral_density(double wavelength);
+    void scale_spectral_density();
 private:
+
     std::map<double, double> data;
+    double mag;
+    double v_zp = 8660006000.0;
+    double s_val = 1;
 
 };
 

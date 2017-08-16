@@ -125,10 +125,10 @@ void Spectra::Create_dflux(){
     //0.503 is for assuming intensity is erg/s/cm^2/cm
     //and that event~(wavelength) is in A
 
-    //5.03*10^12 is for assuming intensity is uW/m^2/um
+    //5.03*10^10 is for assuming intensity is uW/m^2/um
     //and that event is in um
 
-    double ch_factor = 5.03E12;
+    double ch_factor = 5.03E10;
 
     for(int i=0; i<length; i++){
         dflux.push_back(intensity[i]*(ch_factor)*(event[i]));
