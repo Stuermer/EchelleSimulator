@@ -31,6 +31,7 @@ public:
     /*!
      * \fn virtual double get_spectral_density(double wavelength)
      * This function returns the spectral density at a given wavelength. It is the essential function for all subclasses.
+     *
      * \see Source::get_spectrum() will use this function to integrate over it to retreive a spectrum for a given wavelength vector.
      * @param wavelength wavelength
      * @return spectral density
@@ -59,7 +60,27 @@ public:
      */
     void set_integration_steps(int n);
 
+    /*!
+     * Scales the spectral density of the source by converting to photon density and normalizing against integrated photon flux
+     */
+    void scale_spectral_density();
+
+protected:
+
+    /// Source apparent magnitude
+    double mag;
+    /// Reference flux obtained from integration of vega over bessel filter (units are photons/m^2/s)
+    double v_zp=8660006000.0;
+    /// Scaling factor used in Source::scale_spectral_density() for normalization of source spectral_density against Source::v_zp
+    double s_val  = 1.0;
+
+    /// minimum wavelength recorded for source
+    double min_w;
+    /// maximum wavelength recorded for source
+    double max_w;
+
 private:
+
     /*!
      * Integrates the \see{Source::spectral_density()} function between limits a and b.
      *
@@ -68,8 +89,8 @@ private:
      * \f[
      * I = \int_{a}^{b}(s(\lambda) d\lambda \approx \sum_{i=0}^{n} s(a + (i+0.5)frac{b-a}{n}) * \frac{(b-a)}{n}
      * \f]
-     * @param a lower wavelength limit
-     * @param b upper wavelength limit
+     * @param min_w lower wavelength limit
+     * @param max_w upper wavelength limit
      * @param n number of subintervalls
      * @return integrated spectrum within [a, b]
      *
@@ -230,21 +251,12 @@ public:
      * s(\lambda) = \frac{2hc^2}{\lambda^5}\frac{1}{\exp{\frac{hc}{\lambda k_B T}}-1}
      * \f]
      * @param wavelength wavelength [micron]
-     * @param mag is the apparent magnitude of the source
-     * @param v_zp is the reference flux used to adjust the flux
-     * @param s_val is the scaling factor to adjust the flux
      * @return spectral density of a blackbody at given wavelength
      */
     double get_spectral_density(double wavelength);
 
-    void scale_spectral_density();
-
 private:
     double T; ///< Temperature [K]
-    double mag; //Star magnitude
-    double v_zp=8660006000.0; //The reference flux is obtained by integrating vega
-    // over a bessel filter and has units photons/m^2/s
-    double s_val  = 1.0;
 };
 
 class PhoenixSpectrum : public Source{
@@ -256,21 +268,13 @@ public:
      * @param wavelength_file file path of wavelength
      * @param min_wavelength minimum wavelength in micrometer
      * @param max_wavelength maximum wavelength in micrometer
-     * @param mag is the apparent magnitude of the source
-     * @param v_zp is the reference flux used to adjust the flux
-     * @param s_val is the scaling factor to adjust the flux
      */
     void read_spectrum(std::string spectrum_file, std::string wavelength_file, const double& min_wavelength, const double& max_wavelength, double mag);
     double get_spectral_density(double wavelength);
-    void scale_spectral_density();
+
 private:
 
     std::map<double, double> data;
-    double min_w;
-    double max_w;
-    double mag;
-    double v_zp = 8660006000.0;
-    double s_val = 1.0;
 
 };
 

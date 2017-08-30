@@ -80,6 +80,25 @@ void Source::set_doppler_shift(double shift) {
     this->shift = 1. + shift / 300000000.;
 }
 
+void Source::scale_spectral_density() {
+
+    double a = min_w;
+    double b = max_w;
+    double inten_pho = 5.03E12;
+    int n =100000;
+    double step = (b-a) / n;  // width of each small rectangle
+    double area = 0.0;  // signed area
+    for (int i = 0; i < n; i ++) {
+        area += this->get_spectral_density(a + (i + 0.5) * step) * (inten_pho) * (a + (i + 0.5) * step) * (step); // sum up each small rectangle
+    }
+
+    //std::cout<<area;
+
+    s_val = s_val * pow(10, mag/(-2.5))*v_zp / (area);
+    std::cout<<s_val;
+
+}
+
 double Constant::get_spectral_density(double wavelength) {
     return this->value;
 }
@@ -121,7 +140,9 @@ double IdealEtalon::get_spectral_density(double wavelength) {
 
  */
 
-Blackbody::Blackbody(double T, double mag): T(T), mag(mag){
+Blackbody::Blackbody(double T, double mag): T(T){
+
+    this -> mag = mag;
 
     scale_spectral_density();
 
@@ -141,25 +162,6 @@ double Blackbody::planck(const double& T, const double& wavelength) {
 double Blackbody::get_spectral_density(double wavelength) {
     return this->planck(this->T, wavelength/1E6);
 }
-
-void Blackbody::scale_spectral_density(){
-
-    double a = 0;
-    double b = 10;
-    int n =100000;
-    double step = (b-a) / n;  // width of each small rectangle
-    double area = 0.0;  // signed area
-    for (int i = 0; i < n; i ++) {
-        area += this->get_spectral_density(a + (i + 0.5) * step) * (5.03E12) * (a + (i + 0.5) * step) * (step); // sum up each small rectangle
-    }
-
-    //std::cout<<area;
-
-    s_val = s_val * pow(10, mag/(-2.5))*v_zp / (area);
-    std::cout<<s_val;
-
-}
-
 
 PhoenixSpectrum::PhoenixSpectrum(std::string spectrum_file, std::string wavelength_file, const double &min_wavelength,
                                  const double &max_wavelength, double mag) {
@@ -215,10 +217,9 @@ void PhoenixSpectrum::read_spectrum(std::string spectrum_file, std::string wavel
 
 double PhoenixSpectrum::get_spectral_density(double wavelength) {
 
-    double a = (s_val)*interpolate(this->data, wavelength);
+    return (s_val)*interpolate(this->data, wavelength);
     //std::cout<<a<<":";
 
-    return a;
     /*
     long idx = 0;
     while (idx < this->wavelength.size() && this->wavelength[idx] < wavelength) {
@@ -227,27 +228,6 @@ double PhoenixSpectrum::get_spectral_density(double wavelength) {
     double frac = (wavelength - this->wavelength[idx-1]) / (this->wavelength[idx] - this->wavelength[idx-1]);
     return lerp(this->spectrum[idx-1], this->spectrum[idx], frac);
      */
-}
-
-void PhoenixSpectrum::scale_spectral_density(){
-
-    double a = this -> min_w;
-    double b = this -> max_w;
-    int n =100000;
-    double step = (b-a) / n;  // width of each small rectangle
-    double area = 0.0;  // signed area
-    for (int i = 0; i < n; i ++) {
-        area += this->get_spectral_density(a + (i + 0.5) * step) * (5.03E12) * (a + (i + 0.5) * step) * (step); // sum up each small rectangle
-        //std::cout<<this->get_spectral_density(a + (i + 0.5) * step)<<":";
-    }
-
-    //std::cout<<area;
-
-    s_val = s_val * pow(10, mag/(-2.5)) * v_zp / (area);
-    std::cout<<s_val;
-
-
-
 }
 
 LineList::LineList(std::string linelist) {
