@@ -230,10 +230,10 @@ public:
      * s(\lambda) = \frac{2hc^2}{\lambda^5}\frac{1}{\exp{\frac{hc}{\lambda k_B T}}-1}
      * \f]
      * @param wavelength wavelength [micron]
-     * @return spectral density of a blackbody at given wavelength
      * @param mag is the apparent magnitude of the source
      * @param v_zp is the reference flux used to adjust the flux
      * @param s_val is the scaling factor to adjust the flux
+     * @return spectral density of a blackbody at given wavelength
      */
     double get_spectral_density(double wavelength);
 
@@ -244,7 +244,7 @@ private:
     double mag; //Star magnitude
     double v_zp=8660006000.0; //The reference flux is obtained by integrating vega
     // over a bessel filter and has units photons/m^2/s
-    double s_val  = 1000;
+    double s_val  = 1.0;
 };
 
 class PhoenixSpectrum : public Source{
@@ -266,9 +266,11 @@ public:
 private:
 
     std::map<double, double> data;
+    double min_w;
+    double max_w;
     double mag;
     double v_zp = 8660006000.0;
-    double s_val = 1;
+    double s_val = 1.0;
 
 };
 

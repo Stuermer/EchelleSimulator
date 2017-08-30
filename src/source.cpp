@@ -128,12 +128,13 @@ Blackbody::Blackbody(double T, double mag): T(T), mag(mag){
 };
 
 double Blackbody::planck(const double& T, const double& wavelength) {
-    const double 	hPlanck = 6.62606896e-34;
-    const double 	speedOfLight = 2.99792458e8;
-    const double 	kBoltzmann = 1.3806504e-23;
+    const double 	hPlanck = 6.62606896e-34; //J * s;
+    const double 	speedOfLight = 2.99792458e8; //m / s;
+    const double 	kBoltzmann = 1.3806504e-23; //J / K
     double a = 2.0 * hPlanck * speedOfLight*speedOfLight;
     double b = hPlanck * speedOfLight / (wavelength * kBoltzmann * T);
-    double intensity = (2.98421e-14) * a / (pow(wavelength,5) * (exp(b) - 1.0));
+    double c = 1E0; // Conversion factor for intensity
+    double intensity = (s_val) * (c) * a / (pow(wavelength,5) * (exp(b) - 1.0)); // (J / s ) / m^3 -> (uJ / s) / ( m^2 * um )
     return intensity;
 }
 
@@ -144,18 +145,18 @@ double Blackbody::get_spectral_density(double wavelength) {
 void Blackbody::scale_spectral_density(){
 
     double a = 0;
-    double b = 10000000;
-    int n =1000000;
+    double b = 10;
+    int n =100000;
     double step = (b-a) / n;  // width of each small rectangle
     double area = 0.0;  // signed area
     for (int i = 0; i < n; i ++) {
-        area += this->get_spectral_density(a + (i + 0.5) * step) * (5.03E10) * (a + (i + 0.5) * step) * (step); // sum up each small rectangle
+        area += this->get_spectral_density(a + (i + 0.5) * step) * (5.03E12) * (a + (i + 0.5) * step) * (step); // sum up each small rectangle
     }
 
     //std::cout<<area;
 
     s_val = s_val * pow(10, mag/(-2.5))*v_zp / (area);
-    //std::cout<<s_val;
+    std::cout<<s_val;
 
 }
 
@@ -184,6 +185,9 @@ void PhoenixSpectrum::read_spectrum(std::string spectrum_file, std::string wavel
     //std::cout<<min_wavelength;
     double max_wavelength_angstrom = max_wavelength*10000.;
 
+    min_w = min_wavelength;
+    max_w = max_wavelength;
+
     // find wavelength limits
     for (long j = 0; j < ax1; ++j)
     {
@@ -203,13 +207,18 @@ void PhoenixSpectrum::read_spectrum(std::string spectrum_file, std::string wavel
     // find wavelength limits
     // convert contents_spec from erg/s/cm^2/cm to uW/s/m^2/um
     for (long j = min_idx; j < max_idx; ++j) {
-        this->data[contents_wl[j]/10000.] = contents_spec[j];
+        this->data[contents_wl[j]/10000.] = (1E3) * contents_spec[j];
+        //std::cout<<contents_spec[j]<<":";
     }
 
 }
 
 double PhoenixSpectrum::get_spectral_density(double wavelength) {
-    return (s_val)*interpolate(this->data, wavelength);
+
+    double a = (s_val)*interpolate(this->data, wavelength);
+    //std::cout<<a<<":";
+
+    return a;
     /*
     long idx = 0;
     while (idx < this->wavelength.size() && this->wavelength[idx] < wavelength) {
@@ -222,19 +231,20 @@ double PhoenixSpectrum::get_spectral_density(double wavelength) {
 
 void PhoenixSpectrum::scale_spectral_density(){
 
-    double a = 0;
-    double b = 1000000;
-    int n =1000000;
+    double a = this -> min_w;
+    double b = this -> max_w;
+    int n =100000;
     double step = (b-a) / n;  // width of each small rectangle
     double area = 0.0;  // signed area
     for (int i = 0; i < n; i ++) {
-        area += this->get_spectral_density(a + (i + 0.5) * step) * (5.03E-1) * (a + (i + 0.5) * step) * (step); // sum up each small rectangle
+        area += this->get_spectral_density(a + (i + 0.5) * step) * (5.03E12) * (a + (i + 0.5) * step) * (step); // sum up each small rectangle
+        //std::cout<<this->get_spectral_density(a + (i + 0.5) * step)<<":";
     }
 
     //std::cout<<area;
 
     s_val = s_val * pow(10, mag/(-2.5)) * v_zp / (area);
-    //std::cout<<s_val;
+    std::cout<<s_val;
 
 
 

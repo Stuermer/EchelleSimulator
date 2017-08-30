@@ -608,7 +608,6 @@ int MatrixSimulator::photon_order(double t) {
 
     }
 
-
 #ifdef USE_CUDA
     int devID = findCudaDevice(0, (const char **) NULL);
 #endif
@@ -729,7 +728,9 @@ int MatrixSimulator::photon_order(double t) {
                 abx = abr_x(gen);
                 aby = abr_y(gen);
                 abz = abr_z(gen);
+                //cout<<abx<<":"<<aby<<":"<<this->sim_psfs[o][idx_psf].at<double>(floor(aby), floor(abx))<<endl;
             }
+
 //            std::cout<<(abx-this->sim_psfs[o][idx_psf].cols/2.)/3.<<"\t"<<(aby-this->sim_psfs[o][idx_psf].rows/2.)/3.<< std::endl;
 //            double abx = abr_x(gen);
 //            std::cout<<(abx-this->sim_psfs[o][idx_psf].cols/2.)/3.<<"\t"<<(aby-this->sim_psfs[o][idx_psf].rows/2.)/3.<< std::endl;
@@ -968,7 +969,7 @@ void MatrixSimulator::prepare_sources(std::vector<Source *> sources) {
 //                std::pair<int, std::vector<float> >(o, std::vector<float>(this->sim_wavelength[o].size())));
     }
 
-    #pragma omp parallel for
+    //#pragma omp parallel for
     for(int o=0; o<this->orders.size(); ++o) {
         {
             for (auto &s : sources) {
