@@ -595,6 +595,7 @@ int MatrixSimulator::photon_order(double t) {
         std::vector<double> a(sim_wavelength[o].begin(), sim_wavelength[o].end()); //units are um
         std::vector<double> b(sim_spectra_time_efficieny[o].begin(), sim_spectra_time_efficieny[o].end()); //units are uW per um
 
+
         wl_s[o] = Spectra(a,b);
 
         //units are assumed to be t=[s], area=[m^2], wl_s.dflux=[Num of Photons]/([s] * [m^2] * [um]), wl_s.Calc_flux = [Num of Photons]/([s]*[m^2])

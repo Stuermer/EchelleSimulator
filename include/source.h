@@ -62,6 +62,12 @@ public:
 
     /*!
      * Scales the spectral density of the source by converting to photon density and normalizing against integrated photon flux
+     *
+     * Spectral density is assumed to be in the units [micro watt] / ([micro meter] * [meter]^2). To convert to photon density we divide the spectral density by
+     * the energy in a photon at a specific wavelength (Planck's Equation). This results in the multiplied factors Source::inten_pho and wavelength
+     * which is represented by (a + (i + 0.5) * step). We integrate over all available wavelengths, Source::min_w to Source::max_w, to obtain
+     * the photon flux. We then produce a scaling factor Source::s_val for the spectral density by comparing the photon flux
+     * to the flux from the star Vega. We then normalize so that our source is at a fixed magnitude Source::mag with respect to Vega.
      */
     void scale_spectral_density();
 
@@ -74,9 +80,9 @@ protected:
     /// Scaling factor used in Source::scale_spectral_density() for normalization of source spectral_density against Source::v_zp
     double s_val  = 1.0;
 
-    /// minimum wavelength recorded for source
+    /// minimum wavelength recorded for source [micro meters]
     double min_w;
-    /// maximum wavelength recorded for source
+    /// maximum wavelength recorded for source [micro meters]
     double max_w;
 
 private:
@@ -250,8 +256,8 @@ public:
      * \f[
      * s(\lambda) = \frac{2hc^2}{\lambda^5}\frac{1}{\exp{\frac{hc}{\lambda k_B T}}-1}
      * \f]
-     * @param wavelength wavelength [micron]
-     * @return spectral density of a blackbody at given wavelength
+     * @param wavelength wavelength [micro meters]
+     * @return spectral density of a blackbody at given wavelength [micro Watt] / ([micro meter] * [meter]^2 )
      */
     double get_spectral_density(double wavelength);
 
