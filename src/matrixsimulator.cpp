@@ -360,6 +360,19 @@ void MatrixSimulator::calc_sim_matrices(){
     }
 }
 
+Matrix23f MatrixSimulator::get_transformation_matrix_lookup(int o, double wavelength){
+    std::vector<double> parameters;
+    int idx_matrix = floor((wavelength - this->sim_wavelength[o].front()) / this->sim_matrix_dwavelength[o]);
+
+    parameters.push_back(this->sim_p[o][idx_matrix]);
+    parameters.push_back(this->sim_q[o][idx_matrix]);
+    parameters.push_back(this->sim_r[o][idx_matrix]);
+    parameters.push_back(this->sim_phi[o][idx_matrix]);
+    parameters.push_back(this->tr_tx[o](wavelength));
+    parameters.push_back(this->tr_ty[o](wavelength));
+    return compose_matrix(parameters);
+
+}
 Matrix23f MatrixSimulator::get_transformation_matrix(int o, double wavelength){
     std::vector<double> parameters;
     parameters.push_back(this->tr_p[o](wavelength));
@@ -582,6 +595,8 @@ int MatrixSimulator::photon_order(double t) {
 
     this->prepare_psfs(1000);
 
+    this->prepare_matrix_lookup(1000);
+
     std::vector<Spectra> wl_s(orders.size());
     std::vector<double> N_photons(orders.size());
 
@@ -657,7 +672,7 @@ int MatrixSimulator::photon_order(double t) {
         for (int i = 0; i < N_photons[o]; ++i) {
             //double wl = wl_s[o].event[dis(gen)];
             double wl = wl_s[o].Sample(dis(gen));
-            Matrix23f tm = this->get_transformation_matrix(o, wl);
+            Matrix23f tm = this->get_transformation_matrix_lookup(o, wl);
 
 //            float x = dis_slitx(gen);
 //            float y = dis_slity(gen);
@@ -955,6 +970,54 @@ void MatrixSimulator::prepare_psfs(int N){
 
 }
 
+
+
+void MatrixSimulator::prepare_matrix_lookup(int N){
+
+    std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
+    std::cout << "Prepare matrix elements ..." << std::endl;
+
+    for(int o=0; o<this->orders.size(); ++o){
+        this->sim_p.push_back(std::vector<double>(N));
+        this->sim_q.push_back(std::vector<double>(N));
+        this->sim_r.push_back(std::vector<double>(N));
+        this->sim_phi.push_back(std::vector<double>(N));
+
+        this->sim_matrix_wavelength.push_back(std::vector<double>(N));
+        this->sim_matrix_dwavelength.push_back(0.);
+    }
+
+
+//#pragma omp parallel for
+    for(int o=0; o<this->orders.size(); ++o){
+        double min_wl = this->raw_transformations[o+this->min_order].front().wavelength;
+        double max_wl = this->raw_transformations[o+this->min_order].back().wavelength;
+        double dl = (max_wl - min_wl) / N;
+        this->sim_matrix_dwavelength[o] = dl;
+        std::vector<double> p;
+        std::vector<double> q;
+        std::vector<double> r;
+        std::vector<double> phi;
+
+        for(int i =0; i<this->sim_matrix_wavelength[o].size(); ++i){
+            this->sim_matrix_wavelength[o][i] = min_wl + i * dl;
+
+            p.push_back(this->tr_p[o](this->sim_matrix_wavelength[o][i]));
+            q.push_back(this->tr_q[o](this->sim_matrix_wavelength[o][i]));
+            r.push_back(this->tr_r[o](this->sim_matrix_wavelength[o][i]));
+            phi.push_back(this->tr_phi[o](this->sim_matrix_wavelength[o][i]));
+        }
+        this->sim_p.push_back(p);
+        this->sim_q.push_back(q);
+        this->sim_r.push_back(r);
+        this->sim_phi.push_back(phi);
+
+    }
+    std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>( t2 - t1 ).count()/1000000.;
+    std::cout<<"Duration: \t" << duration << " s" << std::endl;
+
+}
 
 void MatrixSimulator::prepare_sources(std::vector<Source *> sources) {
     std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();

@@ -35,7 +35,7 @@ include_directories(SYSTEM $OPENCV_INCLUDE_DIRS)
 include_directories(src)
 include_directories(include)
 #include_directories(/home/stuermer/libs/include)
-include_directories(/data/CppLibs/eigen-eigen-67e894c6cd8f)
+include_directories(/home/stuermer/Downloads/eigen/)
 #FIND_LIBRARY(HDF5_LIBRARIES hdf5 /home/stuermer/Repos/hdf5-1.8.18/src/.libs)
 #FIND_LIBRARY(HDF5_HL_LIBRARIES hdf5_hl /home/stuermer/Repos/hdf5-1.8.18/hl/src/.libs)
 #link_directories( ${HDF5_LIBRARY_DIRS} )
@@ -43,8 +43,14 @@ include_directories( ${HDF5_INCLUDE_DIRS} )
 
 set (LINK_LIBS ${LINK_LIBS} ${HDF5_LIBRARIES} ${CCFITS_LIB} ${CFITSIO} ${HDF5_HL_LIBRARIES})
 MESSAGE(${LINK_LIBS})
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -fopenmp -O3")
-#set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -fopenmp -O3")
+#for optimized speed use following flags
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -fopenmp -O3")
+#for debug use following flags:
+set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -std=c++11")
+#for profiling use following flags:
+#set(-CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -pg")
+#set(-CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -std=c++11  -pg")
+#set(-CMAKE_SHARED_LINKER_FLAGS  "${CMAKE_SHARED_LINKER_FLAGS} -std=c++11  -pg")
 #set(CMAKE_CXX_FLAGS_RELEASE  "${CMAKE_C_FLAGS} -O3")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/build")
 

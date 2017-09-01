@@ -46,6 +46,8 @@ public:
      */
     Matrix23f get_transformation_matrix(int order, double wavelength);
 
+    Matrix23f get_transformation_matrix_lookup(int o, double wavelength);
+
     void calc_splines();
 
     void set_wavelength(int N);
@@ -133,6 +135,8 @@ public:
 
     void prepare_psfs(int N);
 
+    void prepare_matrix_lookup(int N);
+
 private:
     cv::Mat img;
     int fiber_number;
@@ -168,6 +172,13 @@ private:
     std::vector<std::vector<double>> sim_psfs_wavelength;
 //    std::map<int, double > sim_psfs_dwavelength;
     std::vector<double> sim_psfs_dwavelength;
+
+    std::vector<std::vector<double>> sim_p;
+    std::vector<std::vector<double>> sim_q;
+    std::vector<std::vector<double>> sim_r;
+    std::vector<std::vector<double>> sim_phi;
+    std::vector<std::vector<double>> sim_matrix_wavelength;
+    std::vector<double> sim_matrix_dwavelength;
 
 
 
