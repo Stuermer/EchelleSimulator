@@ -2,6 +2,7 @@
 
 #include "matrixsimulator.h"
 #include <chrono>
+#include "argagg.hpp"
 
 using namespace std::chrono;
 
