@@ -129,7 +129,7 @@ int main(int argc, char *argv[])
 
 //        Blackbody cs = Blackbody(9602., 0.);
 
-          Constant cs = Constant(10E-8);
+//          Constant cs = Constant(10E-8);
 
 //          PhoenixSpectrum cs = PhoenixSpectrum("/data/CppLibs/7125_0_lte03200-5.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_2.fits",
 //          "/data/CppLibs/WAVE_PHOENIX-ACES-AGSS-COND-2011.fits",0.45, 0.85, 0.);
