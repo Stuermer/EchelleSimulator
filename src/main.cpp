@@ -19,7 +19,6 @@ int main(int argc, char *argv[])
 {
 
     MatrixSimulator simulator;
-//    create_fits_file("../simulations/mdwarf_13bil_0m.fit");
 
     parser argparser {{
 
@@ -29,21 +28,28 @@ int main(int argc, char *argv[])
                               },
 
                               {
+
+                                      "spectrograph", {"-s", "--spectrograph"},
+                                      "path to spectrograph model", 1
+
+                              },
+
+                              {
                                       "blackbody", {"-b", "--blackbody"},
-                                      "Simulate a blackbody with effective temperature K and magnitude M", 0
+                                      "OPTIONAL: Simulate a blackbody with effective temperature K and magnitude M", 0
                               },
 
                               {
 
                                       "temperature", {"-T", "--temperature"},
-                                      "Input temperature for source", 1
+                                      "OPTIONAL: Input temperature for source", 1
 
                               },
 
                               {
 
                                       "magnitude", {"-m", "--magnitude"},
-                                      "Input magnitude for source", 1
+                                      "OPTIONAL: Input magnitude for source", 1
 
                               },
 
@@ -82,6 +88,8 @@ int main(int argc, char *argv[])
     double temp;
     double mag;
 
+    Source * cs = new Source();
+
     if (args["temperature"]) {
 
         temp = args["temperature"].as<double>();
@@ -104,12 +112,12 @@ int main(int argc, char *argv[])
     if (args["blackbody"]) {
 
         cout<<"Stae";
-        Blackbody cs = Blackbody(temp,mag);
+        cs = new Blackbody(temp,mag);
 
     }
     else{
 
-        Constant cs = Constant(10E-8);
+        cs = new Constant(10E-8);
 
     }
 
@@ -117,7 +125,7 @@ int main(int argc, char *argv[])
 
     for (int i=1; i<2; ++i){
         high_resolution_clock::time_point t1 = high_resolution_clock::now();
-        simulator.load_spectrograph_model(argv[1], i, i>1);
+        simulator.load_spectrograph_model(args["spectrograph"], i, i>1);
         std::cout<< "Fiber " << i << std::endl;
         Telescope Gemini = Telescope();
         GratingEfficiency ge = GratingEfficiency(0.8, simulator.get_blaze(), simulator.get_blaze(), simulator.get_gpmm());
@@ -136,7 +144,7 @@ int main(int argc, char *argv[])
 //        IdealEtalon cs = IdealEtalon(5., 1., 0., 0.95);
 //        cs.set_doppler_shift(-100.);
 //        LineList cs = LineList("/home/stuermer/Repos/cpp/EchelleSimulator/laser.txt");
-        simulator.add_source(&cs);
+        simulator.add_source(cs);
 
         simulator.set_wavelength(10000);
 //        simulator.set_wavelength(cs.get_wavelength());
