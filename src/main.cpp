@@ -36,20 +36,30 @@ int main(int argc, char *argv[])
 
                               {
                                       "blackbody", {"-b", "--blackbody"},
-                                      "OPTIONAL: Simulate a blackbody with effective temperature K and magnitude M", 0
+                                      "OPTIONAL: Simulate a blackbody with effective temperature K and magnitude M "
+                                              "(default: --constant 1)", 1
+                              },
+
+                              {
+                                      "phoenix", {"-p", "--phoenix"},
+                                      "OPTIONAL: Simulate a phoenix spectra with magnitude M."
+                                      "Input --phoenix spectral_file wavelength_grid magnitude (default: --constant 1)", 1
+                                      // The explicit command for our current setup m=0
+                                      //-r 0 --spectrograph ../data/MaroonX.hdf  -p "/data/CppLibs/7125_0_lte03200-5.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_2.fits","/data/CppLibs/WAVE_PHOENIX-ACES-AGSS-COND-2011.fits",0.
                               },
 
                               {
 
-                                      "temperature", {"-T", "--temperature"},
-                                      "OPTIONAL: Input temperature for source", 1
+                                      "constant", {"-c", "--constant"},
+                                      "Optional: Simulate a constant spectra with density in units [micro watt] / ([micro meter] * [meter]^2)"
+                                      " (default: --constant 1)", 1
 
                               },
 
                               {
 
-                                      "magnitude", {"-m", "--magnitude"},
-                                      "OPTIONAL: Input magnitude for source", 1
+                                      "radial_velocity", {"-r", "--radial-velocity"},
+                                      "OPTIONAL: radial velocity shift in m/s (default: 0) ", 1
 
                               },
 
@@ -90,38 +100,50 @@ int main(int argc, char *argv[])
 
     Source * cs = new Source();
 
-    if (args["temperature"]) {
-
-        temp = args["temperature"].as<double>();
-
-    }
-    else{
-        temp = 6500;
-    }
-
-    if (args["magnitude"]) {
-
-        cout<<"Stae";
-        mag = args["magnitude"].as<double>();
-
-    }
-    else{
-        mag = 0;
-    }
-
     if (args["blackbody"]) {
+        auto v = args["blackbody"].as<string>();
+        std::vector<std::string> vv = split(v, ',');
+        cout<<"Simulating a blackbody with T="<< stod(vv[0])  <<" and magnitude K=" << stod(vv[0]) << endl;
 
-        cout<<"Stae";
-        cs = new Blackbody(temp,mag);
+        cs = new Blackbody(stod(vv[0]) , stod(vv[1]));
 
     }
     else{
 
-        cs = new Constant(10E-8);
+        cs = new Constant(1);
 
     }
 
+    if (args["phoenix"]) {
+        auto v = args["phoenix"].as<string>();
+        std::vector<std::string> vv = split(v, ',');
+        cout<<"Simulating phoenix spectra with magnitude="<< stod(vv[2]) << endl;
 
+        cs = new PhoenixSpectrum(vv[0] , vv[1], 0.45, 0.85, stod(vv[2])); //0.45 and 0.85 are hardcoded wavelength range parameters (they need to be coded out)
+
+    }
+    else{
+
+        cs = new Constant(1);
+
+    }
+
+    if (args["constant"]) {
+        auto v = args["constant"].as<string>();
+        std::vector<std::string> vv = split(v, ',');
+        cout<<"Simulating constant source with spectral density="<< stod(vv[0]) << " [micro watt] / ([micro meter] * [meter]^2)" << endl;
+
+        cs = new Constant(stod(vv[0]));
+
+    }
+    else{
+
+        cout<<"Simulating constant source with spectral density=1 [micro watt] / ([micro meter] * [meter]^2)" << endl;
+        cs = new Constant(1);
+
+    }
+
+    auto rv = args["radial_velocity"].as<double>(0.);
 
     for (int i=1; i<2; ++i){
         high_resolution_clock::time_point t1 = high_resolution_clock::now();
@@ -129,8 +151,10 @@ int main(int argc, char *argv[])
         std::cout<< "Fiber " << i << std::endl;
         Telescope Gemini = Telescope();
         GratingEfficiency ge = GratingEfficiency(0.8, simulator.get_blaze(), simulator.get_blaze(), simulator.get_gpmm());
+
 //        EtalonEfficiency ee = EtalonEfficiency(10.,1.,0., 0.95);
-//        ConstantEfficiency ge = ConstantEfficiency(1.);
+//        ConstantEfficiency ge = ConstantEfficiency(.8);
+
         simulator.add_efficiency(&ge);
         simulator.add_telescope(&Gemini);
 //        simulator.add_efficiency(&ee);
@@ -142,19 +166,12 @@ int main(int argc, char *argv[])
 //          PhoenixSpectrum cs = PhoenixSpectrum("/data/CppLibs/7125_0_lte03200-5.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_2.fits",
 //          "/data/CppLibs/WAVE_PHOENIX-ACES-AGSS-COND-2011.fits",0.45, 0.85, 0.);
 //        IdealEtalon cs = IdealEtalon(5., 1., 0., 0.95);
-//        cs.set_doppler_shift(-100.);
-//        LineList cs = LineList("/home/stuermer/Repos/cpp/EchelleSimulator/laser.txt");
+        cs->set_doppler_shift(rv);
         simulator.add_source(cs);
 
         simulator.set_wavelength(10000);
-//        simulator.set_wavelength(cs.get_wavelength());
-//        add_vector_parallel();
-//        simulator.prepare_interpolation(1000000);
 
-        //simulator.photon_order(1000000);
           simulator.photon_order(1);
-//        simulator.photon_order_artifical(50000,0.0002);
-//        simulator.simulate_spectrum(false);
 
         high_resolution_clock::time_point t2 = high_resolution_clock::now();
         auto duration = duration_cast<microseconds>( t2 - t1 ).count()/1000000.;

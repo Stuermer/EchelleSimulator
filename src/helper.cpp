@@ -245,3 +245,4 @@ std::vector<float> random_from_2_distributions(std::vector<float> wl, std::vecto
         result.push_back(combined_dis(gen));
     return result;
 }
+

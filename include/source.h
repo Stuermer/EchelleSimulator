@@ -81,9 +81,9 @@ protected:
     double s_val  = 1.0;
 
     /// minimum wavelength recorded for source [micro meters]
-    double min_w;
+    double min_w = 0.;
     /// maximum wavelength recorded for source [micro meters]
-    double max_w;
+    double max_w = 100.;
 
 private:
 

@@ -144,6 +144,9 @@ Blackbody::Blackbody(double T, double mag): T(T){
 
     this -> mag = mag;
 
+    min_w = 0;
+    max_w = 10000;
+
     scale_spectral_density();
 
 };
@@ -276,4 +279,20 @@ std::vector<double> LineList::get_wavelength() {
         wavelength.push_back(m.first);
     }
     return wavelength;
+}
+
+template<typename Out>
+void split(const std::string &s, char delim, Out result) {
+    std::stringstream ss;
+    ss.str(s);
+    std::string item;
+    while (std::getline(ss, item, delim)) {
+        *(result++) = item;
+    }
+}
+
+std::vector<std::string> split(const std::string &s, char delim) {
+    std::vector<std::string> elems;
+    split(s, delim, std::back_inserter(elems));
+    return elems;
 }
