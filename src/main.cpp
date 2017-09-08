@@ -18,7 +18,9 @@ using std::string;
 int main(int argc, char *argv[])
 {
 
-    MatrixSimulator simulator;
+
+    download_phoenix("ftp://phoenix.astro.physik.uni-goettingen.de/HiResFITS/PHOENIX-ACES-AGSS-COND-2011/Z-1.0.Alpha=+0.80/lte06000-4.50-1.0.Alpha=+0.80.PHOENIX-ACES-AGSS-COND-2011-HiRes.fits",
+    "../data/phoenix_spectra/test.fits");
 
     parser argparser {{
 
@@ -30,20 +32,35 @@ int main(int argc, char *argv[])
                               {
 
                                       "spectrograph", {"-s", "--spectrograph"},
-                                      "path to spectrograph model", 1
+                                      "name of spectrograph (default: MaroonX), name has to match filename", 1
+
+                              },
+
+                              {
+
+                                      "fiber", {"-f", "--fiber"},
+                                      "fiber number to use for simulations. Starts at 1. (default: 1) ", 1
+
+                              },
+
+                              {
+
+                                      "keep", {"-k", "--keep-ccd"},
+                                      "if 1 it assumes that a CCD has already been added to the spectrograph model. It keeps it and "
+                                       "adds the new simulations to it. This can be used to simplify the simulation of multiple fibers.", 1
 
                               },
 
                               {
                                       "blackbody", {"-b", "--blackbody"},
-                                      "OPTIONAL: Simulate a blackbody with effective temperature K and magnitude M "
-                                              "(default: --constant 1)", 1
+                                      "OPTIONAL: Simulate a blackbody with effective temperature K and magnitude M. example usage: --blackbody 3500,1.0 ", 1
                               },
 
                               {
                                       "phoenix", {"-p", "--phoenix"},
-                                      "OPTIONAL: Simulate a phoenix spectra with magnitude M."
-                                      "Input --phoenix spectral_file wavelength_grid magnitude (default: --constant 1)", 1
+                                      "OPTIONAL: Simulate a mdwarf phoenix spectra with effective temperature T, magnitude M, log g, metalicity alpha."
+                                          "Check http://phoenix.astro.physik.uni-goettingen.de/?page_id=15 for parameter ranges - intermediate values will be rounded to available spectra."
+                                      "example usage: --phoenix 3200,1.,-5.5,0.,1", 1
                                       // The explicit command for our current setup m=0
                                       //-r 0 --spectrograph ../data/MaroonX.hdf  -p "/data/CppLibs/7125_0_lte03200-5.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_2.fits","/data/CppLibs/WAVE_PHOENIX-ACES-AGSS-COND-2011.fits",0.
                               },
@@ -51,8 +68,8 @@ int main(int argc, char *argv[])
                               {
 
                                       "constant", {"-c", "--constant"},
-                                      "Optional: Simulate a constant spectra with density in units [micro watt] / ([micro meter] * [meter]^2)"
-                                      " (default: --constant 1)", 1
+                                      "Optional: Simulate a constant spectra with density in units [micro watt] / ([micro meter] * [meter]^2) "
+                                      "in a wavelength range min_w to max_w [micro meter] (default: --constant 1 0 1)", 1
 
                               },
 
@@ -64,6 +81,7 @@ int main(int argc, char *argv[])
                               },
 
                       }};
+
 
     // Define our usage text. (Really poor quality)
     ostringstream usage;
@@ -95,6 +113,15 @@ int main(int argc, char *argv[])
         return EXIT_SUCCESS;
     }
 
+    auto keep = args["keep"].as<double>(0);
+    auto fiber = args["fiber"].as<double>(1);
+
+    auto spectrograph = args["spectrograph"].as<std::string>("MaroonX");
+
+    spectrograph = "../data/spectrographs/" + spectrograph + ".hdf";
+
+    MatrixSimulator simulator(spectrograph, fiber, keep);
+
     double temp;
     double mag;
 
@@ -110,7 +137,7 @@ int main(int argc, char *argv[])
     }
     else{
 
-        cs = new Constant(1);
+        cs = new Constant();
 
     }
 
@@ -124,7 +151,7 @@ int main(int argc, char *argv[])
     }
     else{
 
-        cs = new Constant(1);
+        cs = new Constant();
 
     }
 
@@ -133,13 +160,13 @@ int main(int argc, char *argv[])
         std::vector<std::string> vv = split(v, ',');
         cout<<"Simulating constant source with spectral density="<< stod(vv[0]) << " [micro watt] / ([micro meter] * [meter]^2)" << endl;
 
-        cs = new Constant(stod(vv[0]));
+        cs = new Constant(stod(vv[0]),stod(vv[1]),stod(vv[2]));
 
     }
     else{
 
         cout<<"Simulating constant source with spectral density=1 [micro watt] / ([micro meter] * [meter]^2)" << endl;
-        cs = new Constant(1);
+        cs = new Constant();
 
     }
 
@@ -147,7 +174,6 @@ int main(int argc, char *argv[])
 
     for (int i=1; i<2; ++i){
         high_resolution_clock::time_point t1 = high_resolution_clock::now();
-        simulator.load_spectrograph_model(args["spectrograph"], i, i>1);
         std::cout<< "Fiber " << i << std::endl;
         Telescope Gemini = Telescope();
         GratingEfficiency ge = GratingEfficiency(0.8, simulator.get_blaze(), simulator.get_blaze(), simulator.get_gpmm());

@@ -18,6 +18,7 @@
 #include <CCfits/ExtHDU.h>
 #include <Eigen/Dense>
 #include <map>
+#include <curl/curl.h>
 
 void vectorToFile(std::vector<double> const& vec, std::string const& filename) {
   std::ofstream file(filename);
@@ -246,3 +247,26 @@ std::vector<float> random_from_2_distributions(std::vector<float> wl, std::vecto
     return result;
 }
 
+size_t write_data(void *ptr, size_t size, size_t nmemb, FILE *stream) {
+    size_t written = fwrite(ptr, size, nmemb, stream);
+    return written;
+}
+
+bool download_phoenix(std::string url, std::string path){
+    CURL *curl;
+    FILE *fp;
+    CURLcode res;
+//    char *url = "http://localhost/aaa.txt";
+
+    curl = curl_easy_init();
+    if (curl) {
+        fp = fopen(path.c_str(),"wb");
+        curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data);
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, fp);
+        res = curl_easy_perform(curl);
+        /* always cleanup */
+        curl_easy_cleanup(curl);
+        fclose(fp);
+}
+}

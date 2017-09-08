@@ -36,7 +36,14 @@ typedef struct raw_transformation raw_transformation;
 
 class MatrixSimulator {
 public:
-    MatrixSimulator();
+    /**
+     * Load spectrograph model from HDF file
+     * @param path path to HDF file containing spectrograph model
+     * @param fiber_number fiber to select
+     * @param keep_ccd if true it assumes that a CCD has already been added to the spectrograph model. It keeps it and
+     * adds the new simulations to it. This can be used to simplify the simulation of multiple fibers.
+     */
+    MatrixSimulator(std::string path, int fiber_number, bool keep_ccd);
 
     /**
      * Get affine transformation matrix at specific wavelength and order
@@ -76,14 +83,7 @@ public:
 
     void add_source(Source *src);
 
-    /**
-     * Load spectrograph model from HDF file
-     * @param path path to HDF file containing spectrograph model
-     * @param fiber_number fiber to select
-     * @param keep_ccd if true it assumes that a CCD has already been added to the spectrograph model. It keeps it and
-     * adds the new simulations to it. This can be used to simplify the simulation of multiple fibers.
-     */
-    void load_spectrograph_model(std::string path, int fiber_number, bool keep_ccd = false);
+
 
     void set_order_range(int min_order, int max_order);
 
@@ -137,7 +137,28 @@ public:
 
     void prepare_matrix_lookup(int N);
 
+    /**
+     * Returns the minimum wavelength supported by the spectrograph [microns]
+     * @return minimum wavelength [microns]
+     */
+    double get_minimum_wavelength();
+
+    /**
+    * Returns the maximum wavelength supported by the spectrograph [microns]
+    * @return maximum wavelength [microns]
+    */
+    double get_maximum_wavelength();
+
 private:
+    /**
+     * Load spectrograph model from HDF file
+     * @param path path to HDF file containing spectrograph model
+     * @param fiber_number fiber to select
+     * @param keep_ccd if true it assumes that a CCD has already been added to the spectrograph model. It keeps it and
+     * adds the new simulations to it. This can be used to simplify the simulation of multiple fibers.
+     */
+    void load_spectrograph_model(std::string path, int fiber_number, bool keep_ccd = false);
+
     cv::Mat img;
     int fiber_number;
     int n_orders;

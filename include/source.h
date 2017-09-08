@@ -81,9 +81,9 @@ protected:
     double s_val  = 1.0;
 
     /// minimum wavelength recorded for source [micro meters]
-    double min_w = 0.;
+    double min_w;
     /// maximum wavelength recorded for source [micro meters]
-    double max_w = 100.;
+    double max_w;
 
 private:
 
@@ -123,10 +123,10 @@ public:
     /* Constructor */
     Constant();
     /*!
-     * Constructor
+     * Constructor with a wavelength range of 0 to 1 meter
      * @param value constant spectral density value
      */
-    Constant(double value);
+    Constant(double value, double min_w, double max_w);
     /*!
      * Returns constant spectral density.
      *

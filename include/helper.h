@@ -111,5 +111,8 @@ void split(const std::string &s, char delim, Out result);
 
 std::vector<std::string> split(const std::string &s, char delim);
 
+bool download_phoenix(std::string url, std::string path);
+size_t write_data(void *ptr, size_t size, size_t nmemb, FILE *stream);
+
 //int save_to_fits(const std::string filename, cv::Mat img);
 #endif

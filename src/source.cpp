@@ -103,13 +103,16 @@ double Constant::get_spectral_density(double wavelength) {
     return this->value;
 }
 
-Constant::Constant(double value) {
-    this->value = value; // uW per um (micro watts per micro meter)
+Constant::Constant(double value, double min_w, double max_w) {
+    this->value = value; // uW per um (micro watts per micro meter// )
+    this -> min_w = min_w;
+    this -> max_w = max_w;
 }
 
 Constant::Constant() {
     this->value = 1.0 ; // uW per um (micro watts per micro meter)
-
+    min_w = 0;
+    max_w = 1000000;
 }
 
 /* IdealEtalon::IdealEtalon(double d, double n, double theta, double R) : d(d/1000.), n(n), theta(theta), R(R) {
@@ -144,8 +147,8 @@ Blackbody::Blackbody(double T, double mag): T(T){
 
     this -> mag = mag;
 
-    min_w = 0;
-    max_w = 10000;
+    min_w = 0; // Maybe set a cutoff based off intensity?
+    max_w = 1000000;
 
     scale_spectral_density();
 

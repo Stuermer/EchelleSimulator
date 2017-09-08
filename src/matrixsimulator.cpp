@@ -15,9 +15,7 @@
 #include <hdf5_hl.h>
 #include <CCfits/CCfits>
 #include <CCfits/FITS.h>
-//#include <curlpp/cURLpp.hpp>
-//#include <curlpp/Easy.hpp>
-//#include <curlpp/Options.hpp>
+
 #include <string>
 #include <fstream>
 #include <chrono>
@@ -57,8 +55,9 @@ typedef struct transformation_hdf
     float wavelength;
 } transformation_hdf;
 
-MatrixSimulator::MatrixSimulator()
+MatrixSimulator::MatrixSimulator(std::string path, int fiber_number, bool keep_ccd)
 {
+    this->load_spectrograph_model(path, fiber_number, keep_ccd);
 }
 
 //int download_spectrograph_model(){
@@ -228,6 +227,13 @@ void MatrixSimulator::load_spectrograph_model(std::string path, int fiber_number
         }
 }
 
+double MatrixSimulator::get_maximum_wavelength() {
+    return this->wavelength_limit_max;
+}
+
+double MatrixSimulator::get_minimum_wavelength() {
+    return this->wavelength_limit_min;
+}
 
 double MatrixSimulator::get_blaze() {
     return this->spec_info.blaze;
