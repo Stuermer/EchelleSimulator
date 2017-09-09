@@ -99,23 +99,19 @@ std::vector<std::size_t> compute_sort_order(const std::vector<double> &v) {
 }
 
 void show_cv_matrix(cv::Mat img, std::string windowname="image") {
-//    double minVal, maxVal;
+    double minVal, maxVal;
 
-  //  cv::Mat img_show = img.clone();
+    cv::Mat img_show = img.clone();
+    cv::minMaxLoc(img_show, &minVal, &maxVal); //find minimum and maximum intensities
+    int ty = img_show.type();
+    img_show.convertTo(img_show,CV_8U,255.0/(maxVal - minVal), -minVal * 255.0/(maxVal - minVal));
 
-//    cv::Mat img_show = cv::Mat::zeros(512/3, 1024, img.type());
-//    cv::resize(img.rowRange(0, 512*3).colRange(0,4096*3), img_show, img_show.size(), cv::INTER_NEAREST);
-//
-//    cv::minMaxLoc(img_show, &minVal, &maxVal); //find minimum and maximum intensities
-//    int ty = img_show.type();
-    //img_show.convertTo(img_show,CV_8U,255.0/(maxVal - minVal), -minVal * 255.0/(maxVal - minVal));
+     cv::cvtColor(img_show, img_show, CV_GRAY2RGB);
 
-    // cv::cvtColor(img_show, img_show, CV_GRAY2RGB);
-
-//    cv::namedWindow(windowname,CV_WINDOW_NORMAL);
-  //  cv::imshow(windowname, img_show);
-   // cv::resizeWindow(windowname, 1024,1024);
-   // cv::waitKey(1);
+    cv::namedWindow(windowname,CV_WINDOW_NORMAL);
+    cv::imshow(windowname, img_show);
+    cv::resizeWindow(windowname, 1024,1024);
+    cv::waitKey(1);
 
 }
 
@@ -170,66 +166,11 @@ double interpolate(const std::map<double,double> &data,
     return delta*i->second +(1-delta)*l->second;
 }
 
-//int save_to_hdf(const std::string filename, cv::Mat img){
-//    std::auto_ptr<CCfits::FITS> pFits(0);
-//
-//    long naxis    =   2;
-//    long naxes[2] = { img.cols, img.rows };
-//
-//    try
-//    {
-//        pFits.reset( new CCfits::FITS(filename , DOUBLE_IMG , naxis , naxes ) );
-//    }
-//    catch (CCfits::FITS::CantOpen)
-//    {
-//        return -1;
-//    }
-//
-//    long& vectorLength = naxes[0];
-//    long& numberOfRows = naxes[1];
-//    long nelements(1);
-//
-//
-//    // Find the total size of the array.
-//    // this is a little fancier than necessary ( It's only
-//    // calculating naxes[0]*naxes[1]) but it demonstrates  use of the
-//    // C++ standard library accumulate algorithm.
-//
-//    nelements = std::accumulate(&naxes[0],&naxes[naxis],1,std::multiplies<long>());
-//
-//    std::vector<long> extAx ;
-//    extAx.push_back(img.rows);
-//    extAx.push_back(img.cols);
-//
-//    string newName ("IMAGE");
-//    CCfits::ExtHDU* imageExt = pFits->addImage(newName,FLOAT_IMG, extAx);
-//
-//
-//    std::valarray<double> array(nelements);
-//    for (int i = 0; i < numberOfRows; ++i)
-//    {
-//        for (int j =0; j<img.cols; ++j)
-//            array[i*numberOfRows+j] = img.at<double>(i, j);
-//    }
-//
-//    long  fpixel(1);
-//
-//    imageExt->write(fpixel, (long) img.cols, array);
-////    imageExt->write(fpixel, img.cols, array);
-//
-//    return 0;
-//
-//};
-
 herr_t file_info(hid_t loc_id, const char *name, const H5L_info_t *linfo, void *opdata)
 {
     hid_t group;
     auto group_names=reinterpret_cast< std::vector<std::string>* >(opdata);
-//    group = H5Gopen2(loc_id, name, H5P_DEFAULT);
-
     group_names->push_back(name);
-//    std::cout << "Name : " << name << std::endl;
-//    H5Gclose(group);
     return 0;
 }
 
@@ -256,7 +197,6 @@ bool download_phoenix(std::string url, std::string path){
     CURL *curl;
     FILE *fp;
     CURLcode res;
-//    char *url = "http://localhost/aaa.txt";
 
     curl = curl_easy_init();
     if (curl) {

@@ -92,8 +92,6 @@ void Source::scale_spectral_density() {
         area += this->get_spectral_density(a + (i + 0.5) * step) * (inten_pho) * (a + (i + 0.5) * step) * (step); // sum up each small rectangle
     }
 
-    //std::cout<<area;
-
     s_val = s_val * pow(10, mag/(-2.5))*v_zp / (area);
     std::cout<<s_val;
 
@@ -110,38 +108,10 @@ Constant::Constant(double value, double min_w, double max_w) {
 }
 
 Constant::Constant() {
-    this->value = 1.0 ; // uW per um (micro watts per micro meter)
+    this->value = 0.00001 ; // uW per um (micro watts per micro meter)
     min_w = 0;
     max_w = 1000000;
 }
-
-/* IdealEtalon::IdealEtalon(double d, double n, double theta, double R) : d(d/1000.), n(n), theta(theta), R(R) {
-    this->cF = this->coefficient_of_finesse(R);
-}
-
-double IdealEtalon::coefficient_of_finesse(double R) {
-    return 4.*R / ((1.-R)*(1.-R));
-}
-
-double IdealEtalon::FSR() {
-    return 299792458. /  (2.*n*d*cos(theta));
-}
-
-double IdealEtalon::T(double wl, double theta, double d, double n, double cF) {
-    //delta = (2. * math.pi / wl) * 2. * n * math.cos(theta) * d
-    //return 1. / (1. + cF * np.sin(0.5 * delta) ** 2)
-
-    double delta = (2. * M_PI * n * cos(theta) * d) / wl ;
-    double sind = sin(delta);
-    return 1. / (1. + cF * sind*sind);
-}
-
-double IdealEtalon::get_spectral_density(double wavelength) {
-    double res = this->T(wavelength/1E6, theta, d, n, cF);
-    return res;
-}
-
- */
 
 Blackbody::Blackbody(double T, double mag): T(T){
 
@@ -152,7 +122,7 @@ Blackbody::Blackbody(double T, double mag): T(T){
 
     scale_spectral_density();
 
-};
+}
 
 double Blackbody::planck(const double& T, const double& wavelength) {
     const double 	hPlanck = 6.62606896e-34; //J * s;

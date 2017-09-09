@@ -61,7 +61,7 @@ GratingEfficiency ge = GratingEfficiency(0.8, 76., 76., 31.6); //Echelle Grating
 simulator.add_efficiency(&ge); //add efficiency profile to simulator. More profiles can be added
 
 IdealEtalon cs = IdealEtalon(10., 1., 0., 0.9); // spectral source ideal etalon
-simulator.add_source(&cs); //add source to simulator
+simulator.set_source(&cs); //add source to simulator
 
 simulator.simulate_spectrum(); //simulate echelle spectra 
 

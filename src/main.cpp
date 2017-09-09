@@ -18,67 +18,77 @@ using std::string;
 int main(int argc, char *argv[])
 {
 
-
-    download_phoenix("ftp://phoenix.astro.physik.uni-goettingen.de/HiResFITS/PHOENIX-ACES-AGSS-COND-2011/Z-1.0.Alpha=+0.80/lte06000-4.50-1.0.Alpha=+0.80.PHOENIX-ACES-AGSS-COND-2011-HiRes.fits",
-    "../data/phoenix_spectra/test.fits");
-
     parser argparser {{
 
-                              {
-                                      "help", {"-h", "--help"},
-                                      "Print help and exit", 0
-                              },
+                      {
+                              "help", {"-h", "--help"},
+                              "Print help and exit", 0
+                      },
 
-                              {
+                      {
 
-                                      "spectrograph", {"-s", "--spectrograph"},
-                                      "name of spectrograph (default: MaroonX), name has to match filename", 1
+                              "spectrograph", {"-s", "--spectrograph"},
+                              "name of spectrograph (default: MaroonX), name has to match filename", 1
 
-                              },
+                      },
 
-                              {
+                      {
 
-                                      "fiber", {"-f", "--fiber"},
-                                      "fiber number to use for simulations. Starts at 1. (default: 1) ", 1
+                              "fiber", {"-f", "--fiber"},
+                              "fiber number to use for simulations. Starts at 1. (default: 1) ", 1
 
-                              },
+                      },
 
-                              {
+                      {
 
-                                      "keep", {"-k", "--keep-ccd"},
-                                      "if 1 it assumes that a CCD has already been added to the spectrograph model. It keeps it and "
-                                       "adds the new simulations to it. This can be used to simplify the simulation of multiple fibers.", 1
+                              "keep", {"-k", "--keep-ccd"},
+                              "if 1 it assumes that a CCD has already been added to the spectrograph model. It keeps it and "
+                               "adds the new simulations to it. This can be used to simplify the simulation of multiple fibers.", 1
 
-                              },
+                      },
 
-                              {
-                                      "blackbody", {"-b", "--blackbody"},
-                                      "OPTIONAL: Simulate a blackbody with effective temperature K and magnitude M. example usage: --blackbody 3500,1.0 ", 1
-                              },
+                      {
+                              "blackbody", {"-b", "--blackbody"},
+                              "OPTIONAL: Simulate a blackbody with effective temperature K and magnitude M. example usage: --blackbody 3500,1.0 ", 1
+                      },
 
-                              {
-                                      "phoenix", {"-p", "--phoenix"},
-                                      "OPTIONAL: Simulate a mdwarf phoenix spectra with effective temperature T, magnitude M, log g, metalicity alpha."
-                                          "Check http://phoenix.astro.physik.uni-goettingen.de/?page_id=15 for parameter ranges - intermediate values will be rounded to available spectra."
-                                      "example usage: --phoenix 3200,1.,-5.5,0.,1", 1
-                                      // The explicit command for our current setup m=0
-                                      //-r 0 --spectrograph ../data/MaroonX.hdf  -p "/data/CppLibs/7125_0_lte03200-5.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_2.fits","/data/CppLibs/WAVE_PHOENIX-ACES-AGSS-COND-2011.fits",0.
-                              },
+                      {
+                              "phoenix", {"-p", "--phoenix"},
+                              "OPTIONAL: Simulate a mdwarf phoenix spectra with effective temperature T, magnitude M, log g, metalicity alpha."
+                                  "Check http://phoenix.astro.physik.uni-goettingen.de/?page_id=15 for parameter ranges - intermediate values will be rounded to available spectra."
+                              "example usage: --phoenix 3200,1.,-5.5,0.,1", 1
+                              // The explicit command for our current setup m=0
+                              //-r 0 --spectrograph ../data/MaroonX.hdf  -p "/data/CppLibs/7125_0_lte03200-5.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_2.fits","/data/CppLibs/WAVE_PHOENIX-ACES-AGSS-COND-2011.fits",0.
+                      },
 
-                              {
+                      {
 
-                                      "constant", {"-c", "--constant"},
-                                      "Optional: Simulate a constant spectra with density in units [micro watt] / ([micro meter] * [meter]^2) "
-                                      "in a wavelength range min_w to max_w [micro meter] (default: --constant 1 0 1)", 1
+                              "constant", {"-c", "--constant"},
+                              "Optional: Simulate a constant spectra with density in units [micro watt] / ([micro meter] * [meter]^2) "
+                              "in a wavelength range min_w to max_w [micro meter] (default: --constant 1 0 1)", 1
 
-                              },
+                      },
 
-                              {
+                      {
 
-                                      "radial_velocity", {"-r", "--radial-velocity"},
-                                      "OPTIONAL: radial velocity shift in m/s (default: 0) ", 1
+                              "radial_velocity", {"-r", "--radial-velocity"},
+                              "OPTIONAL: radial velocity shift in m/s (default: 0) ", 1
 
-                              },
+                      },
+                      {
+
+                              "integration_time", {"-t", "--integration-time"},
+                              "OPTIONAL: integration time of the spectrograph (default: 1) ", 1
+
+                      },
+                      {
+
+                              "output", {"-o", "--output"},
+                              "OPTIONAL: path of the output fits file. If only a filename is given, the image will be saved in "
+                                      "../simulations/filename. Otherwise it's assumed the path is absolute (default: test.fit) ", 1
+
+                      },
+
 
                       }};
 
@@ -117,7 +127,6 @@ int main(int argc, char *argv[])
     auto fiber = args["fiber"].as<double>(1);
 
     auto spectrograph = args["spectrograph"].as<std::string>("MaroonX");
-
     spectrograph = "../data/spectrographs/" + spectrograph + ".hdf";
 
     MatrixSimulator simulator(spectrograph, fiber, keep);
@@ -133,12 +142,10 @@ int main(int argc, char *argv[])
         cout<<"Simulating a blackbody with T="<< stod(vv[0])  <<" and magnitude K=" << stod(vv[0]) << endl;
 
         cs = new Blackbody(stod(vv[0]) , stod(vv[1]));
-
     }
     else{
 
         cs = new Constant();
-
     }
 
     if (args["phoenix"]) {
@@ -147,12 +154,10 @@ int main(int argc, char *argv[])
         cout<<"Simulating phoenix spectra with magnitude="<< stod(vv[2]) << endl;
 
         cs = new PhoenixSpectrum(vv[0] , vv[1], 0.45, 0.85, stod(vv[2])); //0.45 and 0.85 are hardcoded wavelength range parameters (they need to be coded out)
-
     }
     else{
 
         cs = new Constant();
-
     }
 
     if (args["constant"]) {
@@ -161,52 +166,39 @@ int main(int argc, char *argv[])
         cout<<"Simulating constant source with spectral density="<< stod(vv[0]) << " [micro watt] / ([micro meter] * [meter]^2)" << endl;
 
         cs = new Constant(stod(vv[0]),stod(vv[1]),stod(vv[2]));
-
     }
     else{
 
         cout<<"Simulating constant source with spectral density=1 [micro watt] / ([micro meter] * [meter]^2)" << endl;
         cs = new Constant();
-
     }
 
     auto rv = args["radial_velocity"].as<double>(0.);
 
-    for (int i=1; i<2; ++i){
-        high_resolution_clock::time_point t1 = high_resolution_clock::now();
-        std::cout<< "Fiber " << i << std::endl;
-        Telescope Gemini = Telescope();
-        GratingEfficiency ge = GratingEfficiency(0.8, simulator.get_blaze(), simulator.get_blaze(), simulator.get_gpmm());
+    high_resolution_clock::time_point t1 = high_resolution_clock::now();
+    Telescope Gemini = Telescope();
+    GratingEfficiency ge = GratingEfficiency(0.8, simulator.get_blaze(), simulator.get_blaze(), simulator.get_gpmm());
 
-//        EtalonEfficiency ee = EtalonEfficiency(10.,1.,0., 0.95);
-//        ConstantEfficiency ge = ConstantEfficiency(.8);
+    simulator.add_efficiency(&ge);
+    simulator.set_telescope(&Gemini);
 
-        simulator.add_efficiency(&ge);
-        simulator.add_telescope(&Gemini);
-//        simulator.add_efficiency(&ee);
+    cs->set_doppler_shift(rv);
+    simulator.set_source(cs);
 
-//        Blackbody cs = Blackbody(9602., 0.);
+    simulator.set_wavelength(10000);
 
-//          Constant cs = Constant(10E-8);
+    auto t = args["integration_time"].as<double>(1.);
+    simulator.simulate(t);
 
-//          PhoenixSpectrum cs = PhoenixSpectrum("/data/CppLibs/7125_0_lte03200-5.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_2.fits",
-//          "/data/CppLibs/WAVE_PHOENIX-ACES-AGSS-COND-2011.fits",0.45, 0.85, 0.);
-//        IdealEtalon cs = IdealEtalon(5., 1., 0., 0.95);
-        cs->set_doppler_shift(rv);
-        simulator.add_source(cs);
+    high_resolution_clock::time_point t2 = high_resolution_clock::now();
+    auto duration = duration_cast<microseconds>( t2 - t1 ).count()/1000000.;
+    std::cout << "Total Duration: "  << duration << std::endl;
 
-        simulator.set_wavelength(10000);
-
-          simulator.photon_order(1);
-
-        high_resolution_clock::time_point t2 = high_resolution_clock::now();
-        auto duration = duration_cast<microseconds>( t2 - t1 ).count()/1000000.;
-        std::cout << "Total Duration: "  << duration << std::endl;
-
-//        simulator.save_to_fits("../simulations/flat"+std::to_string(i)+".fit", true, false, false);
-//        simulator.save_1d_to_fits("../simulations/etalon_noblaze_tri.fit");
-    }
-    simulator.save_to_fits("../simulations/test.fit", false, false, true);
+    auto path = args["output"].as<std::string>("test.fit");
+    if (path.find("/") == std::string::npos)
+        simulator.save_to_fits("../simulations/" + path, false, false, true);
+    else
+        simulator.save_to_fits(path);
 
     return 0;
 }
