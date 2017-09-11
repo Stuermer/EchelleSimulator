@@ -18,6 +18,9 @@ using std::string;
 int main(int argc, char *argv[])
 {
 
+    //download_phoenix("ftp://phoenix.astro.physik.uni-goettingen.de/HiResFITS/PHOENIX-ACES-AGSS-COND-2011/Z-1.0.Alpha=+0.80/lte06000-4.50-1.0.Alpha=+0.80.PHOENIX-ACES-AGSS-COND-2011-HiRes.fits",
+                    // "../data/phoenix_spectra/test.fits");
+
     parser argparser {{
 
                       {
@@ -143,24 +146,16 @@ int main(int argc, char *argv[])
 
         cs = new Blackbody(stod(vv[0]) , stod(vv[1]));
     }
-    else{
-
-        cs = new Constant();
-    }
-
-    if (args["phoenix"]) {
+    else if (args["phoenix"]) {
         auto v = args["phoenix"].as<string>();
         std::vector<std::string> vv = split(v, ',');
-        cout<<"Simulating phoenix spectra with magnitude="<< stod(vv[2]) << endl;
+        cout<<"Simulating phoenix spectra with magnitude="<< stod(vv[4]) << endl;
 
-        cs = new PhoenixSpectrum(vv[0] , vv[1], 0.45, 0.85, stod(vv[2])); //0.45 and 0.85 are hardcoded wavelength range parameters (they need to be coded out)
+        download_phoenix(vv[0], vv[1], vv[2], vv[3], "../data/phoenix_spectra/test.fits");
+
+        cs = new PhoenixSpectrum("../data/phoenix_spectra/test.fits", "/data/CppLibs/WAVE_PHOENIX-ACES-AGSS-COND-2011.fits", 0.45, 0.85, stod(vv[4])); //0.45 and 0.85 are hardcoded wavelength range parameters (they need to be coded out)
     }
-    else{
-
-        cs = new Constant();
-    }
-
-    if (args["constant"]) {
+    else if (args["constant"]) {
         auto v = args["constant"].as<string>();
         std::vector<std::string> vv = split(v, ',');
         cout<<"Simulating constant source with spectral density="<< stod(vv[0]) << " [micro watt] / ([micro meter] * [meter]^2)" << endl;
@@ -177,7 +172,8 @@ int main(int argc, char *argv[])
 
     high_resolution_clock::time_point t1 = high_resolution_clock::now();
     Telescope Gemini = Telescope();
-    GratingEfficiency ge = GratingEfficiency(0.8, simulator.get_blaze(), simulator.get_blaze(), simulator.get_gpmm());
+//    GratingEfficiency ge = GratingEfficiency(0.8, simulator.get_blaze(), simulator.get_blaze(), simulator.get_gpmm());
+    ConstantEfficiency ge = ConstantEfficiency(1.);
 
     simulator.add_efficiency(&ge);
     simulator.set_telescope(&Gemini);

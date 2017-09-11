@@ -390,7 +390,7 @@ int MatrixSimulator::simulate(double t) {
         N_photons[o] = wl_s[o].Calc_flux();
         //this->telescope->get_area();
         //t*area*wl_s[o].Calc_flux()
-        cout << "Order "<< o+this->min_order <<" :" << " \t "<<N_photons[o]<<" \t "<<wl_s[o].Calc_flux() <<endl;
+        cout << "Order "<< o+this->min_order <<" :" <<N_photons[o] <<endl;
     }
 
     std::cout <<"Start tracing ..." <<std::endl;

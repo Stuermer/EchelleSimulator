@@ -84,8 +84,8 @@ void Source::scale_spectral_density() {
 
     double a = min_w;
     double b = max_w;
-    double inten_pho = 5.03E12;
-    int n =100000;
+    double inten_pho = 5.03E10;
+    int n =1000000;
     double step = (b-a) / n;  // width of each small rectangle
     double area = 0.0;  // signed area
     for (int i = 0; i < n; i ++) {
@@ -93,7 +93,7 @@ void Source::scale_spectral_density() {
     }
 
     s_val = s_val * pow(10, mag/(-2.5))*v_zp / (area);
-    std::cout<<s_val;
+    std::cout<<s_val<<std::endl;
 
 }
 

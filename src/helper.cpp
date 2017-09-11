@@ -98,22 +98,22 @@ std::vector<std::size_t> compute_sort_order(const std::vector<double> &v) {
     return res;
 }
 
-void show_cv_matrix(cv::Mat img, std::string windowname="image") {
-    double minVal, maxVal;
-
-    cv::Mat img_show = img.clone();
-    cv::minMaxLoc(img_show, &minVal, &maxVal); //find minimum and maximum intensities
-    int ty = img_show.type();
-    img_show.convertTo(img_show,CV_8U,255.0/(maxVal - minVal), -minVal * 255.0/(maxVal - minVal));
-
-     cv::cvtColor(img_show, img_show, CV_GRAY2RGB);
-
-    cv::namedWindow(windowname,CV_WINDOW_NORMAL);
-    cv::imshow(windowname, img_show);
-    cv::resizeWindow(windowname, 1024,1024);
-    cv::waitKey(1);
-
-}
+//void show_cv_matrix(cv::Mat img, std::string windowname="image") {
+//    double minVal, maxVal;
+//
+//    cv::Mat img_show = img.clone();
+//    cv::minMaxLoc(img_show, &minVal, &maxVal); //find minimum and maximum intensities
+//    int ty = img_show.type();
+//    img_show.convertTo(img_show,CV_8U,255.0/(maxVal - minVal), -minVal * 255.0/(maxVal - minVal));
+//
+//     cv::cvtColor(img_show, img_show, CV_GRAY2RGB);
+//
+//    cv::namedWindow(windowname,CV_WINDOW_NORMAL);
+//    cv::imshow(windowname, img_show);
+//    cv::resizeWindow(windowname, 1024,1024);
+//    cv::waitKey(1);
+//
+//}
 
 void print_cv_matrix_info(cv::Mat img, std::string imagename="Image") {
     std::cout<< "------------" << imagename << "----------------:" << std::endl;
@@ -193,14 +193,49 @@ size_t write_data(void *ptr, size_t size, size_t nmemb, FILE *stream) {
     return written;
 }
 
-bool download_phoenix(std::string url, std::string path){
+void download_phoenix(std::string Teff, std::string log_g, std::string z, std::string alpha, std::string path){
+
+    std::cout<<"Hello"<<std::endl;
+
+    std::string url = "ftp://phoenix.astro.physik.uni-goettingen.de/HiResFITS/PHOENIX-ACES-AGSS-COND-2011/";
+
+    url += "Z" + z;
+
+    if(alpha != "0.0"){
+
+        url += ".Alpha=" + alpha;
+
+    }
+
+    url += "/lte";
+
+    for(int i = 0; i < 5 - Teff.length(); i++){
+
+        Teff = "0" + Teff;
+
+    }
+
+    url += Teff + "-" + log_g;
+
+    url += z;
+
+    if(alpha != "0.0"){
+
+        url += ".Alpha=" + alpha;
+
+    }
+
+    url += ".PHOENIX-ACES-AGSS-COND-2011-HiRes.fits";
+
+    std::cout<<url<<std::endl; //cover z = 0 case also see if adding x.0 and + | - is doable
+
     CURL *curl;
     FILE *fp;
     CURLcode res;
 
     curl = curl_easy_init();
     if (curl) {
-        fp = fopen(path.c_str(),"wb");
+        fp = fopen(path.c_str(), "wb");
         curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data);
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, fp);
@@ -208,5 +243,7 @@ bool download_phoenix(std::string url, std::string path){
         /* always cleanup */
         curl_easy_cleanup(curl);
         fclose(fp);
-}
+    }
+
+
 }
