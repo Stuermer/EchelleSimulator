@@ -112,6 +112,8 @@ void split(const std::string &s, char delim, Out result);
 std::vector<std::string> split(const std::string &s, char delim);
 
 int download_phoenix(std::string Teff, std::string log_g, std::string z, std::string alpha, std::string path);
+int download_wave_grid(std::string path);
+bool check_for(const std::string& name);
 size_t write_data(void *ptr, size_t size, size_t nmemb, FILE *stream);
 
 //int save_to_fits(const std::string filename, cv::Mat img);

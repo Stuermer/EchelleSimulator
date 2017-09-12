@@ -19,6 +19,9 @@
 #include <Eigen/Dense>
 #include <map>
 #include <curl/curl.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#include <string>
 
 void vectorToFile(std::vector<double> const& vec, std::string const& filename) {
   std::ofstream file(filename);
@@ -341,4 +344,37 @@ int download_phoenix(std::string Teff, std::string log_g, std::string z, std::st
     return res;
 
 
+}
+
+int download_wave_grid(std::string path){
+
+    std::string url = "ftp://phoenix.astro.physik.uni-goettingen.de/HiResFITS//WAVE_PHOENIX-ACES-AGSS-COND-2011.fits";
+
+    CURL *curl;
+    FILE *fp;
+    CURLcode res;
+
+    curl = curl_easy_init();
+    if (curl) {
+        fp = fopen(path.c_str(), "wb");
+        curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data);
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, fp);
+        res = curl_easy_perform(curl);
+        /* always cleanup */
+        curl_easy_cleanup(curl);
+        fclose(fp);
+    }
+
+    return res;
+
+}
+
+bool check_for (const std::string& name) {
+    if (FILE *file = fopen(name.c_str(), "r")) {
+        fclose(file);
+        return true;
+    } else {
+        return false;
+    }
 }

@@ -4,6 +4,7 @@
 #include <chrono>
 #include <CCfits/FITS.h>
 #include "argagg.hpp"
+#include "helper.h"
 
 using namespace std::chrono;
 using argagg::parser_results;
@@ -154,7 +155,18 @@ int main(int argc, char *argv[])
 
         if(download_phoenix(vv[0], vv[1], vv[2], vv[3], "../data/phoenix_spectra/test.fits") == 0){
 
-            cs = new PhoenixSpectrum("../data/phoenix_spectra/test.fits", "/data/CppLibs/WAVE_PHOENIX-ACES-AGSS-COND-2011.fits", stod(vv[4])); //0.45 and 0.85 are hardcoded wavelength range parameters (they need to be coded out)
+            const std::string& w_file = "../data/phoenix_spectra/WAVE_PHOENIX-ACES-AGSS-COND-2011.fits";
+
+            if(check_for(w_file)){
+
+                cs = new PhoenixSpectrum("../data/phoenix_spectra/test.fits", "../data/phoenix_spectra/WAVE_PHOENIX-ACES-AGSS-COND-2011.fits", stod(vv[4]));
+
+            }
+            else{
+
+                download_wave_grid("../data/phoenix_spectra/WAVE_PHOENIX-ACES-AGSS-COND-2011.fits");
+
+            }
 
         }
         else{
