@@ -81,9 +81,9 @@ protected:
     double s_val  = 1.0;
 
     /// minimum wavelength recorded for source [micro meters]
-    double min_w;
+    double min_w = 0.45;
     /// maximum wavelength recorded for source [micro meters]
-    double max_w;
+    double max_w = 0.85;
 
 private:
 
@@ -267,7 +267,7 @@ private:
 
 class PhoenixSpectrum : public Source{
 public:
-    PhoenixSpectrum(std::string spectrum_file, std::string wavelength_file, const double& min_wavelength, const double& max_wavelength, double mag);
+    PhoenixSpectrum(std::string spectrum_file, std::string wavelength_file, double mag);
     /*!
      * read in the spectrum from file between min_wavelength and max_wavelength
      * @param spectrum_file file path of spectrum
@@ -275,7 +275,7 @@ public:
      * @param min_wavelength minimum wavelength in micrometer
      * @param max_wavelength maximum wavelength in micrometer
      */
-    void read_spectrum(std::string spectrum_file, std::string wavelength_file, const double& min_wavelength, const double& max_wavelength, double mag);
+    void read_spectrum(std::string spectrum_file, std::string wavelength_file, double mag);
     double get_spectral_density(double wavelength);
 
 private:

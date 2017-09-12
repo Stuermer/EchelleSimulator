@@ -93,7 +93,7 @@ void Source::scale_spectral_density() {
     }
 
     s_val = s_val * pow(10, mag/(-2.5))*v_zp / (area);
-    std::cout<<s_val<<std::endl;
+    //std::cout<<s_val<<std::endl;
 
 }
 
@@ -139,16 +139,14 @@ double Blackbody::get_spectral_density(double wavelength) {
     return this->planck(this->T, wavelength/1E6);
 }
 
-PhoenixSpectrum::PhoenixSpectrum(std::string spectrum_file, std::string wavelength_file, const double &min_wavelength,
-                                 const double &max_wavelength, double mag) {
-    this->read_spectrum(spectrum_file, wavelength_file, min_wavelength, max_wavelength, mag);
+PhoenixSpectrum::PhoenixSpectrum(std::string spectrum_file, std::string wavelength_file, double mag) {
+    this->read_spectrum(spectrum_file, wavelength_file, mag);
     scale_spectral_density();
 }
 
 
 
-void PhoenixSpectrum::read_spectrum(std::string spectrum_file, std::string wavelength_file,
-                                    const double &min_wavelength, const double &max_wavelength, double mag) {
+void PhoenixSpectrum::read_spectrum(std::string spectrum_file, std::string wavelength_file, double mag) {
 // read in wavelength file
     std::unique_ptr<CCfits::FITS> ptr_FITS_wl(new CCfits::FITS(wavelength_file, CCfits::Read, true));
     CCfits::PHDU& wl = ptr_FITS_wl->pHDU();
@@ -159,12 +157,9 @@ void PhoenixSpectrum::read_spectrum(std::string spectrum_file, std::string wavel
     long ax1(wl.axis(0));
     long min_idx=ax1;
     long max_idx=0;
-    double min_wavelength_angstrom = min_wavelength*10000.;
+    double min_wavelength_angstrom = min_w*10000.;
     //std::cout<<min_wavelength;
-    double max_wavelength_angstrom = max_wavelength*10000.;
-
-    min_w = min_wavelength;
-    max_w = max_wavelength;
+    double max_wavelength_angstrom = max_w*10000.;
 
     // find wavelength limits
     for (long j = 0; j < ax1; ++j)

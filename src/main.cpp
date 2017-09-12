@@ -2,6 +2,7 @@
 
 #include "matrixsimulator.h"
 #include <chrono>
+#include <CCfits/FITS.h>
 #include "argagg.hpp"
 
 using namespace std::chrono;
@@ -61,7 +62,7 @@ int main(int argc, char *argv[])
                                   "Check http://phoenix.astro.physik.uni-goettingen.de/?page_id=15 for parameter ranges - intermediate values will be rounded to available spectra."
                               "example usage: --phoenix 3200,1.,-5.5,0.,1", 1
                               // The explicit command for our current setup m=0
-                              //-r 0 --spectrograph ../data/MaroonX.hdf  -p "/data/CppLibs/7125_0_lte03200-5.50-0.0.PHOENIX-ACES-AGSS-COND-2011-HiRes_2.fits","/data/CppLibs/WAVE_PHOENIX-ACES-AGSS-COND-2011.fits",0.
+                              //--spectrograph MaroonX -p 7000,1.50,-0.5,1.0,0.0,"../data/phoenix_spectra/test.fits"
                       },
 
                       {
@@ -142,29 +143,39 @@ int main(int argc, char *argv[])
     if (args["blackbody"]) {
         auto v = args["blackbody"].as<string>();
         std::vector<std::string> vv = split(v, ',');
-        cout<<"Simulating a blackbody with T="<< stod(vv[0])  <<" and magnitude K=" << stod(vv[0]) << endl;
+        cout<<"Simulating a blackbody with T = "<< stod(vv[0])  <<" and magnitude K = " << stod(vv[0]) << endl;
 
         cs = new Blackbody(stod(vv[0]) , stod(vv[1]));
     }
     else if (args["phoenix"]) {
         auto v = args["phoenix"].as<string>();
         std::vector<std::string> vv = split(v, ',');
-        cout<<"Simulating phoenix spectra with magnitude="<< stod(vv[4]) << endl;
+        cout<<"Simulating phoenix spectra with magnitude = "<< stod(vv[4]) << endl;
 
-        download_phoenix(vv[0], vv[1], vv[2], vv[3], "../data/phoenix_spectra/test.fits");
+        if(download_phoenix(vv[0], vv[1], vv[2], vv[3], "../data/phoenix_spectra/test.fits") == 0){
 
-        cs = new PhoenixSpectrum("../data/phoenix_spectra/test.fits", "/data/CppLibs/WAVE_PHOENIX-ACES-AGSS-COND-2011.fits", 0.45, 0.85, stod(vv[4])); //0.45 and 0.85 are hardcoded wavelength range parameters (they need to be coded out)
+            cs = new PhoenixSpectrum("../data/phoenix_spectra/test.fits", "/data/CppLibs/WAVE_PHOENIX-ACES-AGSS-COND-2011.fits", stod(vv[4])); //0.45 and 0.85 are hardcoded wavelength range parameters (they need to be coded out)
+
+        }
+        else{
+
+            argagg::fmt_ostream fmt(cerr);
+            fmt << usage.str() << argparser;
+            return EXIT_FAILURE;
+
+        }
+
     }
     else if (args["constant"]) {
         auto v = args["constant"].as<string>();
         std::vector<std::string> vv = split(v, ',');
-        cout<<"Simulating constant source with spectral density="<< stod(vv[0]) << " [micro watt] / ([micro meter] * [meter]^2)" << endl;
+        cout<<"Simulating constant source with spectral density = "<< stod(vv[0]) << " [micro watt] / ([micro meter] * [meter]^2)" << endl;
 
         cs = new Constant(stod(vv[0]),stod(vv[1]),stod(vv[2]));
     }
     else{
 
-        cout<<"Simulating constant source with spectral density=1 [micro watt] / ([micro meter] * [meter]^2)" << endl;
+        cout<<"Simulating constant source with spectral density = 1 [micro watt] / ([micro meter] * [meter]^2)" << endl;
         cs = new Constant();
     }
 
@@ -191,10 +202,14 @@ int main(int argc, char *argv[])
     std::cout << "Total Duration: "  << duration << std::endl;
 
     auto path = args["output"].as<std::string>("test.fit");
-    if (path.find("/") == std::string::npos)
+    if (path.find("/") == std::string::npos) {
         simulator.save_to_fits("../simulations/" + path, false, false, true);
-    else
+        //std::auto_ptr<CCfits::FITS> pFits(0);
+        //pFits->pHDU().addKey("OMEGA",omega," Complex cube root of 1 ");
+    }
+    else {
         simulator.save_to_fits(path);
+    }
 
     return 0;
 }

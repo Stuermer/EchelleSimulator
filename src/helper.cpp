@@ -193,9 +193,102 @@ size_t write_data(void *ptr, size_t size, size_t nmemb, FILE *stream) {
     return written;
 }
 
-void download_phoenix(std::string Teff, std::string log_g, std::string z, std::string alpha, std::string path){
+int download_phoenix(std::string Teff, std::string log_g, std::string z, std::string alpha, std::string path){
 
-    std::cout<<"Hello"<<std::endl;
+    //input positive z without '+'
+    if(z.at(0) != '-' && z.at(0) != '+'){
+
+        z = "+" + z;
+
+    }
+
+    //input positive alpha without '+'
+    if(alpha.at(0) != '-' && alpha.at(0) != '+'){
+
+        alpha = "+" + alpha;
+
+    }
+
+    //fix attempts at inputting z = -0.0
+    if(z == "0"){
+
+        z = "-" + z + ".0";
+
+    }
+    else if(z == "0."){
+
+        z = "-" + z + "0";
+
+    }
+    else if(z == "0.0"){
+
+        z = "-" + z;
+
+    }
+    else{
+
+    }
+
+    //fix attempts at inputting log_g = -0.00
+    if(log_g == "0"){
+
+        log_g = "-" + log_g + ".00";
+
+    }
+    else if(log_g == "0."){
+
+        log_g = "-" + log_g + "00";
+
+    }
+    else if(z == "0.0"){
+
+        log_g = "-" + log_g + "0";
+
+    }
+    else if(z == "0.00"){
+
+        log_g = "-" + log_g;
+
+    }
+    else{
+
+    }
+
+    //pad for z inputs
+    if(z.length() == 2){
+        z = z + ".0";
+    }
+    else if(z.length() == 3){
+        z = z + "0";
+    }
+    else{
+
+    }
+
+    //pad for log_g inputs
+    if(log_g.length() == 1){
+        log_g = log_g + ".00";
+    }
+    else if(log_g.length() == 2){
+        log_g = log_g + "00";
+    }
+    else if(log_g.length() == 3){
+        log_g = log_g + "0";
+    }
+    else{
+
+    }
+
+    //pad for alpha inputs
+    if(alpha.length() == 2){
+        alpha = alpha + ".00";
+    }
+    else if(alpha.length() == 3){
+        alpha = alpha + "00";
+    }
+    else if(alpha.length() == 4){
+        alpha = alpha + "0";
+    }
 
     std::string url = "ftp://phoenix.astro.physik.uni-goettingen.de/HiResFITS/PHOENIX-ACES-AGSS-COND-2011/";
 
@@ -227,7 +320,7 @@ void download_phoenix(std::string Teff, std::string log_g, std::string z, std::s
 
     url += ".PHOENIX-ACES-AGSS-COND-2011-HiRes.fits";
 
-    std::cout<<url<<std::endl; //cover z = 0 case also see if adding x.0 and + | - is doable
+    std::cout<<"Downloading spectra from: "<<url<<std::endl; //cover z = 0 case also see if adding x.0 and + | - is doable
 
     CURL *curl;
     FILE *fp;
@@ -244,6 +337,8 @@ void download_phoenix(std::string Teff, std::string log_g, std::string z, std::s
         curl_easy_cleanup(curl);
         fclose(fp);
     }
+
+    return res;
 
 
 }

@@ -377,7 +377,7 @@ int MatrixSimulator::simulate(double t) {
     std::vector<double> N_photons(orders.size());
     std::uniform_real_distribution<double> dis(0.0,1.0);
 
-    std::cout << "Number of photons per Order:" << std::endl;
+    std::cout << "Number of photons per order:" << std::endl;
     for(int o=0; o<this->orders.size(); ++o){
 
         std::vector<double> a(sim_wavelength[o].begin(), sim_wavelength[o].end()); //units are um
@@ -390,7 +390,7 @@ int MatrixSimulator::simulate(double t) {
         N_photons[o] = wl_s[o].Calc_flux();
         //this->telescope->get_area();
         //t*area*wl_s[o].Calc_flux()
-        cout << "Order "<< o+this->min_order <<" :" <<N_photons[o] <<endl;
+        cout << "Order "<< o+this->min_order <<": " <<N_photons[o] <<endl;
     }
 
     std::cout <<"Start tracing ..." <<std::endl;
@@ -443,7 +443,7 @@ int MatrixSimulator::simulate(double t) {
 
 void MatrixSimulator::set_efficiencies(std::vector<Efficiency *> &efficiencies)
 {
-    std::cout<<"Set Efficiencies ... " << std::endl;
+    std::cout<<std::endl<<"Set Efficiencies ... " << std::endl;
     std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
 
     for(int o=0; o<this->orders.size(); ++o) {
@@ -609,10 +609,14 @@ void MatrixSimulator::save_1d_to_fits(std::string filename) {
     int n_orders = this->orders.size();
 
     CCfits::Table* newTable = infile.addTable(hduName,2);
+
     for(auto const &o: this->orders)
     {
+
         newTable->addColumn(CCfits::Tdouble, "Order_"+std::to_string(o),this->sim_spectra[o].size(), "");
         newTable->column("Order_"+std::to_string(o)).write(this->sim_spectra[o],1,2);
         newTable->column("Order_"+std::to_string(o)).write(this->sim_wavelength[o],1,1);
+
     }
+
 }
