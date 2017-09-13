@@ -3,6 +3,7 @@
 #include "matrixsimulator.h"
 #include <chrono>
 #include <CCfits/FITS.h>
+#include <CCfits/PHDU.h>
 #include "argagg.hpp"
 #include "helper.h"
 
@@ -63,7 +64,7 @@ int main(int argc, char *argv[])
                                   "Check http://phoenix.astro.physik.uni-goettingen.de/?page_id=15 for parameter ranges - intermediate values will be rounded to available spectra."
                               "example usage: --phoenix 3200,1.,-5.5,0.,1", 1
                               // The explicit command for our current setup m=0
-                              //--spectrograph MaroonX -p 7000,1.50,-0.5,1.0,0.0,"../data/phoenix_spectra/test.fits"
+                              //--spectrograph MaroonX -p 7000,1.50,-0.5,1.0,0.0
                       },
 
                       {
@@ -128,6 +129,7 @@ int main(int argc, char *argv[])
         return EXIT_SUCCESS;
     }
 
+    std::string source;
     auto keep = args["keep"].as<double>(0);
     auto fiber = args["fiber"].as<double>(1);
 
@@ -147,26 +149,21 @@ int main(int argc, char *argv[])
         cout<<"Simulating a blackbody with T = "<< stod(vv[0])  <<" and magnitude K = " << stod(vv[0]) << endl;
 
         cs = new Blackbody(stod(vv[0]) , stod(vv[1]));
+        source = "blackbody";
     }
     else if (args["phoenix"]) {
         auto v = args["phoenix"].as<string>();
         std::vector<std::string> vv = split(v, ',');
         cout<<"Simulating phoenix spectra with magnitude = "<< stod(vv[4]) << endl;
 
-        if(download_phoenix(vv[0], vv[1], vv[2], vv[3], "../data/phoenix_spectra/test.fits") == 0){
+        if(download_phoenix(vv[0], vv[1], vv[2], vv[3]) == 0){
 
             const std::string& w_file = "../data/phoenix_spectra/WAVE_PHOENIX-ACES-AGSS-COND-2011.fits";
 
-            if(check_for(w_file)){
-
-                cs = new PhoenixSpectrum("../data/phoenix_spectra/test.fits", "../data/phoenix_spectra/WAVE_PHOENIX-ACES-AGSS-COND-2011.fits", stod(vv[4]));
-
-            }
-            else{
-
+            if(!check_for(w_file)) {
                 download_wave_grid("../data/phoenix_spectra/WAVE_PHOENIX-ACES-AGSS-COND-2011.fits");
-
             }
+            cs = new PhoenixSpectrum("../data/phoenix_spectra/test.fits", "../data/phoenix_spectra/WAVE_PHOENIX-ACES-AGSS-COND-2011.fits", stod(vv[4]));
 
         }
         else{
@@ -176,6 +173,7 @@ int main(int argc, char *argv[])
             return EXIT_FAILURE;
 
         }
+        source = "phoenix";
 
     }
     else if (args["constant"]) {
@@ -184,11 +182,13 @@ int main(int argc, char *argv[])
         cout<<"Simulating constant source with spectral density = "<< stod(vv[0]) << " [micro watt] / ([micro meter] * [meter]^2)" << endl;
 
         cs = new Constant(stod(vv[0]),stod(vv[1]),stod(vv[2]));
+        source = "constant";
     }
     else{
 
         cout<<"Simulating constant source with spectral density = 1 [micro watt] / ([micro meter] * [meter]^2)" << endl;
         cs = new Constant();
+        source = "constant";
     }
 
     auto rv = args["radial_velocity"].as<double>(0.);
@@ -216,8 +216,21 @@ int main(int argc, char *argv[])
     auto path = args["output"].as<std::string>("test.fit");
     if (path.find("/") == std::string::npos) {
         simulator.save_to_fits("../simulations/" + path, false, false, true);
-        //std::auto_ptr<CCfits::FITS> pFits(0);
-        //pFits->pHDU().addKey("OMEGA",omega," Complex cube root of 1 ");
+        std::string filename = "../simulations/" + path;
+        std::vector<std::string> * keys;
+        std::auto_ptr<CCfits::FITS> pFits(0);
+        pFits.reset( new CCfits::FITS(filename, CCfits::Write));
+
+        try {
+            pFits->pHDU().addKey("EXPTIME", t, "exposure time");
+            pFits->pHDU().addKey("Spectrograph", spectrograph, "Used spectrograph model");
+        }
+        catch(...) {
+
+                std::cout<< "keys already exists - skipping";
+        };
+        pFits->pHDU().addKey("Fiber_"+std::to_string(fiber), source, "Used spectrograph model");
+
     }
     else {
         simulator.save_to_fits(path);

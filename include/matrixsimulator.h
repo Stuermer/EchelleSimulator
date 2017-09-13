@@ -162,7 +162,7 @@ private:
      * @param wavelength wavelength [micron]
      * @return 2x3 affine transformation matrix
      */
-    Matrix23f get_transformation_matrix_lookup(int o, double wavelength);
+    inline Matrix23f get_transformation_matrix_lookup(int o, double wavelength);
 
     void set_efficiencies(std::vector<Efficiency *> &efficiencies);
 
@@ -209,6 +209,8 @@ private:
     std::vector<std::vector<double>> sim_q;
     std::vector<std::vector<double>> sim_r;
     std::vector<std::vector<double>> sim_phi;
+    std::vector<std::vector<double>> sim_tx;
+    std::vector<std::vector<double>> sim_ty;
     std::vector<std::vector<double>> sim_matrix_wavelength;
     std::vector<double> sim_matrix_dwavelength;
 

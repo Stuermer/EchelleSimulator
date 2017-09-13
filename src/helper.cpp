@@ -196,7 +196,7 @@ size_t write_data(void *ptr, size_t size, size_t nmemb, FILE *stream) {
     return written;
 }
 
-int download_phoenix(std::string Teff, std::string log_g, std::string z, std::string alpha, std::string path){
+int download_phoenix(std::string Teff, std::string log_g, std::string z, std::string alpha){
 
     //input positive z without '+'
     if(z.at(0) != '-' && z.at(0) != '+'){
@@ -328,6 +328,8 @@ int download_phoenix(std::string Teff, std::string log_g, std::string z, std::st
     CURL *curl;
     FILE *fp;
     CURLcode res;
+    std::string path = "../data/phoenix_spectra/test.fits";
+    remove(path.c_str());
 
     curl = curl_easy_init();
     if (curl) {

@@ -406,7 +406,7 @@ int MatrixSimulator::simulate(double t) {
 
         for (int i = 0; i < N_photons[o]; ++i) {
             double wl = wl_s[o].Sample(dis(gen));
-            Matrix23f tm = this->get_transformation_matrix_lookup(o, wl);
+            Matrix23f tm = this->get_transformation_matrix(o, wl);
 
             float x = rgx(gen);
             float y = rgy(gen);
@@ -512,6 +512,8 @@ void MatrixSimulator::prepare_matrix_lookup(int N){
         this->sim_q.push_back(std::vector<double>(N));
         this->sim_r.push_back(std::vector<double>(N));
         this->sim_phi.push_back(std::vector<double>(N));
+        this->sim_tx.push_back(std::vector<double>(N));
+        this->sim_ty.push_back(std::vector<double>(N));
 
         this->sim_matrix_wavelength.push_back(std::vector<double>(N));
         this->sim_matrix_dwavelength.push_back(0.);
@@ -526,6 +528,8 @@ void MatrixSimulator::prepare_matrix_lookup(int N){
         std::vector<double> q;
         std::vector<double> r;
         std::vector<double> phi;
+        std::vector<double> tx;
+        std::vector<double> ty;
 
         for(int i = 0; i<this->sim_matrix_wavelength[o].size(); ++i){
             this->sim_matrix_wavelength[o][i] = min_wl + i * dl;
@@ -534,11 +538,15 @@ void MatrixSimulator::prepare_matrix_lookup(int N){
             q.push_back(this->tr_q[o](this->sim_matrix_wavelength[o][i]));
             r.push_back(this->tr_r[o](this->sim_matrix_wavelength[o][i]));
             phi.push_back(this->tr_phi[o](this->sim_matrix_wavelength[o][i]));
+            tx.push_back(this->tr_tx[o](this->sim_matrix_wavelength[o][i]));
+            ty.push_back(this->tr_ty[o](this->sim_matrix_wavelength[o][i]));
         }
         this->sim_p.push_back(p);
         this->sim_q.push_back(q);
         this->sim_r.push_back(r);
         this->sim_phi.push_back(phi);
+        this->sim_tx.push_back(tx);
+        this->sim_ty.push_back(ty);
 
     }
     std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
