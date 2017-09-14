@@ -60,37 +60,12 @@ MatrixSimulator::MatrixSimulator(std::string path, int fiber_number, bool keep_c
     this->load_spectrograph_model(path, fiber_number, keep_ccd);
 }
 
-//int download_spectrograph_model(){
-//    try
-//    {
-//        std::string url = "http://www.example.com/";
-//        std::ofstream out("output");
-//
-//        curlpp::Cleanup cleanup;
-//        curlpp::Easy request;
-//
-//        request.setOpt(new curlpp::options::Url(url));
-//        request.setOpt(new curlpp::options::WriteStream(&out));
-//
-//        request.perform();
-//    }
-//    catch( cURLpp::RuntimeError &e )
-//    {
-//        std::cerr << e.what() << std::endl;
-//        return 1;
-//    }
-//    catch( cURLpp::LogicError &e )
-//    {
-//        std::cerr << e.what() << std::endl;
-//        return 1;
-//    }
-//}
-
 void MatrixSimulator::load_spectrograph_model(std::string path, int fiber_number, bool keep_ccd) {
     if (path.find('.hdf') != std::string::npos) {
-        std::cout << "found!" << '\n';
+        std::cout << "Spectrograph file found" << std::endl;
     } else
     {
+        std::cout << "Spectrograph file not found" << std::endl;
 //        download_spectrograph_model()https://github.com/Stuermer/EchelleSimulator/blob/master/data/MaroonX.hdf
     }
     const H5std_string filename(path);
@@ -121,15 +96,13 @@ void MatrixSimulator::load_spectrograph_model(std::string path, int fiber_number
     attr = new H5::Attribute(fiber->openAttribute("field_height"));
     type = new H5::DataType(attr->getDataType());
     double field_height, field_width = 0;
-    int oversampling = 0;
     int sampling_input_x;
     int number_of_points;
 
     attr->read(*type, &field_height);
     fiber->openAttribute("field_with").read(*type, &field_width);
-    attr = new H5::Attribute(fiber->openAttribute("oversampling_output"));
+    attr = new H5::Attribute(fiber->openAttribute("sampling_input_x"));
     type = new H5::DataType(attr->getDataType());
-    attr->read(*type, &oversampling);
     fiber->openAttribute("sampling_input_x").read(*type, &sampling_input_x);
     fiber->openAttribute("MatricesPerOrder").read(*type, &number_of_points);
 
@@ -376,6 +349,7 @@ int MatrixSimulator::simulate(double t) {
     std::vector<Spectra> wl_s(orders.size());
     std::vector<double> N_photons(orders.size());
     std::uniform_real_distribution<double> dis(0.0,1.0);
+    double psf_scaling = (*this->ccd->get_pixelsize() / this->psfs->pixelsampling );
 
     std::cout << "Number of photons per order:" << std::endl;
     for(int o=0; o<this->orders.size(); ++o){
@@ -387,7 +361,7 @@ int MatrixSimulator::simulate(double t) {
 
         //units are assumed to be t=[s], area=[m^2], wl_s.dflux=[Num of Photons]/([s] * [m^2] * [um]), wl_s.Calc_flux = [Num of Photons]/([s]*[m^2])
 //        N_photons[o] = 1000000;
-        N_photons[o] = wl_s[o].Calc_flux();
+        N_photons[o] = wl_s[o].Calc_flux()*t;
         //this->telescope->get_area();
         //t*area*wl_s[o].Calc_flux()
         cout << "Order "<< o+this->min_order <<": " <<N_photons[o] <<endl;
@@ -411,8 +385,8 @@ int MatrixSimulator::simulate(double t) {
             float x = rgx(gen);
             float y = rgy(gen);
 
-            float newx = (tm(0, 0) * x + tm(0, 1) * y + tm(0, 2)) / 3.;
-            float newy = (tm(1, 0) * x + tm(1, 1) * y + tm(1, 2)) / 3.;
+            float newx = (tm(0, 0) * x + tm(0, 1) * y + tm(0, 2));
+            float newy = (tm(1, 0) * x + tm(1, 1) * y + tm(1, 2));
 
             // lookup psf
             int idx_psf = floor((wl - this->sim_wavelength[o].front()) / this->sim_psfs_dwavelength[o]);
@@ -429,8 +403,8 @@ int MatrixSimulator::simulate(double t) {
                 abz = abr_z(gen);
             }
 
-            newx += (abx - this->sim_psfs[o][idx_psf].cols / 2.) / 3.;
-            newy += (aby - this->sim_psfs[o][idx_psf].rows / 2.) / 3.;
+            newx += (abx - this->sim_psfs[o][idx_psf].cols / 2.)/psf_scaling;
+            newy += (aby - this->sim_psfs[o][idx_psf].rows / 2.)/psf_scaling;
 
             if (newx > 0 && newx < this->ccd->data.cols && newy > 0 && newy < this->ccd->data.rows)
                 this->ccd->data.at<double>(floor(newy), floor(newx)) += 1.;

@@ -89,6 +89,7 @@ PSF_ZEMAX::PSF_ZEMAX(const std::string filename, int fiber_number) {
             // group names are psf_order_100    get order number here
             int order = std::stoi(gn.substr(10));
             std::vector<PSFdata> psf_vec;
+            std::vector<double> pixelsampling;
 
             std::vector<std::string> wl_names;
             std::string dt_path = gn;
@@ -108,6 +109,12 @@ PSF_ZEMAX::PSF_ZEMAX(const std::string filename, int fiber_number) {
                 H5::DataType  *type = new H5::DataType(attr->getDataType());
                 double wavelength = 0.;
                 attr->read(*type, &wavelength);
+
+                *attr = H5::Attribute(dataset.openAttribute("dataSpacing"));
+                *type = H5::DataType(attr->getDataType());
+                double read_sampling = 0.;
+                attr->read(*type, &read_sampling);
+                this->pixelsampling =read_sampling;
 
 
                 H5::DataSpace dspace = dataset.getSpace();

@@ -41,6 +41,7 @@ public:
     virtual ~PSF();
     virtual cv::Mat get_PSF(int order, double wavelength) = 0;
     virtual cv::Mat get_PSF_nocut(int order, double wavelength) = 0;
+    double pixelsampling;
 };
 
 /**

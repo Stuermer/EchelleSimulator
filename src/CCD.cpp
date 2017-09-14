@@ -7,7 +7,7 @@
 #include "hdf5opencv.h"
 #include <CCfits/CCfits>
 
-CCD::CCD(int Nx, int Ny, int oversampling, int data_type) :Nx(Nx), Ny(Ny), oversampling(oversampling) {
+CCD::CCD(int Nx, int Ny, int data_type, double pixelsize) :Nx(Nx), Ny(Ny), oversampling(oversampling), pixelsize(pixelsize) {
 
 #ifdef USE_GPU
     {
@@ -17,12 +17,16 @@ CCD::CCD(int Nx, int Ny, int oversampling, int data_type) :Nx(Nx), Ny(Ny), overs
     }
 #else
     {
-        this->data = cv::Mat::zeros(Ny*oversampling, Nx*oversampling, CV_64F);
+        this->data = cv::Mat::zeros(Ny, Nx, CV_64F);
     }
 #endif
 
     // this->data = cv::Mat::zeros(Ny*oversampling, Nx*oversampling, data_type);
 
+}
+
+double * CCD::get_pixelsize() {
+    return &this->pixelsize;
 }
 
 void CCD::save_to_hdf(std::string filename, bool downsample, bool bleed, bool overwrite) {

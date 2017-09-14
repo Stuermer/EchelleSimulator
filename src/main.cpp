@@ -21,9 +21,6 @@ using std::string;
 int main(int argc, char *argv[])
 {
 
-    //download_phoenix("ftp://phoenix.astro.physik.uni-goettingen.de/HiResFITS/PHOENIX-ACES-AGSS-COND-2011/Z-1.0.Alpha=+0.80/lte06000-4.50-1.0.Alpha=+0.80.PHOENIX-ACES-AGSS-COND-2011-HiRes.fits",
-                    // "../data/phoenix_spectra/test.fits");
-
     parser argparser {{
 
                       {
@@ -78,13 +75,13 @@ int main(int argc, char *argv[])
                       {
 
                               "radial_velocity", {"-r", "--radial-velocity"},
-                              "OPTIONAL: radial velocity shift in m/s (default: 0) ", 1
+                              "OPTIONAL: radial velocity shift [m/s] (default: 0) ", 1
 
                       },
                       {
 
                               "integration_time", {"-t", "--integration-time"},
-                              "OPTIONAL: integration time of the spectrograph (default: 1) ", 1
+                              "OPTIONAL: integration time of the spectrograph [s] (default: 1) ", 1
 
                       },
                       {
@@ -195,8 +192,8 @@ int main(int argc, char *argv[])
 
     high_resolution_clock::time_point t1 = high_resolution_clock::now();
     Telescope Gemini = Telescope();
-//    GratingEfficiency ge = GratingEfficiency(0.8, simulator.get_blaze(), simulator.get_blaze(), simulator.get_gpmm());
-    ConstantEfficiency ge = ConstantEfficiency(1.);
+    GratingEfficiency ge = GratingEfficiency(0.8, simulator.get_blaze(), simulator.get_blaze(), simulator.get_gpmm());
+//    ConstantEfficiency ge = ConstantEfficiency(1.);
 
     simulator.add_efficiency(&ge);
     simulator.set_telescope(&Gemini);
@@ -229,7 +226,7 @@ int main(int argc, char *argv[])
 
                 std::cout<< "keys already exists - skipping";
         };
-        pFits->pHDU().addKey("Fiber_"+std::to_string(fiber), source, "Used spectrograph model");
+        pFits->pHDU().addKey("Fiber_"+std::to_string(fiber), source, "Source for Fiber "+std::to_string(fiber));
 
     }
     else {
