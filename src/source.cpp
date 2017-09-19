@@ -353,9 +353,12 @@ double CustomSpectrum::get_spectral_density(double wavelength) {
 
 }
 
-LineList::LineList(std::string linelist_file) {
+LineList::LineList(std::string linelist_file, double scaling) {
     this->read_spectrum(linelist_file);
     mode = false;
+    this -> scaling = scaling;
+
+    event = get_wavelength();
 
 }
 
@@ -392,7 +395,7 @@ std::vector<float> LineList::get_spectrum(std::vector<double> wavelength){
 
 double LineList::get_spectral_density(double wavelength) {
 
-    return data[wavelength];
+    return scaling * data[wavelength];
 
 }
 

@@ -306,7 +306,7 @@ double Histogram::Kolmogorov_Smirnov_test(Histogram &sim_histogram){
 template<class T>
 double Histogram::Sample(T sample_value){
 
-    if(mode == true) {
+    if(mode == 1) {
         long dist = distance(cdf.begin(), lower_bound(cdf.begin(), cdf.end(), sample_value)) - 1;
         if (dist == -1) { dist = 0; };
         //There's a lot going on here. distance() finds the number of elements seperating two values of cdf
@@ -319,7 +319,7 @@ double Histogram::Sample(T sample_value){
         long dist = distance(cdf.begin(), lower_bound(cdf.begin(), cdf.end(), sample_value));
         if (cdf[dist] < sample_value) { dist = dist + 1;};
 
-        return event[dist];
+        return event[1];
 
     }
 }

@@ -209,7 +209,7 @@ int main(int argc, char *argv[])
     else if (args["coehlo"]) {
 
         auto v = args["choehlo"].as<string>();
-        std::vector<std::string> vv = split(v, 'v');
+        std::vector<std::string> vv = split(v, ',');
         cout<<"Simulating coehlo spectra with magnitude = "<< stod(vv[1]) << endl;
 
         cs = new CoehloSpectrum(vv[0],stod(vv[1]));
@@ -218,7 +218,7 @@ int main(int argc, char *argv[])
     else if (args["custom1"]) {
 
         auto v = args["custom1"].as<string>();
-        std::vector<std::string> vv = split(v, 'v');
+        std::vector<std::string> vv = split(v, ',');
         cout<<"Simulating coehlo spectra with magnitude = "<< stod(vv[3]) << endl;
 
         cs = new CustomSpectrum(vv[0],stod(vv[1]),stod(vv[2]),stod(vv[3]));
@@ -227,7 +227,7 @@ int main(int argc, char *argv[])
     else if (args["custom2"]) {
 
         auto v = args["custom2"].as<string>();
-        std::vector<std::string> vv = split(v, 'v');
+        std::vector<std::string> vv = split(v, ',');
         cout<<"Simulating coehlo spectra with magnitude = "<< stod(vv[2]) << endl;
 
         cs = new CustomSpectrum(vv[0],vv[1],stod(vv[2]));
@@ -235,11 +235,14 @@ int main(int argc, char *argv[])
     }
     else if (args["linelist"]){
 
-        cs = new LineList("../data/phoenix_spectra/Untitled_1.csv");
-
-        cout << cs->get_spectral_density(0.3);
+        auto v = args["linelist"].as<string>();
+        std::vector<std::string> vv = split(v, ',');
+        cout<<"Simulating line list spectra with scaling factor = "<< stod(vv[1]) << endl;
+        cs = new LineList(vv[0], stod(vv[1]));
 
         simulator.mode = false;
+
+        source = "line list";
 
     }
     else if (args["constant"]) {

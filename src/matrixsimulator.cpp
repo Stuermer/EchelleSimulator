@@ -354,11 +354,17 @@ int MatrixSimulator::simulate(double t) {
     std::cout << "Number of photons per order:" << std::endl;
     for(int o=0; o<this->orders.size(); ++o){
 
-        std::vector<double> a(sim_wavelength[o].begin(), sim_wavelength[o].end()); //units are um
+        wl_s[o].mode = this -> mode;
+
+        if(mode == 0) {
+            std::vector<double> a(sim_wavelength[o].begin(), sim_wavelength[o].end()); //units are um
+        }
+        else{
+            //std::vector<double> a = set_wavelength(*sources[o].event);
+        }
         std::vector<double> b(sim_spectra_time_efficieny[o].begin(), sim_spectra_time_efficieny[o].end()); //units are uW per um
 
         wl_s[o] = Spectra(a,b);
-        wl_s[o].mode = this -> mode;
 
         //units are assumed to be t=[s], area=[m^2], wl_s.dflux=[Num of Photons]/([s] * [m^2] * [um]), wl_s.Calc_flux = [Num of Photons]/([s]*[m^2])
 //        N_photons[o] = 1000000;
@@ -381,6 +387,7 @@ int MatrixSimulator::simulate(double t) {
 
         for (int i = 0; i < N_photons[o]; ++i) {
             double wl = wl_s[o].Sample(dis(gen));
+            cout<<wl<<endl;
             Matrix23f tm = this->get_transformation_matrix(o, wl);
 
             float x = rgx(gen);

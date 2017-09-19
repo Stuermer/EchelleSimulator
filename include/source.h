@@ -333,11 +333,15 @@ private:
  */
 class LineList : public Source{
 public:
-    LineList(std::string linelist_file);
+    LineList(std::string linelist_file, double scaling);
     void read_spectrum(std::string linelist_file);
     double get_spectral_density(double wavelength);
     std::vector<float> get_spectrum(std::vector<double> wavelength);
     std::vector<double> get_wavelength();
+
+    vector<double> event;
+
+    double scaling;
 
 private:
     std::map<double, double> data;
