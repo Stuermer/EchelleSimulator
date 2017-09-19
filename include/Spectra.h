@@ -194,16 +194,33 @@ double Spectra::Calc_flux(const Histogram& filter){
 
 double Spectra::Calc_flux(){
 
-    long double flux=0;
+    if (mode == true) {
+        long double flux = 0;
 
-    for(int i=0; i<length; i++){
+        for (int i = 0; i < length; i++) {
 
-        flux=flux+(0.5)*(dflux[i+1]+dflux[i])*(d_event[i]);
+            flux = flux + (0.5) * (dflux[i + 1] + dflux[i]) * (d_event[i]);
+
+        }
+
+        magnitude = 2.5 * log10(v_zp / flux);
+        return flux;
 
     }
+    else{
 
-    magnitude=2.5*log10(v_zp / flux);
-    return flux;
+        long double flux = 0;
+
+        for (int i = 0; i < length; i++) {
+
+            flux = flux + (dflux[i]);
+
+        }
+
+        magnitude = 2.5 * log10(v_zp / flux);
+        return flux;
+
+    }
 
 }
 

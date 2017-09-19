@@ -56,6 +56,37 @@ int main(int argc, char *argv[])
                       },
 
                       {
+
+                              "coehlo", {"--coehlo"},
+                              "OPTIONAL: Simulate a solar coehlo spectra from a file."
+                              "Check http://specmodels.iag.usp.br/fits_search/?refer=s_coelho05 for available files."
+                              "Example usage: --coehlo file_path,magnitude", 1
+
+                      },
+
+                      {
+
+                              "custom1", {"--custom1"},
+                              "OPTIONAL: Simulate a spectra given by the user."
+                              "Example usage: --custom spectra_file,min_w,max_w,magnitude",1
+
+                      },
+
+                      {
+
+                              "custom2", {"--custom2"},
+                              "OPTIONAL: Simulate a spectra given by the user."
+                              "Example usage: --custom spectra_file,wave_file,magnitude",1
+
+                      },
+
+                      {
+
+                              "linelist", {"--linelist"},"Hello",1
+
+                      },
+
+                      {
                               "phoenix", {"-p", "--phoenix"},
                               "OPTIONAL: Simulate a mdwarf phoenix spectra with effective temperature T, magnitude M, log g, metalicity alpha."
                                   "Check http://phoenix.astro.physik.uni-goettingen.de/?page_id=15 for parameter ranges - intermediate values will be rounded to available spectra."
@@ -160,6 +191,8 @@ int main(int argc, char *argv[])
             if(!check_for(w_file)) {
                 download_wave_grid("../data/phoenix_spectra/WAVE_PHOENIX-ACES-AGSS-COND-2011.fits");
             }
+            //cs = new CustomSpectrum("../data/phoenix_spectra/test.fits", "../data/phoenix_spectra/WAVE_PHOENIX-ACES-AGSS-COND-2011.fits", stod(vv[4]));
+//            cout<<"Downloaded";
             cs = new PhoenixSpectrum("../data/phoenix_spectra/test.fits", "../data/phoenix_spectra/WAVE_PHOENIX-ACES-AGSS-COND-2011.fits", stod(vv[4]));
 
         }
@@ -171,6 +204,42 @@ int main(int argc, char *argv[])
 
         }
         source = "phoenix";
+
+    }
+    else if (args["coehlo"]) {
+
+        auto v = args["choehlo"].as<string>();
+        std::vector<std::string> vv = split(v, 'v');
+        cout<<"Simulating coehlo spectra with magnitude = "<< stod(vv[1]) << endl;
+
+        cs = new CoehloSpectrum(vv[0],stod(vv[1]));
+
+    }
+    else if (args["custom1"]) {
+
+        auto v = args["custom1"].as<string>();
+        std::vector<std::string> vv = split(v, 'v');
+        cout<<"Simulating coehlo spectra with magnitude = "<< stod(vv[3]) << endl;
+
+        cs = new CustomSpectrum(vv[0],stod(vv[1]),stod(vv[2]),stod(vv[3]));
+
+    }
+    else if (args["custom2"]) {
+
+        auto v = args["custom2"].as<string>();
+        std::vector<std::string> vv = split(v, 'v');
+        cout<<"Simulating coehlo spectra with magnitude = "<< stod(vv[2]) << endl;
+
+        cs = new CustomSpectrum(vv[0],vv[1],stod(vv[2]));
+
+    }
+    else if (args["linelist"]){
+
+        cs = new LineList("../data/phoenix_spectra/Untitled_1.csv");
+
+        cout << cs->get_spectral_density(0.3);
+
+        simulator.mode = false;
 
     }
     else if (args["constant"]) {

@@ -358,6 +358,7 @@ int MatrixSimulator::simulate(double t) {
         std::vector<double> b(sim_spectra_time_efficieny[o].begin(), sim_spectra_time_efficieny[o].end()); //units are uW per um
 
         wl_s[o] = Spectra(a,b);
+        wl_s[o].mode = this -> mode;
 
         //units are assumed to be t=[s], area=[m^2], wl_s.dflux=[Num of Photons]/([s] * [m^2] * [um]), wl_s.Calc_flux = [Num of Photons]/([s]*[m^2])
 //        N_photons[o] = 1000000;

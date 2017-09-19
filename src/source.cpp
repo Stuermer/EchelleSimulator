@@ -22,6 +22,7 @@
 #include "source.h"
 #include <CCfits/CCfits>
 #include <helper.h>
+//#include <Histogram.h>
 
 Source::Source()
 {
@@ -140,13 +141,12 @@ double Blackbody::get_spectral_density(double wavelength) {
 }
 
 PhoenixSpectrum::PhoenixSpectrum(std::string spectrum_file, std::string wavelength_file, double mag) {
-    this->read_spectrum(spectrum_file, wavelength_file, mag);
+    this->read_spectrum(spectrum_file, wavelength_file);
+    this->mag = mag;
     scale_spectral_density();
 }
 
-
-
-void PhoenixSpectrum::read_spectrum(std::string spectrum_file, std::string wavelength_file, double mag) {
+void PhoenixSpectrum::read_spectrum(std::string spectrum_file, std::string wavelength_file) {
 // read in wavelength file
     std::unique_ptr<CCfits::FITS> ptr_FITS_wl(new CCfits::FITS(wavelength_file, CCfits::Read, true));
     CCfits::PHDU& wl = ptr_FITS_wl->pHDU();
@@ -201,19 +201,171 @@ double PhoenixSpectrum::get_spectral_density(double wavelength) {
      */
 }
 
-LineList::LineList(std::string linelist) {
-    this->read_spectrum(linelist);
+CoehloSpectrum::CoehloSpectrum(std::string spectrum_file, double mag) {
+    this->read_spectrum(spectrum_file);
+    this->mag = mag;
+    scale_spectral_density();
+}
+
+void CoehloSpectrum::read_spectrum(std::string spectrum_file) {
+//// read in wavelength file
+//    std::unique_ptr<CCfits::FITS> ptr_FITS_wl(new CCfits::FITS(wavelength_file, CCfits::Read, true));
+//    CCfits::PHDU& wl = ptr_FITS_wl->pHDU();
+//    std::valarray<double>  contents_wl;
+//    wl.readAllKeys();
+//    wl.read(contents_wl);
+//
+//    long ax1(wl.axis(0));
+//    long min_idx=ax1;
+//    long max_idx=0;
+//    double min_wavelength_angstrom = min_w*10000.;
+//    //std::cout<<min_wavelength;
+//    double max_wavelength_angstrom = max_w*10000.;
+//
+//    // find wavelength limits
+//    for (long j = 0; j < ax1; ++j)
+//    {
+//        if (contents_wl[j] < min_wavelength_angstrom)
+//            min_idx = j;
+//        if ( contents_wl[j] > max_wavelength_angstrom)
+//            max_idx = j;
+//    }
+//    std::cout << "min_idx"<<":"<<min_idx<<"\t";
+//    std::cout<<"max_idx"<<":"<<max_idx<<"\t";
+
+    std::unique_ptr<CCfits::FITS> ptr_FITS_spectrum(new CCfits::FITS(spectrum_file, CCfits::Read, true));
+    CCfits::PHDU& spec = ptr_FITS_spectrum->pHDU();
+    std::valarray<double>  contents_spec;
+    spec.readAllKeys();
+    spec.read(contents_spec);
+    long ax1(spec.axis(0));
+    long max_idx=ax1;
+    long min_idx=0;
+    std::auto_ptr<CCfits::FITS> pInfile(new CCfits::FITS(spectrum_file, CCfits::Read));
+    double minwl;
+    pInfile->pHDU().readKey("CRVAL1", minwl);
+
+    double wld;
+    pInfile->pHDU().readKey("CDELT1", wld);
+
+    // find wavelength limits
+    // convert contents_spec from erg/s/cm^2/A to uW/s/m^2/um
+    for (long j = min_idx; j < max_idx; ++j) {
+        this->data[(minwl+j*wld)/10000.] = (1E11) * contents_spec[j];
+        //std::cout<<contents_spec[j]<<":";
+    }
 
 }
 
+double CoehloSpectrum::get_spectral_density(double wavelength) {
 
+    return (s_val)*interpolate(this->data, wavelength);
 
-void LineList::read_spectrum(std::string linelist) {
-    std::ifstream       file(linelist.c_str());
+}
+
+CustomSpectrum::CustomSpectrum(std::string spectrum_file, double min_w, double max_w, double mag){
+
+    this -> min_w = min_w;
+    this -> max_w = max_w;
+    this -> mag = mag;
+
+    read_spectrum(spectrum_file);
+    scale_spectral_density();
+
+}
+
+CustomSpectrum::CustomSpectrum(std::string spectrum_file, std::string wave_file, double mag){
+
+    this -> mag = mag;
+
+    read_spectrum(spectrum_file, wave_file);
+    scale_spectral_density();
+
+}
+
+void CustomSpectrum::read_spectrum(std::string spectrum_file) {
+//// read in wavelength file
+
+    std::unique_ptr<CCfits::FITS> ptr_FITS_spectrum(new CCfits::FITS(spectrum_file, CCfits::Read, true));
+    CCfits::PHDU& spec = ptr_FITS_spectrum->pHDU();
+    std::valarray<double>  contents_spec;
+    spec.readAllKeys();
+    spec.read(contents_spec);
+    long ax1(spec.axis(0));
+    long max_idx=ax1;
+    long min_idx=0;
+    std::auto_ptr<CCfits::FITS> pInfile(new CCfits::FITS(spectrum_file, CCfits::Read));
+
+    // find wavelength limits
+    // convert contents_spec from erg/s/cm^2/A to uW/s/m^2/um
+    for (long j = min_idx; j < max_idx; ++j) {
+        this->data[( (max_w-min_w)*j / max_idx + min_w ) /10000.] = (1E11) * contents_spec[j];
+        //std::cout<<contents_spec[j]<<":";
+    }
+
+}
+
+void CustomSpectrum::read_spectrum(std::string spectrum_file, std::string wave_file) {
+//// read in wavelength file
+    std::unique_ptr<CCfits::FITS> ptr_FITS_wl(new CCfits::FITS(wave_file, CCfits::Read, true));
+    CCfits::PHDU& wl = ptr_FITS_wl->pHDU();
+    std::valarray<double>  contents_wl;
+    wl.readAllKeys();
+    wl.read(contents_wl);
+
+    long ax1(wl.axis(0));
+    long max_idx=ax1;
+    long min_idx=0;
+    double min_wavelength_angstrom = min_w*10000.;
+    //std::cout<<min_wavelength;
+    double max_wavelength_angstrom = max_w*10000.;
+
+    // find wavelength limits
+    for (long j = 0; j < ax1; ++j)
+    {
+        if (contents_wl[j] < min_wavelength_angstrom)
+            min_idx = j;
+        if ( contents_wl[j] > max_wavelength_angstrom)
+            max_idx = j;
+    }
+    std::cout << "min_idx"<<":"<<min_idx<<"\t";
+    std::cout<<"max_idx"<<":"<<max_idx<<"\t";
+
+    std::unique_ptr<CCfits::FITS> ptr_FITS_spectrum(new CCfits::FITS(spectrum_file, CCfits::Read, true));
+    CCfits::PHDU& spec = ptr_FITS_spectrum->pHDU();
+    std::valarray<double>  contents_spec;
+    spec.readAllKeys();
+    spec.read(contents_spec);
+    std::auto_ptr<CCfits::FITS> pInfile(new CCfits::FITS(spectrum_file, CCfits::Read));
+
+    // find wavelength limits
+    // convert contents_spec from erg/s/cm^2/A to uW/s/m^2/um
+    for (long j = min_idx; j < max_idx; ++j) {
+        this->data[ contents_wl[j] / 10000.] = (1E11) * contents_spec[j];
+        //std::cout<<contents_spec[j]<<":";
+    }
+
+}
+
+double CustomSpectrum::get_spectral_density(double wavelength) {
+
+    return (s_val)*interpolate(this->data, wavelength);
+
+}
+
+LineList::LineList(std::string linelist_file) {
+    this->read_spectrum(linelist_file);
+    mode = false;
+
+}
+
+void LineList::read_spectrum(std::string linelist_file) {
+    std::ifstream       file(linelist_file.c_str());
 
     for(CSVIterator loop(file); loop != CSVIterator(); ++loop)
     {
-        this->data.insert(std::pair<double, double> (std::stod((*loop)[0]), std::stod((*loop)[1])));
+        std::cout<<(*loop)[0];
+        this->data.insert(std::pair<double, double> (stod((*loop)[0]), stod((*loop)[1])));
     }
 
 }
@@ -229,7 +381,8 @@ std::vector<float> LineList::get_spectrum(std::vector<double> wavelength){
             }
             else
             {
-                spectrum.push_back(iterator->second);
+                float t = iterator->second;
+                spectrum.push_back(t);
                 break;
             }
         }
@@ -238,6 +391,8 @@ std::vector<float> LineList::get_spectrum(std::vector<double> wavelength){
 }
 
 double LineList::get_spectral_density(double wavelength) {
+
+    return data[wavelength];
 
 }
 

@@ -199,14 +199,14 @@ size_t write_data(void *ptr, size_t size, size_t nmemb, FILE *stream) {
 int download_phoenix(std::string Teff, std::string log_g, std::string z, std::string alpha){
 
     //input positive z without '+'
-    if(z.at(0) != '-' && z.at(0) != '+'){
+    if(z.at(0) != '-' && z.at(0) != '+' && z.at(0) != '0'){
 
         z = "+" + z;
 
     }
 
     //input positive alpha without '+'
-    if(alpha.at(0) != '-' && alpha.at(0) != '+'){
+    if(alpha.at(0) != '-' && alpha.at(0) != '+' && alpha.at(0) != '0'){
 
         alpha = "+" + alpha;
 
@@ -232,6 +232,31 @@ int download_phoenix(std::string Teff, std::string log_g, std::string z, std::st
 
     }
 
+    //fix attempts at inputting alpha = -0.0
+    if(alpha == "0"){
+
+        alpha = "-" + alpha + ".00";
+
+    }
+    else if(alpha == "0."){
+
+        alpha = "-" + alpha + "00";
+
+    }
+    else if(alpha == "0.0"){
+
+        alpha = "-" + alpha + "0";
+
+    }
+    else if(alpha == "0.00"){
+
+        alpha = "-" + alpha;
+
+    }
+    else{
+
+    }
+
     //fix attempts at inputting log_g = -0.00
     if(log_g == "0"){
 
@@ -243,12 +268,12 @@ int download_phoenix(std::string Teff, std::string log_g, std::string z, std::st
         log_g = "-" + log_g + "00";
 
     }
-    else if(z == "0.0"){
+    else if(log_g == "0.0"){
 
         log_g = "-" + log_g + "0";
 
     }
-    else if(z == "0.00"){
+    else if(log_g == "0.00"){
 
         log_g = "-" + log_g;
 
@@ -297,7 +322,7 @@ int download_phoenix(std::string Teff, std::string log_g, std::string z, std::st
 
     url += "Z" + z;
 
-    if(alpha != "0.0"){
+    if(alpha != "-0.00"){
 
         url += ".Alpha=" + alpha;
 
@@ -315,7 +340,7 @@ int download_phoenix(std::string Teff, std::string log_g, std::string z, std::st
 
     url += z;
 
-    if(alpha != "0.0"){
+    if(alpha != "-0.00"){
 
         url += ".Alpha=" + alpha;
 

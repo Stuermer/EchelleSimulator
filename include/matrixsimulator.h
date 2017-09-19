@@ -132,6 +132,8 @@ public:
     */
     double get_maximum_wavelength();
 
+    bool mode = true;
+
 private:
     /**
      * Load spectrograph model from HDF file

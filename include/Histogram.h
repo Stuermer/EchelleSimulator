@@ -61,6 +61,8 @@ public:
     template<class T>
     vector<double> Linear_sample(vector<T> sample_value);
 
+    bool mode = true;
+
 };
 
 Histogram::Histogram() {
@@ -219,34 +221,55 @@ void Histogram::Read_Data(string path_1, string path_2) {
 
 void Histogram::Create_cdf(){
 
-    cdf.push_back (0);
+    if(mode == true) {
+        cdf.push_back(0);
 
-    for(int i=0; i<length-1; i++)
-    {
-        d_event.push_back(event[i+1]-event[i]);
-        d_intensity.push_back(intensity[i+1]-intensity[i]);
-        //The factor of 1/2 comes from the fact we are numerically integrating and thus
-        //taking the average of intensity at two nearby points
-        cdf.push_back (cdf[i]+(0.5)*(d_event[i])*(intensity[i+1]+intensity[i]));
-        d_cdf.push_back ((0.5)*(d_event[i])*(intensity[i+1]+intensity[i]));
+        for (int i = 0; i < length - 1; i++) {
+            d_event.push_back(event[i + 1] - event[i]);
+            d_intensity.push_back(intensity[i + 1] - intensity[i]);
+            //The factor of 1/2 comes from the fact we are numerically integrating and thus
+            //taking the average of intensity at two nearby points
+            cdf.push_back(cdf[i] + (0.5) * (d_event[i]) * (intensity[i + 1] + intensity[i]));
+            d_cdf.push_back((0.5) * (d_event[i]) * (intensity[i + 1] + intensity[i]));
+        }
+
+        d_event.push_back(event[length - 1] - event[length - 2]);
+        d_cdf.push_back((0.5) * (d_event[length - 1]) * (intensity[length - 1] + intensity[length - 2]));
+        d_intensity.push_back(intensity[length - 1] - intensity[length - 2]);
+
+        d_event.push_back(event[length - 1] - event[length - 2]);
+        d_cdf.push_back((0.5) * (d_event[length - 1]) * (intensity[length - 1] + intensity[length - 2]));
+        d_intensity.push_back(intensity[length - 1] - intensity[length - 2]);
+
+        double norm = cdf[length - 1];
+        //We have to create a normalized cdf
+        //So we have to go back through and divide by the integration constant
+        //This is expensive...however note that cdf is already ordered for us
+        for (int i = 0; i < length; i++) {
+            cdf[i] = cdf[i] / norm;
+            d_cdf[i] = d_cdf[i] / norm;
+        }
+
     }
+    else{
 
-    d_event.push_back (event[length-1]-event[length-2]);
-    d_cdf.push_back ((0.5)*(d_event[length-1])*(intensity[length-1]+intensity[length-2]));
-    d_intensity.push_back(intensity[length-1]-intensity[length-2]);
+        double tsum = 0;
 
-    d_event.push_back (event[length-1]-event[length-2]);
-    d_cdf.push_back ((0.5)*(d_event[length-1])*(intensity[length-1]+intensity[length-2]));
-    d_intensity.push_back(intensity[length-1]-intensity[length-2]);
+        for(int i = 0; i < length; i++) {
 
-    double norm = cdf[length-1];
-    //We have to create a normalized cdf
-    //So we have to go back through and divide by the integration constant
-    //This is expensive...however note that cdf is already ordered for us
-    for(int i  =0; i<length; i++)
-    {
-        cdf[i] = cdf[i]/norm;
-        d_cdf[i] = d_cdf[i]/norm;
+            tsum = tsum + intensity[i];
+            cdf.push_back(tsum);
+
+        }
+
+        double norm = cdf[length-1];
+
+        for(int i = 0; i < length; i++){
+
+            cdf[i] = cdf[i] / norm;
+
+        }
+
     }
 
     return;
@@ -282,12 +305,23 @@ double Histogram::Kolmogorov_Smirnov_test(Histogram &sim_histogram){
 
 template<class T>
 double Histogram::Sample(T sample_value){
-    long dist=distance(cdf.begin(),lower_bound(cdf.begin(),cdf.end(),sample_value))-1;
-    if(dist == -1){dist=0;};
-    //There's a lot going on here. distance() finds the number of elements seperating two values of cdf
-    //lower_bound finds the closest member of cdf to sample_valuepl
 
-    return event[dist];
+    if(mode == true) {
+        long dist = distance(cdf.begin(), lower_bound(cdf.begin(), cdf.end(), sample_value)) - 1;
+        if (dist == -1) { dist = 0; };
+        //There's a lot going on here. distance() finds the number of elements seperating two values of cdf
+        //lower_bound finds the closest member of cdf to sample_valuepl
+
+        return event[dist];
+    }
+    else{
+
+        long dist = distance(cdf.begin(), lower_bound(cdf.begin(), cdf.end(), sample_value));
+        if (cdf[dist] < sample_value) { dist = dist + 1;};
+
+        return event[dist];
+
+    }
 }
 
 

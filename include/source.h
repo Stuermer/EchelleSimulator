@@ -71,6 +71,8 @@ public:
      */
     void scale_spectral_density();
 
+    bool mode = true;
+
 protected:
 
     /// Source apparent magnitude
@@ -83,7 +85,7 @@ protected:
     /// minimum wavelength recorded for source [micro meters]
     double min_w = 0.45;
     /// maximum wavelength recorded for source [micro meters]
-    double max_w = 0.85;
+    double max_w = 1.0;
 
 private:
 
@@ -265,6 +267,12 @@ private:
     double T; ///< Temperature [K]
 };
 
+/*!
+ * \class Phoenix
+ * \brief Implements a *mdwarf spectrum* using data from the Phoenix data repository (remote)
+ *
+ */
+
 class PhoenixSpectrum : public Source{
 public:
     PhoenixSpectrum(std::string spectrum_file, std::string wavelength_file, double mag);
@@ -275,7 +283,35 @@ public:
      * @param min_wavelength minimum wavelength in micrometer
      * @param max_wavelength maximum wavelength in micrometer
      */
-    void read_spectrum(std::string spectrum_file, std::string wavelength_file, double mag);
+    void read_spectrum(std::string spectrum_file, std::string wavelength_file);
+    double get_spectral_density(double wavelength);
+
+private:
+
+    std::map<double, double> data;
+
+};
+
+class CoehloSpectrum : public Source{
+public:
+    CoehloSpectrum(std::string spectrum_file, double mag);
+    void read_spectrum(std::string spectrum_file);
+    double get_spectral_density(double wavelength);
+
+private:
+
+    std::map<double, double> data;
+
+};
+
+class CustomSpectrum : public Source{
+public:
+    CustomSpectrum(std::string spectrum_file, double min_w, double max_w, double mag);
+    CustomSpectrum(std::string spectrum_file, std::string wave_file, double mag);
+
+    void read_spectrum(std::string spectrum_file);
+    void read_spectrum(std::string spectrum_file, std::string wave_file);
+
     double get_spectral_density(double wavelength);
 
 private:
@@ -285,17 +321,24 @@ private:
 };
 
 /*!
+ *
+ * \class Phoenix
+ *
+ */
+
+/*!
  * \class LineList
  * \brief Implements line list spectrum
  *
  */
 class LineList : public Source{
 public:
-    LineList(std::string linelist);
-    void read_spectrum(std::string linelist);
+    LineList(std::string linelist_file);
+    void read_spectrum(std::string linelist_file);
     double get_spectral_density(double wavelength);
     std::vector<float> get_spectrum(std::vector<double> wavelength);
     std::vector<double> get_wavelength();
+
 private:
     std::map<double, double> data;
 };
