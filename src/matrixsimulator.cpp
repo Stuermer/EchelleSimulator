@@ -353,25 +353,28 @@ int MatrixSimulator::simulate(double t) {
 
     std::cout << "Number of photons per order:" << std::endl;
     for(int o=0; o<this->orders.size(); ++o){
-
+        if (sim_wavelength[o].size() > 0) {
         wl_s[o].mode = this -> mode;
 
-        if(mode == 0) {
-            std::vector<double> a(sim_wavelength[o].begin(), sim_wavelength[o].end()); //units are um
-        }
-        else{
-            //std::vector<double> a = set_wavelength(*sources[o].event);
-        }
+        std::vector<double> a(sim_wavelength[o].begin(), sim_wavelength[o].end()); //units are um
         std::vector<double> b(sim_spectra_time_efficieny[o].begin(), sim_spectra_time_efficieny[o].end()); //units are uW per um
 
         wl_s[o] = Spectra(a,b);
 
         //units are assumed to be t=[s], area=[m^2], wl_s.dflux=[Num of Photons]/([s] * [m^2] * [um]), wl_s.Calc_flux = [Num of Photons]/([s]*[m^2])
 //        N_photons[o] = 1000000;
-        N_photons[o] = wl_s[o].Calc_flux()*t;
+//        N_photons[o] = wl_s[o].Calc_flux()*t;
+            N_photons[o] = 10;
         //this->telescope->get_area();
         //t*area*wl_s[o].Calc_flux()
         cout << "Order "<< o+this->min_order <<": " <<N_photons[o] <<endl;
+        }
+        else
+        {
+            N_photons[o] = 0;
+            cout << "Order "<< o+this->min_order <<": " <<N_photons[o] <<endl;
+        }
+
     }
 
     std::cout <<"Start tracing ..." <<std::endl;
@@ -387,7 +390,7 @@ int MatrixSimulator::simulate(double t) {
 
         for (int i = 0; i < N_photons[o]; ++i) {
             double wl = wl_s[o].Sample(dis(gen));
-            cout<<wl<<endl;
+            //cout<<wl<<endl;
             Matrix23f tm = this->get_transformation_matrix(o, wl);
 
             float x = rgx(gen);

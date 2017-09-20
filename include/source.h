@@ -70,6 +70,7 @@ public:
      * to the flux from the star Vega. We then normalize so that our source is at a fixed magnitude Source::mag with respect to Vega.
      */
     void scale_spectral_density();
+    virtual std::vector<double> get_wavelength() {};
 
     bool mode = true;
 
@@ -335,11 +336,13 @@ class LineList : public Source{
 public:
     LineList(std::string linelist_file, double scaling);
     void read_spectrum(std::string linelist_file);
+    void smooth_spectrum();
     double get_spectral_density(double wavelength);
     std::vector<float> get_spectrum(std::vector<double> wavelength);
     std::vector<double> get_wavelength();
 
-    vector<double> event;
+    std::vector<double> event;
+    std::vector<double> intensity;
 
     double scaling;
 

@@ -194,7 +194,6 @@ double Spectra::Calc_flux(const Histogram& filter){
 
 double Spectra::Calc_flux(){
 
-    if (mode == true) {
         long double flux = 0;
 
         for (int i = 0; i < length; i++) {
@@ -205,22 +204,6 @@ double Spectra::Calc_flux(){
 
         magnitude = 2.5 * log10(v_zp / flux);
         return flux;
-
-    }
-    else{
-
-        long double flux = 0;
-
-        for (int i = 0; i < length; i++) {
-
-            flux = flux + (dflux[i]);
-
-        }
-
-        magnitude = 2.5 * log10(v_zp / flux);
-        return flux;
-
-    }
 
 }
 

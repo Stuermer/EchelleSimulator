@@ -358,7 +358,7 @@ LineList::LineList(std::string linelist_file, double scaling) {
     mode = false;
     this -> scaling = scaling;
 
-    event = get_wavelength();
+    smooth_spectrum();
 
 }
 
@@ -367,9 +367,17 @@ void LineList::read_spectrum(std::string linelist_file) {
 
     for(CSVIterator loop(file); loop != CSVIterator(); ++loop)
     {
-        std::cout<<(*loop)[0];
+        event.push_back(stod((*loop)[0]));
+        intensity.push_back(stod((*loop)[1]));
         this->data.insert(std::pair<double, double> (stod((*loop)[0]), stod((*loop)[1])));
+
     }
+
+}
+
+void LineList::smooth_spectrum(){
+
+
 
 }
 

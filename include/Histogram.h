@@ -221,7 +221,6 @@ void Histogram::Read_Data(string path_1, string path_2) {
 
 void Histogram::Create_cdf(){
 
-    if(mode == true) {
         cdf.push_back(0);
 
         for (int i = 0; i < length - 1; i++) {
@@ -249,28 +248,6 @@ void Histogram::Create_cdf(){
             cdf[i] = cdf[i] / norm;
             d_cdf[i] = d_cdf[i] / norm;
         }
-
-    }
-    else{
-
-        double tsum = 0;
-
-        for(int i = 0; i < length; i++) {
-
-            tsum = tsum + intensity[i];
-            cdf.push_back(tsum);
-
-        }
-
-        double norm = cdf[length-1];
-
-        for(int i = 0; i < length; i++){
-
-            cdf[i] = cdf[i] / norm;
-
-        }
-
-    }
 
     return;
 }
@@ -306,22 +283,13 @@ double Histogram::Kolmogorov_Smirnov_test(Histogram &sim_histogram){
 template<class T>
 double Histogram::Sample(T sample_value){
 
-    if(mode == 1) {
         long dist = distance(cdf.begin(), lower_bound(cdf.begin(), cdf.end(), sample_value)) - 1;
         if (dist == -1) { dist = 0; };
         //There's a lot going on here. distance() finds the number of elements seperating two values of cdf
         //lower_bound finds the closest member of cdf to sample_valuepl
 
         return event[dist];
-    }
-    else{
 
-        long dist = distance(cdf.begin(), lower_bound(cdf.begin(), cdf.end(), sample_value));
-        if (cdf[dist] < sample_value) { dist = dist + 1;};
-
-        return event[1];
-
-    }
 }
 
 

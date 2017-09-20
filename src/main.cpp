@@ -273,7 +273,17 @@ int main(int argc, char *argv[])
     cs->set_doppler_shift(rv);
     simulator.set_source(cs);
 
-    simulator.set_wavelength(10000);
+//    simulator.set_wavelength(10000);
+    if(cs -> mode == 1){
+
+        simulator.set_wavelength(10000);
+
+    }
+    else {
+
+        simulator.set_wavelength(cs -> get_wavelength());
+
+    }
 
     auto t = args["integration_time"].as<double>(1.);
     simulator.simulate(t);
