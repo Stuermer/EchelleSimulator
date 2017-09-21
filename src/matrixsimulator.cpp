@@ -391,7 +391,7 @@ int MatrixSimulator::simulate(double t) {
         for (int i = 0; i < N_photons[o]; ++i) {
             double wl = wl_s[o].Sample(dis(gen));
             //cout<<wl<<endl;
-            Matrix23f tm = this->get_transformation_matrix(o, wl);
+            Matrix23f tm = this->get_transformation_matrix_lookup(o, wl);
 
             float x = rgx(gen);
             float y = rgy(gen);
