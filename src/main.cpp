@@ -158,13 +158,13 @@ int main(int argc, char *argv[])
     }
 
     std::string source;
-    auto keep = args["keep"].as<double>(0);
+    auto keep = args["keep"].as<bool>(false);
     auto fiber = args["fiber"].as<double>(1);
 
     auto spectrograph = args["spectrograph"].as<std::string>("MaroonX");
     spectrograph = "../data/spectrographs/" + spectrograph + ".hdf";
 
-    MatrixSimulator simulator(spectrograph, fiber, keep);
+    MatrixSimulator simulator(spectrograph, fiber, false);
 
     double temp;
     double mag;
@@ -294,7 +294,7 @@ int main(int argc, char *argv[])
 
     auto path = args["output"].as<std::string>("test.fit");
     if (path.find("/") == std::string::npos) {
-        simulator.save_to_fits("../simulations/" + path, false, false, true);
+        simulator.save_to_fits("../simulations/" + path, false, false, !keep);
         std::string filename = "../simulations/" + path;
         std::vector<std::string> * keys;
         std::auto_ptr<CCfits::FITS> pFits(0);
@@ -312,7 +312,7 @@ int main(int argc, char *argv[])
 
     }
     else {
-        simulator.save_to_fits(path);
+        simulator.save_to_fits(path, false, false, !keep);
     }
 
     return 0;

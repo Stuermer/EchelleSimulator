@@ -363,8 +363,8 @@ int MatrixSimulator::simulate(double t) {
 
         //units are assumed to be t=[s], area=[m^2], wl_s.dflux=[Num of Photons]/([s] * [m^2] * [um]), wl_s.Calc_flux = [Num of Photons]/([s]*[m^2])
 //        N_photons[o] = 1000000;
-//        N_photons[o] = wl_s[o].Calc_flux()*t;
-            N_photons[o] = 10;
+        N_photons[o] = wl_s[o].Calc_flux()*t;
+//            N_photons[o] = 10;
         //this->telescope->get_area();
         //t*area*wl_s[o].Calc_flux()
         cout << "Order "<< o+this->min_order <<": " <<N_photons[o] <<endl;

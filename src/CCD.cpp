@@ -40,22 +40,37 @@ void CCD::save_to_fits(std::string filename, bool downsample, bool bleed, bool o
     long naxis    =   2;
     long naxes[2] = { res.cols, res.rows };
     std::auto_ptr<CCfits::FITS> pFits(0);
-    if (overwrite){
-        remove(filename.c_str());
+    // Try to read in old image
+    long old_img_ax1=0;
+    long old_img_ax2=0;
+    std::valarray<double>  contents;
+    const std::string fileName(filename.c_str());
+    try{
+        pFits.reset(new CCfits::FITS(fileName, CCfits::Read));
+        CCfits::PHDU& image = pFits->pHDU();
+
+
+        image.readAllKeys();
+
+        image.read(contents);
+
+        old_img_ax1 = image.axis(0);
+        old_img_ax2 = image.axis(1);
+        pFits->destroy();
+
     }
+    catch (...) {
+    // no old data
+        std::cout << "No old data found" ;
+        pFits.reset( new CCfits::FITS(filename, FLOAT_IMG , naxis , naxes ) );
+        pFits->flush();
+        pFits->destroy();
+    }
+
     try
     {
-        // overwrite existing file if the file already exists.
+        pFits.reset( new CCfits::FITS(fileName, CCfits::Write));
 
-        const std::string fileName(filename.c_str());
-
-        // Create a new FITS object, specifying the data type and axes for the primary
-        // image. Simultaneously create the corresponding file.
-
-        // this image is unsigned short data, demonstrating the cfitsio extension
-        // to the FITS standard.
-
-        pFits.reset( new CCfits::FITS(filename, FLOAT_IMG , naxis , naxes ) );
     }
     catch (CCfits::FITS::CantCreate)
     {
@@ -66,10 +81,22 @@ void CCD::save_to_fits(std::string filename, bool downsample, bool bleed, bool o
     nelements = std::accumulate(&naxes[0],&naxes[naxis],1,std::multiplies<long>());
     long  fpixel(1);
     std::valarray<double> data_array(nelements);
-    for (int i=0; i<res.rows; ++i){
-        for (int j=0; j<res.cols; ++j){
-            data_array[j*res.cols+i] = res.at<double>(j,i);
+    if ((old_img_ax1>0) & (old_img_ax2>0) & !overwrite)
+    {
+        for (int i=0; i<res.rows; ++i) {
+            for (int j = 0; j < res.cols; ++j) {
+                data_array[j * res.cols + i] = res.at<double>(j, i) + contents[j * res.cols + i];
+            }
         }
+    }
+    else
+    {
+
+    for (int i=0; i<res.rows; ++i) {
+        for (int j = 0; j < res.cols; ++j) {
+            data_array[j * res.cols + i] = res.at<double>(j, i);
+        }
+    }
 
     }
 
