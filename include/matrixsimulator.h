@@ -213,6 +213,12 @@ private:
     std::vector<std::vector<double>> sim_phi;
     std::vector<std::vector<double>> sim_tx;
     std::vector<std::vector<double>> sim_ty;
+
+    std::vector<std::vector<double>> sim_m00;
+    std::vector<std::vector<double>> sim_m01;
+    std::vector<std::vector<double>> sim_m10;
+    std::vector<std::vector<double>> sim_m11;
+
     std::vector<std::vector<double>> sim_matrix_wavelength;
     std::vector<double> sim_matrix_dwavelength;
 

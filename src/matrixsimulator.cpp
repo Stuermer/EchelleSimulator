@@ -391,13 +391,19 @@ int MatrixSimulator::simulate(double t) {
         for (int i = 0; i < N_photons[o]; ++i) {
             double wl = wl_s[o].Sample(dis(gen));
             //cout<<wl<<endl;
-            Matrix23f tm = this->get_transformation_matrix_lookup(o, wl);
+//            Matrix23f tm = this->get_transformation_matrix(o, wl);
+
+            int idx_matrix = floor((wl - this->sim_wavelength[o].front()) / this->sim_matrix_dwavelength[o]);
 
             float x = rgx(gen);
             float y = rgy(gen);
 
-            float newx = (tm(0, 0) * x + tm(0, 1) * y + tm(0, 2));
-            float newy = (tm(1, 0) * x + tm(1, 1) * y + tm(1, 2));
+            float newx = (sim_m00[o][idx_matrix] * x + sim_m01[o][idx_matrix] * y + this->tr_tx[o](wl));
+            float newy = (sim_m10[o][idx_matrix]  * x + sim_m11[o][idx_matrix]  * y + this->tr_ty[o](wl));
+
+//            this is not accurate enough.  probably fixable by linear interpolation of tx and ty
+//            float newx = (sim_m00[o][idx_matrix] * x + sim_m01[o][idx_matrix] * y + sim_tx[o][idx_matrix]);
+//            float newy = (sim_m10[o][idx_matrix]  * x + sim_m11[o][idx_matrix]  * y + sim_ty[o][idx_matrix]);
 
             // lookup psf
             int idx_psf = floor((wl - this->sim_wavelength[o].front()) / this->sim_psfs_dwavelength[o]);
@@ -423,7 +429,7 @@ int MatrixSimulator::simulate(double t) {
     }
     std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::microseconds>( t2 - t1 ).count()/1000000.;
-    std::cout<<"Duration: \t" << duration << " s" << std::endl;
+    std::cout<<"Duration Tracing: \t" << duration << " s" << std::endl;
 }
 
 void MatrixSimulator::set_efficiencies(std::vector<Efficiency *> &efficiencies)
@@ -500,6 +506,11 @@ void MatrixSimulator::prepare_matrix_lookup(int N){
         this->sim_tx.push_back(std::vector<double>(N));
         this->sim_ty.push_back(std::vector<double>(N));
 
+        this->sim_m00.push_back(std::vector<double>(N));
+        this->sim_m01.push_back(std::vector<double>(N));
+        this->sim_m10.push_back(std::vector<double>(N));
+        this->sim_m11.push_back(std::vector<double>(N));
+
         this->sim_matrix_wavelength.push_back(std::vector<double>(N));
         this->sim_matrix_dwavelength.push_back(0.);
     }
@@ -516,6 +527,12 @@ void MatrixSimulator::prepare_matrix_lookup(int N){
         std::vector<double> tx;
         std::vector<double> ty;
 
+        std::vector<double> m00;
+        std::vector<double> m10;
+        std::vector<double> m01;
+        std::vector<double> m11;
+
+
         for(int i = 0; i<this->sim_matrix_wavelength[o].size(); ++i){
             this->sim_matrix_wavelength[o][i] = min_wl + i * dl;
 
@@ -525,6 +542,20 @@ void MatrixSimulator::prepare_matrix_lookup(int N){
             phi.push_back(this->tr_phi[o](this->sim_matrix_wavelength[o][i]));
             tx.push_back(this->tr_tx[o](this->sim_matrix_wavelength[o][i]));
             ty.push_back(this->tr_ty[o](this->sim_matrix_wavelength[o][i]));
+
+            std::vector<double> params;
+            params.push_back(p[i]);
+            params.push_back(q[i]);
+            params.push_back(r[i]);
+            params.push_back(phi[i]);
+            params.push_back(tx[i]);
+            params.push_back(ty[i]);
+            Matrix23f tm = compose_matrix(params);
+
+            m00.push_back(tm(0,0));
+            m01.push_back(tm(0,1));
+            m10.push_back(tm(1,0));
+            m11.push_back(tm(1,1));
         }
         this->sim_p.push_back(p);
         this->sim_q.push_back(q);
@@ -532,6 +563,11 @@ void MatrixSimulator::prepare_matrix_lookup(int N){
         this->sim_phi.push_back(phi);
         this->sim_tx.push_back(tx);
         this->sim_ty.push_back(ty);
+        this->sim_m00.push_back(m00);
+        this->sim_m01.push_back(m01);
+        this->sim_m10.push_back(m10);
+        this->sim_m11.push_back(m11);
+
 
     }
     std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
