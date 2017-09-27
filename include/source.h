@@ -31,6 +31,7 @@ public:
     /*!
      * \fn virtual double get_spectral_density(double wavelength)
      * This function returns the spectral density at a given wavelength. It is the essential function for all subclasses.
+     *
      * \see Source::get_spectrum() will use this function to integrate over it to retreive a spectrum for a given wavelength vector.
      * @param wavelength wavelength
      * @return spectral density
@@ -44,7 +45,7 @@ public:
      * @param wavelength wavelength vector
      * @return spectrum at given wavelength
      */
-    virtual std::vector<double> get_spectrum(std::vector<double> wavelength);
+    virtual std::vector<float> get_spectrum(std::vector<double> wavelength);
 
     /*!
      * Applies a spectral shift on the spectrum to simulate radial velocity shifts.
@@ -59,7 +60,36 @@ public:
      */
     void set_integration_steps(int n);
 
+    /*!
+     * Scales the spectral density of the source by converting to photon density and normalizing against integrated photon flux
+     *
+     * Spectral density is assumed to be in the units [micro watt] / ([micro meter] * [meter]^2). To convert to photon density we divide the spectral density by
+     * the energy in a photon at a specific wavelength (Planck's Equation). This results in the multiplied factors Source::inten_pho and wavelength
+     * which is represented by (a + (i + 0.5) * step). We integrate over all available wavelengths, Source::min_w to Source::max_w, to obtain
+     * the photon flux. We then produce a scaling factor Source::s_val for the spectral density by comparing the photon flux
+     * to the flux from the star Vega. We then normalize so that our source is at a fixed magnitude Source::mag with respect to Vega.
+     */
+    void scale_spectral_density();
+    virtual std::vector<double> get_wavelength() {};
+
+    bool mode = true;
+
+protected:
+
+    /// Source apparent magnitude
+    double mag;
+    /// Reference flux obtained from integration of vega over bessel filter (units are photons/m^2/s)
+    double v_zp=8660006000.0;
+    /// Scaling factor used in Source::scale_spectral_density() for normalization of source spectral_density against Source::v_zp
+    double s_val  = 1.0;
+
+    /// minimum wavelength recorded for source [micro meters]
+    double min_w = 0.45;
+    /// maximum wavelength recorded for source [micro meters]
+    double max_w = 1.0;
+
 private:
+
     /*!
      * Integrates the \see{Source::spectral_density()} function between limits a and b.
      *
@@ -68,8 +98,8 @@ private:
      * \f[
      * I = \int_{a}^{b}(s(\lambda) d\lambda \approx \sum_{i=0}^{n} s(a + (i+0.5)frac{b-a}{n}) * \frac{(b-a)}{n}
      * \f]
-     * @param a lower wavelength limit
-     * @param b upper wavelength limit
+     * @param min_w lower wavelength limit
+     * @param max_w upper wavelength limit
      * @param n number of subintervalls
      * @return integrated spectrum within [a, b]
      *
@@ -96,10 +126,10 @@ public:
     /* Constructor */
     Constant();
     /*!
-     * Constructor
+     * Constructor with a wavelength range of 0 to 1 meter
      * @param value constant spectral density value
      */
-    Constant(double value);
+    Constant(double value, double min_w, double max_w);
     /*!
      * Returns constant spectral density.
      *
@@ -216,36 +246,86 @@ public:
      * Constructor
      * @param T Temperature [K]
      */
-    Blackbody(double T);
+    Blackbody(double T, double mag);
     /*!
      * Planck function for spectral density of a blackbody with Temperature T
      * @param T Temperature [K]
      * @param wavelength wavelength [m]
      * @return spectral density
      */
-    static double planck(const double& T, const double& wavelength);
+    double planck(const double& T, const double& wavelength);
     /*!
      * spectral density of a blackbody
      * \f[
      * s(\lambda) = \frac{2hc^2}{\lambda^5}\frac{1}{\exp{\frac{hc}{\lambda k_B T}}-1}
      * \f]
-     * @param wavelength wavelength [micron]
-     * @return spectral density of a blackbody at given wavelength
+     * @param wavelength wavelength [micro meters]
+     * @return spectral density of a blackbody at given wavelength [micro Watt] / ([micro meter] * [meter]^2 )
      */
     double get_spectral_density(double wavelength);
+
 private:
     double T; ///< Temperature [K]
 };
 
+/*!
+ * \class Phoenix
+ * \brief Implements a *mdwarf spectrum* using data from the Phoenix data repository (remote)
+ *
+ */
+
 class PhoenixSpectrum : public Source{
 public:
-    PhoenixSpectrum(std::string spectrum_file, std::string wavelength_file, const double& min_wavelength, const double& max_wavelength);
-    void read_spectrum(std::string spectrum_file, std::string wavelength_file, const double& min_wavelength, const double& max_wavelength);
+    PhoenixSpectrum(std::string spectrum_file, std::string wavelength_file, double mag);
+    /*!
+     * read in the spectrum from file between min_wavelength and max_wavelength
+     * @param spectrum_file file path of spectrum
+     * @param wavelength_file file path of wavelength
+     * @param min_wavelength minimum wavelength in micrometer
+     * @param max_wavelength maximum wavelength in micrometer
+     */
+    void read_spectrum(std::string spectrum_file, std::string wavelength_file);
     double get_spectral_density(double wavelength);
+
 private:
+
     std::map<double, double> data;
 
 };
+
+class CoehloSpectrum : public Source{
+public:
+    CoehloSpectrum(std::string spectrum_file, double mag);
+    void read_spectrum(std::string spectrum_file);
+    double get_spectral_density(double wavelength);
+
+private:
+
+    std::map<double, double> data;
+
+};
+
+class CustomSpectrum : public Source{
+public:
+    CustomSpectrum(std::string spectrum_file, double min_w, double max_w, double mag);
+    CustomSpectrum(std::string spectrum_file, std::string wave_file, double mag);
+
+    void read_spectrum(std::string spectrum_file);
+    void read_spectrum(std::string spectrum_file, std::string wave_file);
+
+    double get_spectral_density(double wavelength);
+
+private:
+
+    std::map<double, double> data;
+
+};
+
+/*!
+ *
+ * \class Phoenix
+ *
+ */
 
 /*!
  * \class LineList
@@ -254,11 +334,18 @@ private:
  */
 class LineList : public Source{
 public:
-    LineList(std::string linelist);
-    void read_spectrum(std::string linelist);
+    LineList(std::string linelist_file, double scaling);
+    void read_spectrum(std::string linelist_file);
+    void smooth_spectrum();
     double get_spectral_density(double wavelength);
-    std::vector<double> get_spectrum(std::vector<double> wavelength);
+    std::vector<float> get_spectrum(std::vector<double> wavelength);
     std::vector<double> get_wavelength();
+
+    std::vector<double> event;
+    std::vector<double> intensity;
+
+    double scaling;
+
 private:
     std::map<double, double> data;
 };

@@ -40,6 +40,8 @@ public:
     PSF();
     virtual ~PSF();
     virtual cv::Mat get_PSF(int order, double wavelength) = 0;
+    virtual cv::Mat get_PSF_nocut(int order, double wavelength) = 0;
+    double pixelsampling;
 };
 
 /**
@@ -57,6 +59,7 @@ public:
      */
     PSF_ZEMAX(std::string filename, int fiber_number);
     cv::Mat get_PSF(int order, double wavelength);
+    cv::Mat get_PSF_nocut(int order, double wavelength);
 private:
     /**
      * Interpolates between neighboring PSFs as a simple linear sum
@@ -68,6 +71,7 @@ private:
      * @return
      */
     cv::Mat interpolate_PSF(cv::Mat psf1, cv::Mat psf2, double w1, double w2, double w);
+    cv::Mat interpolate_PSF_nocut(cv::Mat psf1, cv::Mat psf2, double w1, double w2, double w);
     std::map< int, std::vector<PSFdata> > psfs;
 
 };

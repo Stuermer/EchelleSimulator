@@ -25,11 +25,11 @@ public:
      * Constructor
      * @param Nx number of pixels in X direction
      * @param Ny number of pixels in Y direction
-     * @param oversampling specifies the oversampling factor that will be used to downsample the image to its physical size
+     * @param pixelsize size of the pixels [micron]
      * @param data_type data type, should be same as slit.image. Possible values see opencv datatypes (e.g. CV_32F, CV_64F,...)
      * @return CCD
      */
-    CCD(int Nx, int Ny, int oversampling, int data_type);
+    CCD(int Nx, int Ny, int data_type, double pixelsize);
 
     ~CCD();
 
@@ -38,6 +38,8 @@ public:
     void save_to_fits(std::string filename, bool downsample = true, bool bleed = true, bool overwrite = false);
 
     cv::Mat get_image(bool downsample = true, bool bleed = true);
+
+    double * get_pixelsize();
 
     //overload + operator
     static void do_bleed(cv::Mat &input, double limit);
@@ -65,6 +67,7 @@ public:
 
 private:
     int Nx, Ny, oversampling;
+    double pixelsize;
 
 
 };

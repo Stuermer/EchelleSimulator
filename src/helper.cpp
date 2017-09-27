@@ -16,6 +16,12 @@
 //#include <CCfits>
 #include <CCfits/FITS.h>
 #include <CCfits/ExtHDU.h>
+#include <Eigen/Dense>
+#include <map>
+#include <curl/curl.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#include <string>
 
 void vectorToFile(std::vector<double> const& vec, std::string const& filename) {
   std::ofstream file(filename);
@@ -30,14 +36,7 @@ void vectorToFile(std::vector<double> const& vec, std::string const& filename) {
   file.close();  
 }
 
-void MatToFile(cv::Mat& image, std::string const& filename){
-  std::ofstream file(filename);
-  
-  file << cv::format(image, "numpy") << std::endl;
-  file.close();
-}
-
-std::vector<double> decompose_matrix(cv::Mat mat){
+std::vector<double> decompose_matrix(Matrix23f mat){
     std::vector<double> result;
     /*
      * Matrix looks like:
@@ -45,12 +44,12 @@ std::vector<double> decompose_matrix(cv::Mat mat){
      * d e ty
      */
 
-    double a = mat.at<double>(0,0);
-    double b = mat.at<double>(0,1);
-    double d = mat.at<double>(1,0);
-    double e = mat.at<double>(1,1);
-    double tx = mat.at<double>(0,2);
-    double ty = mat.at<double>(1,2);
+    double a = mat(0,0);
+    double b = mat(0,1);
+    double d = mat(1,0);
+    double e = mat(1,1);
+    double tx = mat(0,2);
+    double ty = mat(1,2);
     
     double sx = sqrt(a*a+d*d);
     double sy = sqrt(b*b+e*e);
@@ -73,22 +72,20 @@ std::vector<double> decompose_matrix(cv::Mat mat){
     return result;
 }
 
-cv::Mat compose_matrix(std::vector<double> parameters){
+Matrix23f compose_matrix(std::vector<double> parameters){
   double sx = parameters[0];
   double sy = parameters[1];
   double shear = parameters[2];
   double rot = parameters[3];
 
-  cv::Mat result = cv::Mat(2,3,CV_64FC1);
-    
-  result.at<double>(0,0) = sx*cos(rot);
-  result.at<double>(0,1) = -sy*sin(rot+shear);
-  result.at<double>(1,0) = sx*sin(rot);
-  result.at<double>(1,1) = sy*cos(rot+shear);
-  result.at<double>(0,2) = parameters[4];
-  result.at<double>(1,2) = parameters[5];
-
-  return result;
+  Matrix23f m;
+    m(0,0) = sx*cos(rot);
+    m(1,0) = sx*sin(rot);
+    m(0,1) = -sy*sin(rot+shear);
+    m(1,1)= sy*cos(rot+shear);
+    m(0,2) = parameters[4];
+    m(1,2) = parameters[5];
+  return m;
 }
 
 std::vector<std::size_t> compute_sort_order(const std::vector<double> &v) {
@@ -104,25 +101,22 @@ std::vector<std::size_t> compute_sort_order(const std::vector<double> &v) {
     return res;
 }
 
-void show_cv_matrix(cv::Mat img, std::string windowname="image") {
-    double minVal, maxVal;
-
-    cv::Mat img_show = img.clone();
-
-//    cv::Mat img_show = cv::Mat::zeros(512/3, 1024, img.type());
-//    cv::resize(img.rowRange(0, 512*3).colRange(0,4096*3), img_show, img_show.size(), cv::INTER_NEAREST);
+//void show_cv_matrix(cv::Mat img, std::string windowname="image") {
+//    double minVal, maxVal;
 //
-    cv::minMaxLoc(img_show, &minVal, &maxVal); //find minimum and maximum intensities
+//    cv::Mat img_show = img.clone();
+//    cv::minMaxLoc(img_show, &minVal, &maxVal); //find minimum and maximum intensities
 //    int ty = img_show.type();
-    img_show.convertTo(img_show,CV_8U,255.0/(maxVal - minVal), -minVal * 255.0/(maxVal - minVal));
-
-    // cv::cvtColor(img_show, img_show, CV_GRAY2RGB);
-
-     cv::namedWindow(windowname,CV_WINDOW_NORMAL);
-    cv::imshow(windowname, img_show);
-    cv::waitKey(1);
-
-}
+//    img_show.convertTo(img_show,CV_8U,255.0/(maxVal - minVal), -minVal * 255.0/(maxVal - minVal));
+//
+//     cv::cvtColor(img_show, img_show, CV_GRAY2RGB);
+//
+//    cv::namedWindow(windowname,CV_WINDOW_NORMAL);
+//    cv::imshow(windowname, img_show);
+//    cv::resizeWindow(windowname, 1024,1024);
+//    cv::waitKey(1);
+//
+//}
 
 void print_cv_matrix_info(cv::Mat img, std::string imagename="Image") {
     std::cout<< "------------" << imagename << "----------------:" << std::endl;
@@ -175,65 +169,239 @@ double interpolate(const std::map<double,double> &data,
     return delta*i->second +(1-delta)*l->second;
 }
 
-//int save_to_hdf(const std::string filename, cv::Mat img){
-//    std::auto_ptr<CCfits::FITS> pFits(0);
-//
-//    long naxis    =   2;
-//    long naxes[2] = { img.cols, img.rows };
-//
-//    try
-//    {
-//        pFits.reset( new CCfits::FITS(filename , DOUBLE_IMG , naxis , naxes ) );
-//    }
-//    catch (CCfits::FITS::CantOpen)
-//    {
-//        return -1;
-//    }
-//
-//    long& vectorLength = naxes[0];
-//    long& numberOfRows = naxes[1];
-//    long nelements(1);
-//
-//
-//    // Find the total size of the array.
-//    // this is a little fancier than necessary ( It's only
-//    // calculating naxes[0]*naxes[1]) but it demonstrates  use of the
-//    // C++ standard library accumulate algorithm.
-//
-//    nelements = std::accumulate(&naxes[0],&naxes[naxis],1,std::multiplies<long>());
-//
-//    std::vector<long> extAx ;
-//    extAx.push_back(img.rows);
-//    extAx.push_back(img.cols);
-//
-//    string newName ("IMAGE");
-//    CCfits::ExtHDU* imageExt = pFits->addImage(newName,FLOAT_IMG, extAx);
-//
-//
-//    std::valarray<double> array(nelements);
-//    for (int i = 0; i < numberOfRows; ++i)
-//    {
-//        for (int j =0; j<img.cols; ++j)
-//            array[i*numberOfRows+j] = img.at<double>(i, j);
-//    }
-//
-//    long  fpixel(1);
-//
-//    imageExt->write(fpixel, (long) img.cols, array);
-////    imageExt->write(fpixel, img.cols, array);
-//
-//    return 0;
-//
-//};
-
 herr_t file_info(hid_t loc_id, const char *name, const H5L_info_t *linfo, void *opdata)
 {
     hid_t group;
     auto group_names=reinterpret_cast< std::vector<std::string>* >(opdata);
-//    group = H5Gopen2(loc_id, name, H5P_DEFAULT);
-
     group_names->push_back(name);
-//    std::cout << "Name : " << name << std::endl;
-//    H5Gclose(group);
     return 0;
+}
+
+std::vector<float> random_from_2_distributions(std::vector<float> wl, std::vector<float> density1, std::vector<float> density2, int N_samples){
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::vector<float> result;
+    std::vector<float> combined_vec;
+    for(int i=0; i<density1.size(); ++i)
+        density1[i] *= density2[i];
+
+    std::piecewise_linear_distribution<> combined_dis(wl.begin(), wl.end(), combined_vec.begin());
+    for(int i=0; i<N_samples; ++i)
+        result.push_back(combined_dis(gen));
+    return result;
+}
+
+size_t write_data(void *ptr, size_t size, size_t nmemb, FILE *stream) {
+    size_t written = fwrite(ptr, size, nmemb, stream);
+    return written;
+}
+
+int download_phoenix(std::string Teff, std::string log_g, std::string z, std::string alpha){
+
+    //input positive z without '+'
+    if(z.at(0) != '-' && z.at(0) != '+' && z.at(0) != '0'){
+
+        z = "+" + z;
+
+    }
+
+    //input positive alpha without '+'
+    if(alpha.at(0) != '-' && alpha.at(0) != '+' && alpha.at(0) != '0'){
+
+        alpha = "+" + alpha;
+
+    }
+
+    //fix attempts at inputting z = -0.0
+    if(z == "0"){
+
+        z = "-" + z + ".0";
+
+    }
+    else if(z == "0."){
+
+        z = "-" + z + "0";
+
+    }
+    else if(z == "0.0"){
+
+        z = "-" + z;
+
+    }
+    else{
+
+    }
+
+    //fix attempts at inputting alpha = -0.0
+    if(alpha == "0"){
+
+        alpha = "-" + alpha + ".00";
+
+    }
+    else if(alpha == "0."){
+
+        alpha = "-" + alpha + "00";
+
+    }
+    else if(alpha == "0.0"){
+
+        alpha = "-" + alpha + "0";
+
+    }
+    else if(alpha == "0.00"){
+
+        alpha = "-" + alpha;
+
+    }
+    else{
+
+    }
+
+    //fix attempts at inputting log_g = -0.00
+    if(log_g == "0"){
+
+        log_g = "-" + log_g + ".00";
+
+    }
+    else if(log_g == "0."){
+
+        log_g = "-" + log_g + "00";
+
+    }
+    else if(log_g == "0.0"){
+
+        log_g = "-" + log_g + "0";
+
+    }
+    else if(log_g == "0.00"){
+
+        log_g = "-" + log_g;
+
+    }
+    else{
+
+    }
+
+    //pad for z inputs
+    if(z.length() == 2){
+        z = z + ".0";
+    }
+    else if(z.length() == 3){
+        z = z + "0";
+    }
+    else{
+
+    }
+
+    //pad for log_g inputs
+    if(log_g.length() == 1){
+        log_g = log_g + ".00";
+    }
+    else if(log_g.length() == 2){
+        log_g = log_g + "00";
+    }
+    else if(log_g.length() == 3){
+        log_g = log_g + "0";
+    }
+    else{
+
+    }
+
+    //pad for alpha inputs
+    if(alpha.length() == 2){
+        alpha = alpha + ".00";
+    }
+    else if(alpha.length() == 3){
+        alpha = alpha + "00";
+    }
+    else if(alpha.length() == 4){
+        alpha = alpha + "0";
+    }
+
+    std::string url = "ftp://phoenix.astro.physik.uni-goettingen.de/HiResFITS/PHOENIX-ACES-AGSS-COND-2011/";
+
+    url += "Z" + z;
+
+    if(alpha != "-0.00"){
+
+        url += ".Alpha=" + alpha;
+
+    }
+
+    url += "/lte";
+
+    for(int i = 0; i < 5 - Teff.length(); i++){
+
+        Teff = "0" + Teff;
+
+    }
+
+    url += Teff + "-" + log_g;
+
+    url += z;
+
+    if(alpha != "-0.00"){
+
+        url += ".Alpha=" + alpha;
+
+    }
+
+    url += ".PHOENIX-ACES-AGSS-COND-2011-HiRes.fits";
+
+    std::cout<<"Downloading spectra from: "<<url<<std::endl; //cover z = 0 case also see if adding x.0 and + | - is doable
+
+    CURL *curl;
+    FILE *fp;
+    CURLcode res;
+    std::string path = "../data/phoenix_spectra/test.fits";
+    remove(path.c_str());
+
+    curl = curl_easy_init();
+    if (curl) {
+        fp = fopen(path.c_str(), "wb");
+        curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data);
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, fp);
+        res = curl_easy_perform(curl);
+        /* always cleanup */
+        curl_easy_cleanup(curl);
+        fclose(fp);
+    }
+
+    return res;
+
+
+}
+
+int download_wave_grid(std::string path){
+
+    std::string url = "ftp://phoenix.astro.physik.uni-goettingen.de/HiResFITS//WAVE_PHOENIX-ACES-AGSS-COND-2011.fits";
+
+    CURL *curl;
+    FILE *fp;
+    CURLcode res;
+
+    curl = curl_easy_init();
+    if (curl) {
+        fp = fopen(path.c_str(), "wb");
+        curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data);
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, fp);
+        res = curl_easy_perform(curl);
+        /* always cleanup */
+        curl_easy_cleanup(curl);
+        fclose(fp);
+    }
+
+    return res;
+
+}
+
+bool check_for (const std::string& name) {
+    if (FILE *file = fopen(name.c_str(), "r")) {
+        fclose(file);
+        return true;
+    } else {
+        return false;
+    }
 }

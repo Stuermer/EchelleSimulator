@@ -15,6 +15,10 @@
 #include <cstdlib>
 #include "csv_reader.h"
 #include "H5Cpp.h"
+#include "Eigen/Dense"
+#include <map>
+
+typedef Eigen::Matrix<float, 2, 3> Matrix23f;
 
 /*!
  * Saves vector to CSV File
@@ -24,16 +28,6 @@
  * @param filename path to output file
  */
 void vectorToFile(std::vector<double> const &vec, std::string const &filename);
-
-/*!
- * Saves an OpenCV matrix to a text file
- *
- * This function saves a cv::Mat matrix to a text file. The file is essentially a CSV file, but the matrix is 'numpy'
- * style, which means that is begins with [ and ends with ] characters.
- * @param image matrix to be saved
- * @param filename path to output file
- */
-void MatToFile(cv::Mat &image, std::string const &filename);
 
 /*!
  * Decomposes a 2x3 affine transformation matrix into its underlying geometric components.
@@ -51,7 +45,7 @@ void MatToFile(cv::Mat &image, std::string const &filename);
  * @param mat 2x3 transformation matrix
  * @return [sx, sy, shear, \f$ \phi \f$, tx, ty]
  */
-std::vector<double> decompose_matrix(cv::Mat mat);
+std::vector<double> decompose_matrix(Matrix23f mat);
 
 /*!
  * Composes 2x3 transformation matrix from shear, scale, rotation and translation parameters.
@@ -60,7 +54,7 @@ std::vector<double> decompose_matrix(cv::Mat mat);
  * @param parameters [sx, sy, shear, \f$ \phi \f$, tx, ty]
  * @return 2x3 transformation matrix
  */
-cv::Mat compose_matrix(std::vector<double> parameters);
+Matrix23f compose_matrix(std::vector<double> parameters);
 
 /*!
  * Calculates sorted index array of a given vector.
@@ -107,6 +101,20 @@ void create_fits_file(std::string filename);
 double interpolate(const std::map<double, double> &data, double x);
 
 herr_t file_info(hid_t loc_id, const char *name, const H5L_info_t *linfo, void *opdata);
+
+
+std::vector<float> random_from_2_distributions(std::vector<float> wl, std::vector<float> density1, std::vector<float> density2, int N_samples);
+
+
+template<typename Out>
+void split(const std::string &s, char delim, Out result);
+
+std::vector<std::string> split(const std::string &s, char delim);
+
+int download_phoenix(std::string Teff, std::string log_g, std::string z, std::string alpha);
+int download_wave_grid(std::string path);
+bool check_for(const std::string& name);
+size_t write_data(void *ptr, size_t size, size_t nmemb, FILE *stream);
 
 //int save_to_fits(const std::string filename, cv::Mat img);
 #endif
