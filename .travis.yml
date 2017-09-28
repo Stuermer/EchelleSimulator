@@ -12,6 +12,8 @@ addons:
       - libcurl3
       - libcurl4-openssl-dev
       - libeigen3-dev
+      - libcfitsio-dev
+      - libccfits-dev
       - cmake
 script:
     ############################################################################
