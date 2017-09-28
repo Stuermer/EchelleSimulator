@@ -4,7 +4,7 @@
 
 #ifndef ECHELLESIMULATOR_NOISE_H
 #define ECHELLESIMULATOR_NOISE_H
-#include "opencv2/core.hpp"
+#include "opencv2/core/core.hpp"
 
 class noise {
 public:
