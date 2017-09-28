@@ -2,7 +2,7 @@
 // Created by julian on 21.09.16.
 //
 
-#include <opencv2/imgproc.hpp>
+#include "opencv2/imgproc/imgproc.hpp"
 #include "CCD.h"
 #include "hdf5opencv.h"
 #include <CCfits/CCfits>

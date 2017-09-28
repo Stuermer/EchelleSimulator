@@ -5,7 +5,7 @@
 #include <vector>
 #include <iostream>
 #include <highgui.h>
-#include <opencv2/imgproc.hpp>
+#include "opencv2/imgproc/imgproc.hpp"
 #include "PSF.h"
 #include "H5Cpp.h"
 #include "helper.h"

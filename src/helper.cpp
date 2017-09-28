@@ -2,7 +2,7 @@
 
 #include <vector>
 #include <cmath>
-#include "opencv2/core.hpp"
+#include "opencv2/core/core.hpp"
 
 #include <vector>
 #include <iterator>
@@ -11,12 +11,12 @@
 #include <fstream>
 #include <string>
 #include <cstdlib>
-#include <opencv2/imgproc.hpp>
+#include "opencv2/imgproc/imgproc.hpp"
 #include <highgui.h>
 //#include <CCfits>
 #include <CCfits/FITS.h>
 #include <CCfits/ExtHDU.h>
-#include <Eigen/Dense>
+#include "Eigen/Dense"
 #include <map>
 #include <curl/curl.h>
 #include <sys/stat.h>

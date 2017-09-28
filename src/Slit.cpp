@@ -1,5 +1,5 @@
 #include "Slit.h"
-#include <opencv2/highgui.hpp>
+#include "opencv2/highgui/highgui.hpp"
 #include <iostream>
 
 Slit::Slit()

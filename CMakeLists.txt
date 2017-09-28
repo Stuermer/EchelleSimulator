@@ -1,6 +1,6 @@
 project(echellesimulator)
 
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.0)
 find_package( OpenCV REQUIRED HINTS /data/CppLibs/opencv/)
 set(CUDA_USE_STATIC_CUDA_RUNTIME OFF)
 set(LINK_LIBS ${LINK_LIBS} ${OpenCV_LIBS})
@@ -26,9 +26,8 @@ IF( NOT EIGEN3_INCLUDE_DIR )
     MESSAGE( FATAL_ERROR "Please point the environment variable EIGEN3_INCLUDE_DIR to the include directory of your Eigen3 installation.")
 ENDIF()
 INCLUDE_DIRECTORIES (${EIGEN3_INCLUDE_DIR})
-
-
-include_directories( ${HDF5_INCLUDE_DIRS} )
+MESSAGE(INFO, ${EIGEN3_INCLUDE_DIR})
+INCLUDE_DIRECTORIES (${HDF5_INCLUDE_DIRS})
 
 set (LINK_LIBS ${LINK_LIBS} ${HDF5_LIBRARIES} ${CCFITS_LIB} ${CFITSIO} ${HDF5_HL_LIBRARIES} curl)
 MESSAGE(${LINK_LIBS})

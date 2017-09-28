@@ -6,7 +6,7 @@
 #define ECHELLESIMULATOR_CCD_H
 
 
-#include <opencv2/core/types_c.h>
+#include "opencv2/core/types_c.h"
 #include "hdf5.h"
 #include <string>
 #include <ml.h>
