@@ -22,9 +22,11 @@ include_directories(include)
 
 # include eigen library
 
-find_package(PkgConfig)
-pkg_search_module(Eigen3 REQUIRED eigen3)
-include_directories(${EIGEN3_INCLUDE_DIR})
+-SET( EIGEN3_INCLUDE_DIR $ENV{EIGEN3_INCLUDE_DIR} )
+-IF( NOT EIGEN3_INCLUDE_DIR )
+-    MESSAGE( FATAL_ERROR "Please point the environment variable EIGEN3_INCLUDE_DIR to the include directory of your Eigen3 installation.")
+-ENDIF()
+-INCLUDE_DIRECTORIES (${EIGEN3_INCLUDE_DIR})
 
 set (LINK_LIBS ${LINK_LIBS} ${HDF5_LIBRARIES} ${CCFITS_LIB} ${CFITSIO} ${HDF5_HL_LIBRARIES} curl)
 MESSAGE(${LINK_LIBS})
