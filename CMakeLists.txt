@@ -1,6 +1,6 @@
 project(echellesimulator)
 
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.0)
 find_package( OpenCV REQUIRED HINTS /data/CppLibs/opencv/)
 set(CUDA_USE_STATIC_CUDA_RUNTIME OFF)
 set(LINK_LIBS ${LINK_LIBS} ${OpenCV_LIBS})
@@ -21,7 +21,7 @@ include_directories(src)
 include_directories(include)
 
 # include eigen library
-find_package(Eigen3 REQUIRED NO_MODULE)
+find_package(Eigen3 3.0 REQUIRED NO_MODULE)
 
 set (LINK_LIBS ${LINK_LIBS} ${HDF5_LIBRARIES} ${CCFITS_LIB} ${CFITSIO} ${HDF5_HL_LIBRARIES} curl)
 MESSAGE(${LINK_LIBS})
