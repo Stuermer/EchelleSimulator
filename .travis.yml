@@ -12,7 +12,7 @@ addons:
       - libcurl3
       - libcurl4-openssl-dev
       - libeigen3-dev
-      - libcfitsio-dev
+      - libcfitsio3-dev
       - libccfits-dev
       - cmake
 script:
