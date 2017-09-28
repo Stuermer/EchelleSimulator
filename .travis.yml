@@ -24,5 +24,5 @@ script:
      - mkdir -p build
      - cd build
      - pwd
-     - cmake -DCMAKE_BUILD_TYPE=Release -DEIGEN3_INCLUDE_DIR=../eigen/ ..
+     - cmake -DCMAKE_BUILD_TYPE=Release -DEIGEN3_INCLUDE_DIR=eigen/ ..
      - make
