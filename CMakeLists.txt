@@ -22,10 +22,9 @@ include_directories(include)
 
 # include eigen library
 
-find_package(Eigen3 REQUIRED)
+find_package(PkgConfig)
+pkg_search_module(Eigen3 REQUIRED eigen3)
 include_directories(${EIGEN3_INCLUDE_DIR})
-
-include_directories( ${HDF5_INCLUDE_DIRS} )
 
 set (LINK_LIBS ${LINK_LIBS} ${HDF5_LIBRARIES} ${CCFITS_LIB} ${CFITSIO} ${HDF5_HL_LIBRARIES} curl)
 MESSAGE(${LINK_LIBS})
