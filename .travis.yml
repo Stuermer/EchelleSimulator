@@ -9,7 +9,8 @@ addons:
       - libopencv-dev
       - libhdf5-serial-dev
       - libhdf5-dev
-      - libcurl
+      - libcurl3
+      - libcurl4-openssl-dev
       - cmake
 script:
     ############################################################################
