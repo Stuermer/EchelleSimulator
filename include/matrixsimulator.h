@@ -1,8 +1,8 @@
 #ifndef MATRIXSIMULATOR_H
 #define MATRIXSIMULATOR_H
 
-#include <opencv2/core/core.hpp>
-#include <opencv2/highgui/highgui.hpp>
+#include "opencv2/core/core.hpp"
+#include "opencv2/highgui/highgui.hpp"
 #include <memory>
 
 #include "helper.h"
@@ -13,7 +13,7 @@
 #include "CCD.h"
 #include "Slit.h"
 #include "telescope.h"
-#include <Eigen/Dense>
+#include "Eigen/Dense"
 
 struct point2d{
     double x,y;

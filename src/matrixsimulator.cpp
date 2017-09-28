@@ -5,17 +5,13 @@
 #include "spline.h"
 #include "Spectra.h"
 #include "Histogram.h"
-// #include <string>
-// #include <stdlib.h>
 #include "H5Cpp.h"
 #include <math.h>
-// using namespace std
 #include "helper.h"
-#include <opencv2/imgproc.hpp>
+#include "opencv2/imgproc/imgproc.hpp"
 #include <hdf5_hl.h>
 #include <CCfits/CCfits>
 #include <CCfits/FITS.h>
-
 #include <string>
 #include <fstream>
 #include <chrono>
