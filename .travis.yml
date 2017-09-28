@@ -11,6 +11,7 @@ addons:
       - libhdf5-dev
       - libcurl3
       - libcurl4-openssl-dev
+      - libeigen3-dev
       - cmake
 script:
     ############################################################################
