@@ -11,15 +11,16 @@ addons:
       - libhdf5-dev
       - libcurl3
       - libcurl4-openssl-dev
-      - libeigen3-dev
       - libcfitsio3-dev
       - libccfits-dev
+      - mercurial
       - cmake
 script:
+     - hg clone https://bitbucket.org/eigen/eigen/
     ############################################################################
     # Build main and tests
     ############################################################################
      - mkdir -p build
      - cd build
-     - cmake -DCMAKE_BUILD_TYPE=Release .. 
+     - cmake -DCMAKE_BUILD_TYPE=Release -DEIGEN3_INCLUDE_DIR=../eigen/ ..
      - make
