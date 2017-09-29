@@ -495,18 +495,6 @@ void MatrixSimulator::prepare_matrix_lookup(int N){
     std::cout << "Prepare matrix elements ..." << std::endl;
 
     for(int o=0; o<this->orders.size(); ++o){
-        this->sim_p.push_back(std::vector<double>(N));
-        this->sim_q.push_back(std::vector<double>(N));
-        this->sim_r.push_back(std::vector<double>(N));
-        this->sim_phi.push_back(std::vector<double>(N));
-        this->sim_tx.push_back(std::vector<double>(N));
-        this->sim_ty.push_back(std::vector<double>(N));
-
-        this->sim_m00.push_back(std::vector<double>(N));
-        this->sim_m01.push_back(std::vector<double>(N));
-        this->sim_m10.push_back(std::vector<double>(N));
-        this->sim_m11.push_back(std::vector<double>(N));
-
         this->sim_matrix_wavelength.push_back(std::vector<double>(N));
         this->sim_matrix_dwavelength.push_back(0.);
     }
