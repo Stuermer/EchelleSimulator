@@ -22,7 +22,8 @@
 //#include <highfive/H5File.hpp>
 //#include <highfive/H5DataSpace.hpp>
 //#include <highfive/H5DataSet.hpp>
-
+#include <opencv2/core/core.hpp>
+#include <opencv2/highgui/highgui.hpp>
 
 #ifdef USE_GPU
 #include "opencv2/gpu/gpu.hpp"
@@ -181,7 +182,7 @@ void MatrixSimulator::load_spectrograph_model(std::string path, int fiber_number
         ccd->openAttribute("Ny").read(*type, &Ny);
         ccd->openAttribute("pixelsize").read(*type, &pixelsize);
 
-        this->ccd = new CCD(Nx, Ny, 1, this->slit->slit_image.type());
+        this->ccd = new CCD(Nx, Ny, pixelsize);
         delete ccd;
     }
 
@@ -421,9 +422,10 @@ int MatrixSimulator::simulate(double t) {
 
             if (newx > 0 && newx < this->ccd->data.cols && newy > 0 && newy < this->ccd->data.rows)
                 #pragma omp atomic
-                this->ccd->data.at<int>(floor(newy), floor(newx)) += 1;
+                this->ccd->data.at<unsigned short>((int) round(newy), (int) round(newx)) += 1;
         }
     }
+
     std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::microseconds>( t2 - t1 ).count()/1000000.;
     std::cout<<"Duration Tracing: \t" << duration << " s" << std::endl;

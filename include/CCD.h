@@ -26,10 +26,9 @@ public:
      * @param Nx number of pixels in X direction
      * @param Ny number of pixels in Y direction
      * @param pixelsize size of the pixels [micron]
-     * @param data_type data type, should be same as slit.image. Possible values see opencv datatypes (e.g. CV_32F, CV_64F,...)
      * @return CCD
      */
-    CCD(int Nx, int Ny, int data_type, double pixelsize);
+    CCD(int Nx, int Ny, double pixelsize);
 
     ~CCD();
 
@@ -66,7 +65,7 @@ public:
 
 
 private:
-    int Nx, Ny, oversampling;
+    int Nx, Ny;
     double pixelsize;
 
 

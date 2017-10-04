@@ -7,11 +7,11 @@
 #include "hdf5opencv.h"
 #include <CCfits/CCfits>
 
-CCD::CCD(int Nx, int Ny, int data_type, double pixelsize) :Nx(Nx), Ny(Ny), oversampling(oversampling), pixelsize(pixelsize) {
+CCD::CCD(int Nx, int Ny, double pixelsize) :Nx(Nx), Ny(Ny), pixelsize(pixelsize) {
 
 #ifdef USE_GPU
     {
-        cv::Mat ones =  cv::Mat::zeros(Ny*oversampling, Nx*oversampling, CV_32FC1);
+        cv::Mat ones =  cv::Mat::zeros(Ny, Nx, CV_32FC1);
         this->data = cv::gpu::GpuMat();
         this->data.upload(ones);
     }
@@ -21,7 +21,7 @@ CCD::CCD(int Nx, int Ny, int data_type, double pixelsize) :Nx(Nx), Ny(Ny), overs
     }
 #endif
 
-    // this->data = cv::Mat::zeros(Ny*oversampling, Nx*oversampling, data_type);
+    // this->data = cv::Mat::zeros(Ny, Nx, data_type);
 
 }
 
@@ -43,9 +43,10 @@ void CCD::save_to_fits(std::string filename, bool downsample, bool bleed, bool o
     // Try to read in old image
     long old_img_ax1=0;
     long old_img_ax2=0;
-    std::valarray<double>  contents;
+    std::valarray<int>  contents;
     const std::string fileName(filename.c_str());
     try{
+
         pFits.reset(new CCfits::FITS(fileName, CCfits::Read));
         CCfits::PHDU& image = pFits->pHDU();
 
@@ -57,12 +58,12 @@ void CCD::save_to_fits(std::string filename, bool downsample, bool bleed, bool o
         old_img_ax1 = image.axis(0);
         old_img_ax2 = image.axis(1);
         pFits->destroy();
-
+        std::cout << "Old data found" << std::endl;
     }
     catch (...) {
     // no old data
-        std::cout << "No old data found" ;
-        pFits.reset( new CCfits::FITS(filename, SHORT_IMG , naxis , naxes ) );
+        std::cout << "No old data found" << std::endl;;
+        pFits.reset( new CCfits::FITS(filename, USHORT_IMG , naxis , naxes ) );
         pFits->flush();
         pFits->destroy();
     }
@@ -85,7 +86,7 @@ void CCD::save_to_fits(std::string filename, bool downsample, bool bleed, bool o
     {
         for (int i=0; i<res.rows; ++i) {
             for (int j = 0; j < res.cols; ++j) {
-                data_array[j * res.cols + i] = res.at<int>(j, i) + contents[j * res.cols + i];
+                data_array[j * res.cols + i] = res.at<unsigned short>(j, i) + contents[j * res.cols + i];
             }
         }
     }
@@ -94,7 +95,7 @@ void CCD::save_to_fits(std::string filename, bool downsample, bool bleed, bool o
 
     for (int i=0; i<res.rows; ++i) {
         for (int j = 0; j < res.cols; ++j) {
-            data_array[j * res.cols + i] = res.at<int>(j, i);
+            data_array[j * res.cols + i] = res.at<unsigned short>(j, i);
         }
     }
 
@@ -136,7 +137,7 @@ cv::Mat CCD::get_image(bool downsample, bool bleed) {
 void do_bleed_updown(cv::Mat &input, double & limit, int i, int j){
     //find limit
     int k = i;
-    while ((k>1) && (k<input.rows-1) && (input.at<double>(k, j)))
+    while ((k>1) && (k<input.rows-1) && (input.at<unsigned short>(k, j)))
     {
         k++;
     }
@@ -144,7 +145,7 @@ void do_bleed_updown(cv::Mat &input, double & limit, int i, int j){
     cv::blur(input.colRange(i-1,k+1), input.colRange(i-1,k+1), cv::Size(1,3),cv::Point(0.,1.5) ,cv::BORDER_REPLICATE);
     if(i>0)
     {
-        if (input.at<double>(i-1,j) > limit)
+        if (input.at<unsigned short>(i-1,j) > limit)
             do_bleed_updown(input, limit, i-1, j);
     }
 //    double diff = input.at<double>(i, j) - limit;
@@ -172,7 +173,7 @@ void CCD::do_bleed(cv::Mat &input, double limit) {
 
     for(int i=0; i<input.cols; ++i) {
         for (int j = 0; j < input.rows; ++j) {
-            if(input.at<double>(j,i) > limit){
+            if(input.at<unsigned short>(j,i) > limit){
                 do_bleed_updown(input, limit, j, i);
             }
         }
