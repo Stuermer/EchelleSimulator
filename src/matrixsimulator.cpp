@@ -343,7 +343,7 @@ int MatrixSimulator::simulate(double t) {
     this->prepare_matrix_lookup(1000);
 
     std::vector<Spectra> wl_s(orders.size());
-    std::vector<double> N_photons(orders.size());
+    std::vector<int> N_photons(orders.size());
     std::uniform_real_distribution<double> dis(0.0,1.0);
     double psf_scaling = (*this->ccd->get_pixelsize() / this->psfs->pixelsampling );
 
@@ -376,7 +376,7 @@ int MatrixSimulator::simulate(double t) {
     std::cout <<"Start tracing ..." <<std::endl;
     std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
 
-    #pragma omp parallel for
+
     for(int o=0; o<this->orders.size(); ++o) {
         std::random_device rd;
         std::default_random_engine gen(rd());
@@ -384,10 +384,10 @@ int MatrixSimulator::simulate(double t) {
         std::uniform_real_distribution<double> rgx(0., this->slit->slit_sampling);
         std::uniform_real_distribution<double> rgy(0., this->slit->slit_sampling * this->slit->h / this->slit->w);
 
+        #pragma omp parallel for
         for (int i = 0; i < N_photons[o]; ++i) {
+
             double wl = wl_s[o].Sample(dis(gen));
-            //cout<<wl<<endl;
-//            Matrix23f tm = this->get_transformation_matrix(o, wl);
 
             int idx_matrix = floor((wl - this->sim_wavelength[o].front()) / this->sim_matrix_dwavelength[o]);
 
@@ -420,7 +420,8 @@ int MatrixSimulator::simulate(double t) {
             newy += (aby - this->sim_psfs[o][idx_psf].rows / 2.)/psf_scaling;
 
             if (newx > 0 && newx < this->ccd->data.cols && newy > 0 && newy < this->ccd->data.rows)
-                this->ccd->data.at<double>(floor(newy), floor(newx)) += 1.;
+                #pragma omp atomic
+                this->ccd->data.at<int>(floor(newy), floor(newx)) += 1;
         }
     }
     std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();

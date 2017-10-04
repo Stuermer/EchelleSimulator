@@ -17,7 +17,7 @@ CCD::CCD(int Nx, int Ny, int data_type, double pixelsize) :Nx(Nx), Ny(Ny), overs
     }
 #else
     {
-        this->data = cv::Mat::zeros(Ny, Nx, CV_64F);
+        this->data = cv::Mat::zeros(Ny, Nx, CV_16U);
     }
 #endif
 
@@ -62,7 +62,7 @@ void CCD::save_to_fits(std::string filename, bool downsample, bool bleed, bool o
     catch (...) {
     // no old data
         std::cout << "No old data found" ;
-        pFits.reset( new CCfits::FITS(filename, FLOAT_IMG , naxis , naxes ) );
+        pFits.reset( new CCfits::FITS(filename, SHORT_IMG , naxis , naxes ) );
         pFits->flush();
         pFits->destroy();
     }
@@ -80,12 +80,12 @@ void CCD::save_to_fits(std::string filename, bool downsample, bool bleed, bool o
     long nelements(1);
     nelements = std::accumulate(&naxes[0],&naxes[naxis],1,std::multiplies<long>());
     long  fpixel(1);
-    std::valarray<double> data_array(nelements);
+    std::valarray<int> data_array(nelements);
     if ((old_img_ax1>0) & (old_img_ax2>0) & !overwrite)
     {
         for (int i=0; i<res.rows; ++i) {
             for (int j = 0; j < res.cols; ++j) {
-                data_array[j * res.cols + i] = res.at<double>(j, i) + contents[j * res.cols + i];
+                data_array[j * res.cols + i] = res.at<int>(j, i) + contents[j * res.cols + i];
             }
         }
     }
@@ -94,7 +94,7 @@ void CCD::save_to_fits(std::string filename, bool downsample, bool bleed, bool o
 
     for (int i=0; i<res.rows; ++i) {
         for (int j = 0; j < res.cols; ++j) {
-            data_array[j * res.cols + i] = res.at<double>(j, i);
+            data_array[j * res.cols + i] = res.at<int>(j, i);
         }
     }
 
