@@ -422,7 +422,7 @@ int MatrixSimulator::simulate(double t) {
 
             if (newx > 0 && newx < this->ccd->data.cols && newy > 0 && newy < this->ccd->data.rows)
                 #pragma omp atomic
-                this->ccd->data.at<unsigned short>((int) round(newy), (int) round(newx)) += 1;
+                this->ccd->data.at<unsigned short>((int) floor(newy), (int) floor(newx)) += 1;
         }
     }
 
