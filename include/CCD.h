@@ -43,28 +43,15 @@ public:
     //overload + operator
     static void do_bleed(cv::Mat &input, double limit);
 
-#ifdef USE_GPU
-    CCD operator+(const CCD & ccd){
-        cv::gpu::add(this->data, ccd.data, this->data);
-    }
-#else
-
-    CCD operator+(const CCD &ccd) {
-        this->data += ccd.data;
-    }
-
-#endif
 
 #ifdef USE_GPU
     cv::gpu::GpuMat data;
     bool use_gpu = true;
 #else
-    cv::Mat data;
+    std::vector<int> data;
     bool use_gpu = false;
 #endif
 
-
-private:
     int Nx, Ny;
     double pixelsize;
 

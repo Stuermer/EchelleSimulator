@@ -6,6 +6,8 @@
 #include "CCD.h"
 #include "hdf5opencv.h"
 #include <CCfits/CCfits>
+#include "helper.h"
+#include <algorithm>
 
 CCD::CCD(int Nx, int Ny, double pixelsize) :Nx(Nx), Ny(Ny), pixelsize(pixelsize) {
 
@@ -17,7 +19,8 @@ CCD::CCD(int Nx, int Ny, double pixelsize) :Nx(Nx), Ny(Ny), pixelsize(pixelsize)
     }
 #else
     {
-        this->data = cv::Mat::zeros(Ny, Nx, CV_16U);
+//        this->data = cv::Mat::zeros(Ny, Nx, CV_16U);
+        this->data = std::vector<int>(Ny*Nx, 0);
     }
 #endif
 
@@ -36,9 +39,9 @@ void CCD::save_to_hdf(std::string filename, bool downsample, bool bleed, bool ov
 }
 
 void CCD::save_to_fits(std::string filename, bool downsample, bool bleed, bool overwrite) {
-    cv::Mat res = this->get_image(downsample, bleed);
+//    cv::Mat res = this->get_image(downsample, bleed);
     long naxis    =   2;
-    long naxes[2] = { res.cols, res.rows };
+    long naxes[2] = { Ny, Nx };
     std::auto_ptr<CCfits::FITS> pFits(0);
     // Try to read in old image
     long old_img_ax1=0;
@@ -63,7 +66,7 @@ void CCD::save_to_fits(std::string filename, bool downsample, bool bleed, bool o
     catch (...) {
     // no old data
         std::cout << "No old data found" << std::endl;;
-        pFits.reset( new CCfits::FITS(filename, USHORT_IMG , naxis , naxes ) );
+        pFits.reset( new CCfits::FITS(filename, LONG_IMG , naxis , naxes ) );
         pFits->flush();
         pFits->destroy();
     }
@@ -84,21 +87,16 @@ void CCD::save_to_fits(std::string filename, bool downsample, bool bleed, bool o
     std::valarray<int> data_array(nelements);
     if ((old_img_ax1>0) & (old_img_ax2>0) & !overwrite)
     {
-        for (int i=0; i<res.rows; ++i) {
-            for (int j = 0; j < res.cols; ++j) {
-                data_array[j * res.cols + i] = res.at<unsigned short>(j, i) + contents[j * res.cols + i];
-            }
+        for (int i=0; i<Nx*Ny; ++i) {
+            data_array[i] = (int) this->data[i] + contents[i];
         }
     }
     else
     {
 
-    for (int i=0; i<res.rows; ++i) {
-        for (int j = 0; j < res.cols; ++j) {
-            data_array[j * res.cols + i] = res.at<unsigned short>(j, i);
+    for (int i=0; i<Nx*Ny; ++i) {
+            data_array[i] = (int) this->data[i];
         }
-    }
-
     }
 
     pFits->pHDU().write(fpixel, nelements, data_array);
@@ -111,6 +109,19 @@ CCD::~CCD() {
 
 cv::Mat CCD::get_image(bool downsample, bool bleed) {
     cv::Mat result;
+    cv::Mat initial(Ny,Nx, CV_16UC1);
+//    cv::Mat initial = cv::Mat(this->data).reshape(0, this->Ny);
+//    initial.convertTo(initial, CV_16UC1);
+    for(int i=0; i<Ny; ++i){
+        for (int j = 0; j < Nx; ++j) {
+            initial.at<unsigned short>(j, i) = (unsigned short) this->data[j*Nx+i];
+        }
+    }
+//    memcpy(initial.data, this->data.data(), this->data.size()*sizeof(ushort));
+
+//    show_cv_matrix(initial, "test");
+
+
     if (downsample){
         #ifdef  USE_GPU
                 {
@@ -118,13 +129,13 @@ cv::Mat CCD::get_image(bool downsample, bool bleed) {
             };
         #else
                 {
-                    result = cv::Mat(Ny, Nx, this->data.type());
+                    result = cv::Mat(Ny, Nx, initial.type());
                 }
         #endif
-        cv::resize(this->data, result, result.size(), cv::INTER_NEAREST);
+        cv::resize(initial, result, result.size(), cv::INTER_NEAREST);
     }
     else {
-        result = this->data;
+        result = initial;
     }
 
     if (bleed){

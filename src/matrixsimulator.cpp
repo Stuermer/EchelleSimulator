@@ -17,13 +17,8 @@
 #include <chrono>
 #include <omp.h>
 #include "random_generator.h"
-
-
-//#include <highfive/H5File.hpp>
-//#include <highfive/H5DataSpace.hpp>
-//#include <highfive/H5DataSet.hpp>
-#include <opencv2/core/core.hpp>
-#include <opencv2/highgui/highgui.hpp>
+#include "opencv2/core/core.hpp"
+#include "opencv2/highgui/highgui.hpp"
 
 #ifdef USE_GPU
 #include "opencv2/gpu/gpu.hpp"
@@ -34,6 +29,10 @@
 #include <helper_cuda.h>       // helper for CUDA Error handling
 
 #endif
+
+#pragma omp declare reduction(vec_int_plus : std::vector<int> : \
+                              std::transform(omp_out.begin(), omp_out.end(), omp_in.begin(), omp_out.begin(), std::plus<int>())) \
+                    initializer(omp_priv(omp_orig.size(),0))
 
 void print_transformation_matrix(cv::Mat tm){
     std::cout << tm.at<double>(0,0) << "\t" << tm.at<double>(0,1) << "\t" << tm.at<double>(0,2) << "\n";
@@ -378,6 +377,7 @@ int MatrixSimulator::simulate(double t) {
     std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
 
 
+    std::vector<int> local_data = this->ccd->data;
     for(int o=0; o<this->orders.size(); ++o) {
         std::random_device rd;
         std::default_random_engine gen(rd());
@@ -385,7 +385,7 @@ int MatrixSimulator::simulate(double t) {
         std::uniform_real_distribution<double> rgx(0., this->slit->slit_sampling);
         std::uniform_real_distribution<double> rgy(0., this->slit->slit_sampling * this->slit->h / this->slit->w);
 
-        #pragma omp parallel for
+        #pragma omp parallel for reduction(vec_int_plus : local_data)
         for (int i = 0; i < N_photons[o]; ++i) {
 
             double wl = wl_s[o].Sample(dis(gen));
@@ -420,12 +420,11 @@ int MatrixSimulator::simulate(double t) {
             newx += (abx - this->sim_psfs[o][idx_psf].cols / 2.)/psf_scaling;
             newy += (aby - this->sim_psfs[o][idx_psf].rows / 2.)/psf_scaling;
 
-            if (newx > 0 && newx < this->ccd->data.cols && newy > 0 && newy < this->ccd->data.rows)
-                #pragma omp atomic
-                this->ccd->data.at<unsigned short>((int) floor(newy), (int) floor(newx)) += 1;
+            if (newx > 0 && newx < this->ccd->Nx && newy > 0 && newy < this->ccd->Ny)
+                local_data[(int) floor(newx) + this->ccd->Nx * (int) floor(newy)] += 1;
         }
-    }
-
+    this->ccd->data = local_data;
+    };
     std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::microseconds>( t2 - t1 ).count()/1000000.;
     std::cout<<"Duration Tracing: \t" << duration << " s" << std::endl;

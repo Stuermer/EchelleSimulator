@@ -1,9 +1,7 @@
 #include "helper.h"
-
 #include <vector>
 #include <cmath>
 #include "opencv2/core/core.hpp"
-
 #include <vector>
 #include <iterator>
 #include <iostream>
@@ -13,7 +11,6 @@
 #include <cstdlib>
 #include "opencv2/imgproc/imgproc.hpp"
 #include "opencv2/highgui/highgui.hpp"
-//#include <CCfits>
 #include <CCfits/FITS.h>
 #include <CCfits/ExtHDU.h>
 #include "Eigen/Dense"
@@ -101,23 +98,23 @@ std::vector<std::size_t> compute_sort_order(const std::vector<double> &v) {
     return res;
 }
 
-//void show_cv_matrix(cv::Mat img, std::string windowname="image") {
-//    double minVal, maxVal;
-//
-//    cv::Mat img_show = img.clone();
-//    cv::minMaxLoc(img_show, &minVal, &maxVal); //find minimum and maximum intensities
-//    int ty = img_show.type();
-//    std::cout << "Min/Max: " << minVal << "\t " << maxVal << std::endl;
-//    img_show.convertTo(img_show, CV_8U,255.0/(maxVal - minVal), -minVal * 255.0/(maxVal - minVal));
-//
-//     cv::cvtColor(img_show, img_show, CV_GRAY2RGB);
-//
-//    cv::namedWindow(windowname,CV_WINDOW_NORMAL);
-//    cv::imshow(windowname, img_show);
-//    cv::resizeWindow(windowname, 2048,2048);
-//    cv::waitKey(0 );
-//
-//}
+void show_cv_matrix(cv::Mat img, std::string windowname="image") {
+    double minVal, maxVal;
+
+    cv::Mat img_show = img.clone();
+    cv::minMaxLoc(img_show, &minVal, &maxVal); //find minimum and maximum intensities
+    int ty = img_show.type();
+    std::cout << "Min/Max: " << minVal << "\t " << maxVal << std::endl;
+    img_show.convertTo(img_show, CV_8U,255.0/(maxVal - minVal), -minVal * 255.0/(maxVal - minVal));
+
+     cv::cvtColor(img_show, img_show, CV_GRAY2RGB);
+
+    cv::namedWindow(windowname,CV_WINDOW_NORMAL);
+    cv::imshow(windowname, img_show);
+    cv::resizeWindow(windowname, 1024,1024);
+    cv::waitKey(0 );
+
+}
 
 void print_cv_matrix_info(cv::Mat img, std::string imagename="Image") {
     std::cout<< "------------" << imagename << "----------------:" << std::endl;
