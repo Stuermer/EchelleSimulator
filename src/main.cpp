@@ -183,13 +183,15 @@ int main(int argc, char *argv[])
         auto v = args["phoenix"].as<string>();
         std::vector<std::string> vv = split(v, ',');
         cout<<"Simulating phoenix spectra with magnitude = "<< stod(vv[4]) << endl;
+        const std::string& w_file = "../data/phoenix_spectra/WAVE_PHOENIX-ACES-AGSS-COND-2011.fits";
 
         if(download_phoenix(vv[0], vv[1], vv[2], vv[3]) == 0){
 
-            const std::string& w_file = "../data/phoenix_spectra/WAVE_PHOENIX-ACES-AGSS-COND-2011.fits";
-
             if(!check_for(w_file)) {
                 download_wave_grid("../data/phoenix_spectra/WAVE_PHOENIX-ACES-AGSS-COND-2011.fits");
+            }
+            else{
+                cout<<"Wave file found"<<endl;
             }
             //cs = new CustomSpectrum("../data/phoenix_spectra/test.fits", "../data/phoenix_spectra/WAVE_PHOENIX-ACES-AGSS-COND-2011.fits", stod(vv[4]));
 //            cout<<"Downloaded";
@@ -256,7 +258,7 @@ int main(int argc, char *argv[])
     else{
 
         cout<<"Simulating constant source with spectral density = 1 [micro watt] / ([micro meter] * [meter]^2)" << endl;
-        cs = new Constant();
+        cs = new Constant(1,0,1);
         source = "constant";
     }
 
