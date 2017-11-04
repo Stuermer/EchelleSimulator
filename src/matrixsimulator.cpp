@@ -13,8 +13,8 @@
 #include "helper.h"
 #include <opencv2/imgproc.hpp>
 #include <hdf5_hl.h>
-#include <CCfits/CCfits>
-#include <CCfits/FITS.h>
+//#include <CCfits/CCfits>
+//#include <CCfits/FITS.h>
 
 #include <string>
 #include <fstream>

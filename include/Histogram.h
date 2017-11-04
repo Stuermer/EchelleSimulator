@@ -15,6 +15,16 @@
 
 using namespace std;
 
+/*!
+ * \class Histogram
+ * \brief The general statistical object that spectra is a child of
+ *
+ * This class allows for a variety of statistical computations to be carried out
+ * on members from source. It represents sources as a histogram with a cdf and sampling
+ * methods.
+ *
+ */
+
 class Histogram{
 protected:
 
@@ -25,41 +35,62 @@ protected:
 public:
     unsigned long length=0; //This is the number of elements in the histogram object
     int resolution=0;
+    /// Cumalative distribution function for the histogram
     vector<double> cdf;
+    /// The event space of the histogram (wavelengths)
     vector<double> event;
+    /// The number of events
     vector<double> intensity;
 
+    /// Differential of event
     vector<double> d_event;
+    /// Differential of intensity
     vector<double> d_intensity;
+    /// Differential of the cdf (the pdf)
     vector<double> d_cdf; //This is the same as a pdf vector
 
     Histogram();
+    /// Generates a histogram from a csv
     Histogram(string file_path); //Generate histogram from file path
+    /// Generates a histogram from event csv and intensity csv
     Histogram(string path_1, string path_2);
 
+    /// Generates Histogram from a vector of events and weights
     Histogram(vector<double> events, vector<double> weights); //Generate histogram manually
+    /// Will resample another histogram with a number of elements
     Histogram(int num,Histogram &histogram); //Generate sample histogram from original with custom number of elements
+    /// Resamples a histogram with a different resolution and number of elements
     Histogram(int num,int res, Histogram &histogram);//Same as above, but also allows for res x the sampling resolution of the original histogram
 
+    /*!
+     *Returns a test statistic regarding whether or not two histograms are similar
+     *Null hypothesis: The histograms are drawn from the same source.
+     *We want the test statistic to be less than c(a)*sqrt((n+m)/(n*m)) to keep the null hypothesis
+     *...Otherwise we reject it
+     *a|    0.10	0.05	0.025	0.01	0.005	0.001
+     *c(a)| 1.22	1.36	1.48	1.63	1.73	1.95
+     *
+     * @param sim_histogram the comparison histogram
+     * @return
+     */
     double Kolmogorov_Smirnov_test(Histogram &sim_histogram);
-    //Returns a test statistic regarding whether or not two histograms are similar
-    //Null hypothesis: The histograms are drawn from the same source.
-    //We want the test statistic to be less than c(a)*sqrt((n+m)/(n*m)) to keep the null hypothesis
-    //...Otherwise we reject it
-    //a|    0.10	0.05	0.025	0.01	0.005	0.001
-    //c(a)| 1.22	1.36	1.48	1.63	1.73	1.95
 
-    template<class T>
-    double Sample(T sample_value); //Sample using point methods
+    /*!
+    * Allows wavelengths to be sampled from a histogram using
+    * CDF sampling methods
+    *
+    * @param sample_value  A value in the range 0 to 1
+    */
+    template<class T> double Sample(T sample_value); //Sample using point methods
 
-    template<class T>
-    vector<double> Sample(vector<T> sample_value);
+    /// Allows for multi-sampling
+    template<class T> vector<double> Sample(vector<T> sample_value);
 
-    template<class T>
-    double Linear_sample(T sample_value); //Sample using point methods and then correct error to first order
+    /// Allows for sampling using a linear correction to the CDF
+    template<class T> double Linear_sample(T sample_value); //Sample using point methods and then correct error to first order
 
-    template<class T>
-    vector<double> Linear_sample(vector<T> sample_value);
+    /// Allows for multi-sampling with linear correction
+    template<class T> vector<double> Linear_sample(vector<T> sample_value);
 
     bool mode = true;
 

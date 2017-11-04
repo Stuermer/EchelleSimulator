@@ -8,6 +8,16 @@
 #include "Histogram.h"
 #include <iostream>
 
+/*!
+ * \class Spectra
+ * \brief Does computations with sources (such as sampling)
+ *
+ * This class allows for a variety of computations to be done with sources. It's basic
+ * functionality is to allow filters to be applied to sources and to allow conversion between
+ * energy flux and photon flux.
+ *
+ */
+
 class Spectra:public Histogram{
 
 public:
@@ -20,28 +30,56 @@ public:
     //Filters the spectra and adds the result as an object
     //Technically deprecated because of Pass_filter
 
+    /// The reference flux units :: photons/m^2/s (obtained by integrating vega over a bessel filter)
     double v_zp=8660006000.0; //The reference flux is obtained by integrating vega
                                 // over a bessel filter and has units photons/m^2/s
 
     double magnitude;
 
+    /// Photon flux units:: photons/s/cm^2/A
     vector<double> dflux; //Units are flux per wavelength  photons/s/cm^2/A
 
+    /*!
+     * Creates a photon flux vector from the intesnity vector. Uses the formula
+     * Flux_p = Intensity * ch_factor * lambda where ch_factor = 5.03*10^10 uW/m^2/um
+     * with the assumption that lambda is the wavelength in units :: um
+     *
+     */
     void Create_dflux();
     void Set_magnitude(double mag, double t_flux);
 
+    /// Passes a filter over the Spectra and recomputes @dflux
     Spectra Pass_filter(Histogram filter); //Passes the filter over Spectra
+    /// The function that recomputes @dflux according to a filter
     vector<double> Filter_dflux(Histogram filter);
 
+    /*!
+     * Returns the flux of single spectra assuming that it is one of several
+     * spectra that have a normalized total flux.
+     *
+     * @param m_order the reference histogram
+     * @param m_orders the list of histograms to be referenced
+     * @param r_flux the assumed total flux of all the orders
+     * @return
+     */
     double Relative_flux(Histogram m_order, vector<Histogram> m_orders, double r_flux);
     //Calculates flux through m_order assuming
     // there are m_orders and that r_flux is conserved (slower by a factor of num(m_orders))
 
+    /// Very similar to the other method but relaxes the normalization assumption
     double Relative_flux(Histogram m_order, vector<Histogram> m_orders); //Same as above but assumes r_flux = total_flux
 
     double Calc_flux(const Histogram& filter);
     double Calc_flux();
 
+    /*!
+     * Simulates the number of photons that a telescope would collect from a spectra
+     * over a certain time. (Not currently implemented)
+     *
+     * @param m_time units :: seconds
+     * @param m_area units :: m^2
+     * @return
+     */
     double Photon_count(double m_time, double m_area);
     double Exp_time(double s_noise);
 
