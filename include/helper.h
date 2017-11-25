@@ -15,10 +15,10 @@
 #include <cstdlib>
 #include "csv_reader.h"
 #include "H5Cpp.h"
-#include "Eigen/Dense"
 #include <map>
+#include <array>
+#include <algorithm>
 
-typedef Eigen::Matrix<float, 2, 3> Matrix23f;
 
 /*!
  * Saves vector to CSV File
@@ -45,7 +45,7 @@ void vectorToFile(std::vector<double> const &vec, std::string const &filename);
  * @param mat 2x3 transformation matrix
  * @return [sx, sy, shear, \f$ \phi \f$, tx, ty]
  */
-std::vector<double> decompose_matrix(Matrix23f mat);
+std::array<float,6> decompose_matrix(std::array<float,6> mat);
 
 /*!
  * Composes 2x3 transformation matrix from shear, scale, rotation and translation parameters.
@@ -54,7 +54,7 @@ std::vector<double> decompose_matrix(Matrix23f mat);
  * @param parameters [sx, sy, shear, \f$ \phi \f$, tx, ty]
  * @return 2x3 transformation matrix
  */
-Matrix23f compose_matrix(std::vector<double> parameters);
+std::array<float, 6> compose_matrix(std::vector<double> parameters);
 
 /*!
  * Calculates sorted index array of a given vector.

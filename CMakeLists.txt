@@ -1,7 +1,7 @@
 project(echellesimulator)
 
 cmake_minimum_required(VERSION 3.0)
-find_package( OpenCV REQUIRED HINTS /data/CppLibs/opencv/)
+find_package( OpenCV 3 REQUIRED HINTS /data/CppLibs/opencv/)
 set(CUDA_USE_STATIC_CUDA_RUNTIME OFF)
 set(LINK_LIBS ${LINK_LIBS} ${OpenCV_LIBS})
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/src/CMakeModules/")
@@ -17,17 +17,13 @@ find_package(HDF5 COMPONENTS C CXX HL REQUIRED)
 FIND_LIBRARY(CFITSIO cfitsio /usr/local/lib64)
 
 include_directories(SYSTEM $OPENCV_INCLUDE_DIRS)
-include_directories(src)
-include_directories(include)
+include_directories(${CMAKE_SOURCE_DIR}/src)
+include_directories(${CMAKE_SOURCE_DIR}/include)
+message(${CMAKE_SOURCE_DIR})
+#find_package(Qt5Core)
 
-# include eigen library
-SET( EIGEN3_INCLUDE_DIR $ENV{EIGEN3_INCLUDE_DIR} )
-IF( NOT EIGEN3_INCLUDE_DIR )
-    MESSAGE( FATAL_ERROR "Please point the environment variable EIGEN3_INCLUDE_DIR to the include directory of your Eigen3 installation.")
-ENDIF()
-INCLUDE_DIRECTORIES (${EIGEN3_INCLUDE_DIR})
-MESSAGE(INFO, ${EIGEN3_INCLUDE_DIR})
 INCLUDE_DIRECTORIES (${HDF5_INCLUDE_DIRS})
+#find_package(Qt5 REQUIRED COMPONENTS Core Widgets Gui )
 
 set (LINK_LIBS ${LINK_LIBS} ${HDF5_LIBRARIES} ${CCFITS_LIB} ${CFITSIO} ${HDF5_HL_LIBRARIES} curl)
 MESSAGE(${LINK_LIBS})

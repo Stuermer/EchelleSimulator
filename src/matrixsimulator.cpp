@@ -309,7 +309,7 @@ void MatrixSimulator::set_wavelength(std::vector<double> wavelength){
 }
 
 
-Matrix23f MatrixSimulator::get_transformation_matrix_lookup(int o, double wavelength){
+std::array<float,6> MatrixSimulator::get_transformation_matrix_lookup(int o, double wavelength){
     std::vector<double> parameters;
     int idx_matrix = floor((wavelength - this->sim_wavelength[o].front()) / this->sim_matrix_dwavelength[o]);
 
@@ -322,7 +322,7 @@ Matrix23f MatrixSimulator::get_transformation_matrix_lookup(int o, double wavele
     return compose_matrix(parameters);
 
 }
-Matrix23f MatrixSimulator::get_transformation_matrix(int o, double wavelength){
+std::array<float,6> MatrixSimulator::get_transformation_matrix(int o, double wavelength){
     std::vector<double> parameters;
     parameters.push_back(this->tr_p[o](wavelength));
     parameters.push_back(this->tr_q[o](wavelength));
@@ -379,14 +379,13 @@ int MatrixSimulator::simulate(double t) {
 
     std::vector<int> local_data = this->ccd->data;
     for(int o=0; o<this->orders.size(); ++o) {
-        std::random_device rd;
-        std::default_random_engine gen(rd());
-
-        std::uniform_real_distribution<double> rgx(0., this->slit->slit_sampling);
-        std::uniform_real_distribution<double> rgy(0., this->slit->slit_sampling * this->slit->h / this->slit->w);
-
         #pragma omp parallel for reduction(vec_int_plus : local_data)
         for (int i = 0; i < N_photons[o]; ++i) {
+            std::random_device rd;
+            std::default_random_engine gen(rd());
+
+            std::uniform_real_distribution<double> rgx(0., this->slit->slit_sampling);
+            std::uniform_real_distribution<double> rgy(0., this->slit->slit_sampling * this->slit->h / this->slit->w);
 
             double wl = wl_s[o].Sample(dis(gen));
 
@@ -536,12 +535,12 @@ void MatrixSimulator::prepare_matrix_lookup(int N){
             params.push_back(phi[i]);
             params.push_back(tx[i]);
             params.push_back(ty[i]);
-            Matrix23f tm = compose_matrix(params);
+            std::array<float,6> tm = compose_matrix(params);
 
-            m00.push_back(tm(0,0));
-            m01.push_back(tm(0,1));
-            m10.push_back(tm(1,0));
-            m11.push_back(tm(1,1));
+            m00.push_back(tm[0]);
+            m01.push_back(tm[1]);
+            m10.push_back(tm[3]);
+            m11.push_back(tm[4]);
         }
         this->sim_p.push_back(p);
         this->sim_q.push_back(q);

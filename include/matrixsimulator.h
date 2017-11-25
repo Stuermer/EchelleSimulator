@@ -13,7 +13,7 @@
 #include "CCD.h"
 #include "Slit.h"
 #include "telescope.h"
-#include "Eigen/Dense"
+#include <array>
 
 struct point2d{
     double x,y;
@@ -22,7 +22,7 @@ struct point2d{
 struct raw_transformation {
     int order;
     double wavelength;
-    Matrix23f transformation_matrix;
+    std::array<float,6> transformation_matrix;
     std::vector<double> decomposed_matrix;
 
 };
@@ -154,7 +154,7 @@ private:
  * @param wavelength wavelength [micron]
  * @return 2x3 affine transformation matrix
  */
-    Matrix23f get_transformation_matrix(int order, double wavelength);
+    std::array<float,6> get_transformation_matrix(int order, double wavelength);
 
     /**
      * Get affine transformation matrix, but use lookup tables for speedup.
@@ -164,7 +164,7 @@ private:
      * @param wavelength wavelength [micron]
      * @return 2x3 affine transformation matrix
      */
-    inline Matrix23f get_transformation_matrix_lookup(int o, double wavelength);
+    inline std::array<float,6> get_transformation_matrix_lookup(int o, double wavelength);
 
     void set_efficiencies(std::vector<Efficiency *> &efficiencies);
 
@@ -197,7 +197,7 @@ private:
     Slit *slit;
 
     std::vector<std::vector<double>> sim_wavelength;
-    std::vector<std::vector<Matrix23f>> sim_matrices;
+    std::vector<std::vector<std::array<float,6> >> sim_matrices;
     std::vector<std::vector<double>> sim_efficiencies;
     std::vector<std::vector<float>> sim_spectra;
     std::vector<std::vector<float>> sim_spectra_time_efficieny;

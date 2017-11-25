@@ -13,12 +13,12 @@
 #include "opencv2/highgui/highgui.hpp"
 #include <CCfits/FITS.h>
 #include <CCfits/ExtHDU.h>
-#include "Eigen/Dense"
 #include <map>
 #include <curl/curl.h>
 #include <sys/stat.h>
 #include <unistd.h>
 #include <string>
+
 
 void vectorToFile(std::vector<double> const& vec, std::string const& filename) {
   std::ofstream file(filename);
@@ -33,20 +33,20 @@ void vectorToFile(std::vector<double> const& vec, std::string const& filename) {
   file.close();  
 }
 
-std::vector<double> decompose_matrix(Matrix23f mat){
-    std::vector<double> result;
+std::array<float,6> decompose_matrix(std::array<float,6> mat){
+
     /*
      * Matrix looks like:
-     * a b tx
-     * d e ty
+     * a b tx   =   m0 m1 m2
+     * d e ty       m3 m4 m5
      */
 
-    double a = mat(0,0);
-    double b = mat(0,1);
-    double d = mat(1,0);
-    double e = mat(1,1);
-    double tx = mat(0,2);
-    double ty = mat(1,2);
+    double a = mat[0];
+    double b = mat[1];
+    double d = mat[3];
+    double e = mat[4];
+    double tx = mat[2];
+    double ty = mat[5];
     
     double sx = sqrt(a*a+d*d);
     double sy = sqrt(b*b+e*e);
@@ -59,29 +59,25 @@ std::vector<double> decompose_matrix(Matrix23f mat){
     if (shear < -6.1)
         shear += 2.*M_PI;
 
-    result.push_back(sx);
-    result.push_back(sy);
-    result.push_back(shear);
-    result.push_back(phi);
-    result.push_back(tx);
-    result.push_back(ty);
+    std::array<float,6> result={sx,sy,shear,phi,tx,ty};
     // return <sx, sy, shear, rot, tx ,ty>
     return result;
 }
 
-Matrix23f compose_matrix(std::vector<double> parameters){
-  double sx = parameters[0];
-  double sy = parameters[1];
-  double shear = parameters[2];
-  double rot = parameters[3];
+std::array<float, 6> compose_matrix(std::vector<double> parameters){
+double sx = parameters[0];
+double sy = parameters[1];
+double shear = parameters[2];
+double rot = parameters[3];
 
-  Matrix23f m;
-    m(0,0) = sx*cos(rot);
-    m(1,0) = sx*sin(rot);
-    m(0,1) = -sy*sin(rot+shear);
-    m(1,1)= sy*cos(rot+shear);
-    m(0,2) = parameters[4];
-    m(1,2) = parameters[5];
+std::array<float, 6> m = {
+    sx *cos(rot),
+    -sy *sin(rot + shear),
+    parameters[4],
+    sx *sin(rot),
+    sy *cos(rot + shear),
+    parameters[5],
+};
   return m;
 }
 

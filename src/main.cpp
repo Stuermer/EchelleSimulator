@@ -1,11 +1,11 @@
 #include <iostream>
 
-#include "matrixsimulator.h"
 #include <chrono>
 #include <CCfits/FITS.h>
 #include <CCfits/PHDU.h>
 #include "argagg.hpp"
 #include "helper.h"
+#include "matrixsimulator.h"
 
 using namespace std::chrono;
 using argagg::parser_results;
