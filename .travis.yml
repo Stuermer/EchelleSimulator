@@ -3,26 +3,40 @@ language:
   - cpp
 compiler:
   - gcc
-addons:
-  apt:
-    packages:
-      - libopencv-dev
-      - libhdf5-serial-dev
-      - libhdf5-dev
-      - libcurl3
-      - libcurl4-openssl-dev
-      - libcfitsio3-dev
-      - libccfits-dev
-      - mercurial
-      - cmake
+matrix:
+  include:
+    - os: linux
+      env: COMPILER_NAME=gcc CXX=g++-5 CC=gcc-5
+      addons:
+        apt:
+          packages:
+            - g++-5
+            - libopencv-dev
+            - libhdf5-serial-dev
+            - libhdf5-dev
+            - libcurl3
+            - libcurl4-openssl-dev
+            - libcfitsio3-dev
+            - libccfits-dev
+            - mercurial
+            - cmake
+          sources: &sources
+            - llvm-toolchain-precise-3.8
+            - ubuntu-toolchain-r-test
+    - os: linux
+      env: COMPILER_NAME=clang CXX=clang++-3.8 CC=clang-3.8
+      addons:
+        apt:
+          packages:
+            - clang-3.8
+        sources: *sources
+          
 script:
-     - pwd
-     - hg clone https://bitbucket.org/eigen/eigen/
     ############################################################################
     # Build main and tests
     ############################################################################
      - mkdir -p build
      - cd build
      - pwd
-     - cmake -DCMAKE_BUILD_TYPE=Release -DEIGEN3_INCLUDE_DIR=eigen/ ..
+     - cmake -DCMAKE_BUILD_TYPE=Release ..
      - make
