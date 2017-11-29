@@ -1,7 +1,7 @@
 project(echellesimulator)
 
 cmake_minimum_required(VERSION 3.0)
-find_package( OpenCV 3 REQUIRED HINTS /data/CppLibs/opencv/)
+find_package( OpenCV REQUIRED HINTS /data/CppLibs/opencv/)
 set(CUDA_USE_STATIC_CUDA_RUNTIME OFF)
 set(LINK_LIBS ${LINK_LIBS} ${OpenCV_LIBS})
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/src/CMakeModules/")
