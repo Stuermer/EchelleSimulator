@@ -1,8 +1,6 @@
 sudo: required
 language:
   - cpp
-compiler:
-  - gcc
 matrix:
   include:
     - os: linux
@@ -21,7 +19,6 @@ matrix:
             - mercurial
             - cmake
           sources: &sources
-            - llvm-toolchain-precise-3.8
             - ubuntu-toolchain-r-test
           
 script:
