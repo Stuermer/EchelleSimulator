@@ -333,7 +333,7 @@ std::array<float,6> MatrixSimulator::get_transformation_matrix(int o, double wav
     return compose_matrix(parameters);
 }
 
-int MatrixSimulator::simulate(double t) {
+int MatrixSimulator::simulate(double t, unsigned long seed) {
     this->set_efficiencies(this->efficiencies);
 
     this->prepare_sources(this->sources); //put area eventually in sources
@@ -344,7 +344,7 @@ int MatrixSimulator::simulate(double t) {
 
     std::vector<Spectra> wl_s(orders.size());
     std::vector<int> N_photons(orders.size());
-    std::uniform_real_distribution<double> dis(0.0,1.0);
+
     double psf_scaling = (*this->ccd->get_pixelsize() / this->psfs->pixelsampling );
 
     std::cout << "Number of photons per order:" << std::endl;
@@ -359,7 +359,7 @@ int MatrixSimulator::simulate(double t) {
 
         //units are assumed to be t=[s], area=[m^2], wl_s.dflux=[Num of Photons]/([s] * [m^2] * [um]), wl_s.Calc_flux = [Num of Photons]/([s]*[m^2])
 //        N_photons[o] = 1000000;
-        N_photons[o] = wl_s[o].Calc_flux()*t;
+        N_photons[o] = static_cast<int>(floor(wl_s[o].Calc_flux()*t));
 //            N_photons[o] = 10;
         //this->telescope->get_area();
         //t*area*wl_s[o].Calc_flux()
@@ -376,52 +376,67 @@ int MatrixSimulator::simulate(double t) {
     std::cout <<"Start tracing ..." <<std::endl;
     std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
 
-
     std::vector<int> local_data = this->ccd->data;
     for(int o=0; o<this->orders.size(); ++o) {
-        #pragma omp parallel for reduction(vec_int_plus : local_data)
-        for (int i = 0; i < N_photons[o]; ++i) {
-            std::random_device rd;
-            std::default_random_engine gen(rd());
+        #pragma omp parallel
+        {
+            std::uniform_real_distribution<float> dis(0.0, 1.0);
+            std::uniform_real_distribution<float> rgx(0., this->slit->slit_sampling);
+            std::uniform_real_distribution<float> rgy(0., this->slit->slit_sampling * this->slit->h / this->slit->w);
+//            std::default_random_engine gen;
+            std::mt19937 gen;
+            if(seed==0) {
+                std::random_device rd;
+                gen.seed(rd());
+            } else{
+                #if defined(_OPENMP)
+                //TODO: better handling of seeds for parallel execution.. (i.e. use random seed sequence)
+                gen.seed(seed+omp_get_thread_num());
+                #else
+                gen.seed(seed);
+                #endif
 
-            std::uniform_real_distribution<double> rgx(0., this->slit->slit_sampling);
-            std::uniform_real_distribution<double> rgy(0., this->slit->slit_sampling * this->slit->h / this->slit->w);
 
-            double wl = wl_s[o].Sample(dis(gen));
-
-            int idx_matrix = floor((wl - this->sim_wavelength[o].front()) / this->sim_matrix_dwavelength[o]);
-
-            float x = rgx(gen);
-            float y = rgy(gen);
-
-            float newx = (sim_m00[o][idx_matrix] * x + sim_m01[o][idx_matrix] * y + this->tr_tx[o](wl));
-            float newy = (sim_m10[o][idx_matrix]  * x + sim_m11[o][idx_matrix]  * y + this->tr_ty[o](wl));
-
-//            this is not accurate enough.  probably fixable by linear interpolation of tx and ty
-//            float newx = (sim_m00[o][idx_matrix] * x + sim_m01[o][idx_matrix] * y + sim_tx[o][idx_matrix]);
-//            float newy = (sim_m10[o][idx_matrix]  * x + sim_m11[o][idx_matrix]  * y + sim_ty[o][idx_matrix]);
-
-            // lookup psf
-            int idx_psf = floor((wl - this->sim_wavelength[o].front()) / this->sim_psfs_dwavelength[o]);
-
-            std::uniform_real_distribution<> abr_x(0, this->sim_psfs[o][idx_psf].cols);
-            std::uniform_real_distribution<> abr_y(0, this->sim_psfs[o][idx_psf].rows);
-            std::uniform_real_distribution<> abr_z(0, 1);
-            float abx = abr_x(gen);
-            float aby = abr_y(gen);
-            float abz = abr_z(gen);
-            while (abz > this->sim_psfs[o][idx_psf].at<double>(floor(aby), floor(abx))) {
-                abx = abr_x(gen);
-                aby = abr_y(gen);
-                abz = abr_z(gen);
             }
 
-            newx += (abx - this->sim_psfs[o][idx_psf].cols / 2.)/psf_scaling;
-            newy += (aby - this->sim_psfs[o][idx_psf].rows / 2.)/psf_scaling;
+            #pragma omp for reduction(vec_int_plus : local_data)
+            for (int i = 0; i < N_photons[o]; ++i) {
+                double wl = wl_s[o].Sample(dis(gen));
 
-            if (newx > 0 && newx < this->ccd->Nx && newy > 0 && newy < this->ccd->Ny)
-                local_data[(int) floor(newx) + this->ccd->Nx * (int) floor(newy)] += 1;
-        }
+                int idx_matrix = floor((wl - this->sim_wavelength[o].front()) / this->sim_matrix_dwavelength[o]);
+
+                float x = rgx(gen);
+                float y = rgy(gen);
+
+                float newx = (sim_m00[o][idx_matrix] * x + sim_m01[o][idx_matrix] * y + this->tr_tx[o](wl));
+                float newy = (sim_m10[o][idx_matrix]  * x + sim_m11[o][idx_matrix]  * y + this->tr_ty[o](wl));
+
+    //            this is not accurate enough.  probably fixable by linear interpolation of tx and ty
+    //            float newx = (sim_m00[o][idx_matrix] * x + sim_m01[o][idx_matrix] * y + sim_tx[o][idx_matrix]);
+    //            float newy = (sim_m10[o][idx_matrix]  * x + sim_m11[o][idx_matrix]  * y + sim_ty[o][idx_matrix]);
+
+                // lookup psf
+                int idx_psf = static_cast<int> (floor((wl - this->sim_wavelength[o].front()) / this->sim_psfs_dwavelength[o]));
+
+                std::uniform_real_distribution<float> abr_x(0, this->sim_psfs[o][idx_psf].cols);
+                std::uniform_real_distribution<float> abr_y(0, this->sim_psfs[o][idx_psf].rows);
+                std::uniform_real_distribution<float> abr_z(0, 1);
+                float abx = abr_x(gen);
+                float aby = abr_y(gen);
+                float abz = abr_z(gen);
+                while (abz > this->sim_psfs[o][idx_psf].at<double>(floor(aby), floor(abx))) {
+                    abx = abr_x(gen);
+                    aby = abr_y(gen);
+                    abz = abr_z(gen);
+                }
+
+                newx += (abx - this->sim_psfs[o][idx_psf].cols / 2.)/psf_scaling;
+                newy += (aby - this->sim_psfs[o][idx_psf].rows / 2.)/psf_scaling;
+
+                if (newx > 0 && newx < this->ccd->Nx && newy > 0 && newy < this->ccd->Ny)
+                    local_data[(int) floor(newx) + this->ccd->Nx * (int) floor(newy)] += 1;
+            }
+        };
     this->ccd->data = local_data;
     };
     std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
