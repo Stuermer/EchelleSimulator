@@ -649,3 +649,20 @@ void MatrixSimulator::save_1d_to_fits(std::string filename) {
     }
 
 }
+
+void MatrixSimulator::add_background(double bias, double noise, unsigned int seed) {
+    std::mt19937 gen;
+
+    if(seed==0) {
+        std::random_device rd;
+        gen.seed(rd());
+    }
+    else{
+        gen.seed(seed);
+    }
+    std::normal_distribution<double> dis(bias, noise);
+
+    for (int i=0; i<this->ccd->Nx*this->ccd->Ny; ++i) {
+        this->ccd->data[i] += dis(gen);
+    }
+}

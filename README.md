@@ -32,7 +32,6 @@ Part of a simulated flat spectrum for the MAROON-X spectrograph.
 
 ---
  * parallelized C++ code for fast simulations
- * CUDA support (not fully functional yet)
  * arbitrary 1D spectra
  * arbitrary PSFs
  * arbitrary efficiency modells can be applied
@@ -43,6 +42,7 @@ Part of a simulated flat spectrum for the MAROON-X spectrograph.
 ## Prerequisites
  * GCC > 4.6 (or equivalent MSVC), capable of handling C++11 syntax
  * [HDF 5.0 library](https://www.hdfgroup.org/hdf5/)
+ * [Curl](https://curl.haxx.se/libcurl/)
  * [OpenCV 2.4](http://opencv.org/)
  
 ## Example usage
