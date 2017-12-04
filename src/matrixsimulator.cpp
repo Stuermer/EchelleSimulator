@@ -378,6 +378,7 @@ int MatrixSimulator::simulate(double t, unsigned long seed) {
 
     std::vector<int> local_data = this->ccd->data;
     for(int o=0; o<this->orders.size(); ++o) {
+        cout << "Simulating Order... " << o+this->min_order<<"/"<<this->max_order << std::endl;
         #pragma omp parallel
         {
             std::uniform_real_distribution<float> dis(0.0, 1.0);

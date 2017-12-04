@@ -109,7 +109,7 @@ Constant::Constant(double value, double min_w, double max_w) {
 }
 
 Constant::Constant() {
-    this->value = 0.00001 ; // uW per um (micro watts per micro meter)
+    this->value = 0.01 ; // uW per um (micro watts per micro meter)
     min_w = 0;
     max_w = 1000000;
 }

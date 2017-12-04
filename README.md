@@ -32,48 +32,31 @@ Part of a simulated flat spectrum for the MAROON-X spectrograph.
 
 ---
  * parallelized C++ code for fast simulations
- * CUDA support (not fully functional yet)
  * arbitrary 1D spectra
  * arbitrary PSFs
- * arbitrary efficiency modells can be applied
- * works with any spectrograph (needs access to ZEMAX modell only once)
+ * arbitrary efficiency models can be applied
+ * works with any spectrograph (needs access to ZEMAX model only once)
 
 ---
 
 ## Prerequisites
- * GCC > 4.6 (or equivalent MSVC), capable of handling C++11 syntax
+ * GCC > 4.9 (or equivalent MSVC), capable of handling C++11 syntax
  * [HDF 5.0 library](https://www.hdfgroup.org/hdf5/)
- * [OpenCV 2.4](http://opencv.org/)
+ * [OpenCV](http://opencv.org/)
+ * [Curl](https://curl.haxx.se/libcurl/)
  
 ## Example usage
-```c++
-#include <iostream>
-#include "matrixsimulator.h"
-
-int main(int argc, char *argv[])
-{
-MatrixSimulator simulator;  //create instance of simulator
-
-simulator.load_spectrograph_model(argv[1], 1);  //read in ZEMAX simulated transformation matrices
-simulator.set_wavelength(10000); // set wavelength steps per order
-
-GratingEfficiency ge = GratingEfficiency(0.8, 76., 76., 31.6); //Echelle Grating efficiency
-simulator.add_efficiency(&ge); //add efficiency profile to simulator. More profiles can be added
-
-IdealEtalon cs = IdealEtalon(10., 1., 0., 0.9); // spectral source ideal etalon
-simulator.set_source(&cs); //add source to simulator
-
-simulator.simulate_spectrum(); //simulate echelle spectra 
-
-simulator.save_to_fits("../image2.fit", true, true, true); //save echelle spectrum to file
-
-return 0;
-}
+```bash
+./echellesimulator --spectrograph MaroonX --phoenix 3500,-1.,0.,5.5,1 -r 100 -o mdwarf.fits
 ```
+simulates a phoenix M-dwarf spectrum with the given stellar parameters, and a RV shift of 100m/s.
 
-generates a 2D Fabry-Perot etalon spectrum.
-
-On a mordern PC this takes about 5s.
+See
+```bash
+./echellesimulator -h
+``` 
+for all available programm arguments.
+Check also examples folder for python scripting.
 
 ## Documentation
 The documentation can be found [here](https://stuermer.github.io/EchelleSimulator).
@@ -82,7 +65,7 @@ The documentation is automatically produced by **doxygen**, using [this](https:/
 ## Contribution
 Contributions are welcome! You can help by 
 * report bugs
-* provide spectroraph models
+* provide spectrograph models
 * make suggestions 
 * improve documentation
 * improve code
