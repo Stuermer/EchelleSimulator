@@ -133,6 +133,16 @@ public:
     */
     double get_maximum_wavelength();
 
+    /**
+     * Adds readout noise and bias to the frame.
+     * Make sure, you only call this function once, when the keep_ccd flag is set.
+     *
+     * @param bias bias level count
+     * @param noise standard deviation for noise
+     * @param seed optional: random seed
+     */
+    void add_background(double bias, double noise, unsigned int seed);
+
     bool mode = true;
 
 private:
