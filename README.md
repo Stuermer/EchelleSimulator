@@ -4,6 +4,10 @@
 Échelle++, a fast generic échelle simulator.
 [![Build Status](https://travis-ci.org/Stuermer/EchelleSimulator.svg?branch=master)](https://travis-ci.org/Stuermer/EchelleSimulator)
 
+Échelle++ is a simulation tool, to generate realistic 2D echelle spectra.
+It allows to simulate arbitrary spectra for any fiber-fed or slit spectrograph, where a model file
+is available. Optical aberrations are treated accurately, the simulated spectra include photon and read-out noise.  
+ 
 The basic idea is that any (fiber-fed) echelle spectrograph can be modelled with a set of wavelength-dependent transformation matrices and point spread functions which describe the spectrographs optics:
 
 First, wavelength-dependent **affine transformation matrices** are extracted from the ZEMAX model of the spectrograph. As the underlying geometric transformations (scaling, rotation, shearing, translation) vary smoothly across an echelle order, these matrices can be interpolated for any intermediate wavelength.
