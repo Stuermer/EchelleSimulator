@@ -33,6 +33,8 @@ public:
     vector<double> d_intensity;
     vector<double> d_cdf; //This is the same as a pdf vector
 
+    //std::piecewise_constant_distribution<float> distribution;
+
     Histogram();
     Histogram(string file_path); //Generate histogram from file path
     Histogram(string path_1, string path_2);
@@ -248,6 +250,8 @@ void Histogram::Create_cdf(){
             cdf[i] = cdf[i] / norm;
             d_cdf[i] = d_cdf[i] / norm;
         }
+
+    //std::piecewise_constant_distribution<float> distribution (event.begin(),event.end(),intensity.begin());
 
     return;
 }

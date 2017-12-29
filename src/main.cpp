@@ -294,15 +294,15 @@ int main(int argc, char *argv[])
 
 //    simulator.set_wavelength(10000);
     // in case of 'normal' continuous spectrum
-    if(cs -> mode == 1){
+    if(cs -> mode == true){
 
         simulator.set_wavelength(10000);
 
     }
-        // in case of line list type spectrum
     else {
 
         simulator.set_wavelength(cs -> get_wavelength());
+        cout<<"Running LineList Test"<<endl;
 
     }
 

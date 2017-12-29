@@ -44,24 +44,34 @@ double Source::get_spectral_density(double wavelength) {
     return 1.;
 }
 std::vector<float> Source::get_spectrum(std::vector<double> wavelength) {
-    std::vector<float> spectrum;
-    std::vector<double> diff;
+    if(this->mode) {
+        std::vector<float> spectrum;
+        std::vector<double> diff;
 
-    for(std::vector<int>::size_type i = 0; i != wavelength.size()-1; i++)
-    {
-        diff.push_back(this->shift*(wavelength[i+1] - wavelength[i]));
+        for (int i=0; i < wavelength.size(); i++) {
+            diff.push_back(this->shift * (wavelength[i + 1] - wavelength[i]));
+        }
+        diff.push_back(diff.back());
+
+        for (int i=0; i < wavelength.size(); i++) {
+            double a = this->shift * wavelength[i] - diff[i] / 2.;
+            double b = this->shift * wavelength[i] + diff[i] / 2.;
+            float result = float(this->integral_s(a, b, this->integration_steps) / diff[i]);
+            spectrum.push_back(result);
+        }
+
+        return spectrum;
     }
-    diff.push_back(diff.back());
+    else{
+        std::vector<float> spectrum;
 
-    for(std::vector<int>::size_type i = 0; i != wavelength.size()-1; i++)
-    {
-        double a = this->shift*wavelength[i] - diff[i] / 2.;
-        double b = this->shift*wavelength[i] + diff[i] / 2.;
-        float result = float(this->integral_s( a, b, this->integration_steps) / diff[i]);
-        spectrum.push_back(result);
+        for (int i = 0; i < wavelength.size(); i++) {
+            std::cout<<spectrum[i]<<std::endl;
+            spectrum.push_back(float(get_spectral_density(wavelength[i])));
+        }
+
+        return spectrum;
     }
-
-    return spectrum;
 }
 
 void Source::set_integration_steps(int n) {
@@ -354,24 +364,51 @@ double CustomSpectrum::get_spectral_density(double wavelength) {
 }
 
 LineList::LineList(std::string linelist_file, double scaling) {
-    this->read_spectrum(linelist_file);
     mode = false;
     this -> scaling = scaling;
+    this->read_spectrum(linelist_file);
 
     smooth_spectrum();
 
 }
 
 void LineList::read_spectrum(std::string linelist_file) {
-    std::ifstream       file(linelist_file.c_str());
 
-    for(CSVIterator loop(file); loop != CSVIterator(); ++loop)
-    {
-        event.push_back(stod((*loop)[0]));
-        intensity.push_back(stod((*loop)[1]));
-        this->data.insert(std::pair<double, double> (stod((*loop)[0]), stod((*loop)[1])));
+//    std::ifstream       file(linelist_file.c_str());
+
+//    for(CSVIterator loop(file); loop != CSVIterator(); ++loop)
+//    {
+//        std::cout<<"Test"<<std::endl;
+//        event.push_back(stod((*loop)[0]));
+//        intensity.push_back(stod((*loop)[1]));
+//        this->data.insert(std::pair<double, double> (stod((*loop)[0]), stod((*loop)[1])));
+//
+//    }
+
+    std::ifstream open(linelist_file.c_str(), std::ios::in);
+
+    if (!open) {
+        std::cout << "No File Found";
+    }
+
+    double a, c;
+    char b;
+    int i = 0;
+
+    while (open >> a >> b >> c) {
+        i = i + 1;
+
+        event.push_back(a);
+
+        intensity.push_back(scaling * c);
+
+        this->data.insert(std::pair<double, double> (a, scaling * c));
 
     }
+
+    length = i;
+
+
 
 }
 
@@ -384,26 +421,16 @@ void LineList::smooth_spectrum(){
 std::vector<float> LineList::get_spectrum(std::vector<double> wavelength){
     std::vector<float> spectrum;
     for(auto const & wl: wavelength){
-        double d = fabs(wl - this->data.begin()->first);
-        for(auto iterator = ++this->data.begin(); iterator!= this->data.end(); ++iterator)
-        {
-            if (fabs(wl - iterator->first) < d){
-                d = wl - iterator->first;
-            }
-            else
-            {
-                float t = iterator->second;
-                spectrum.push_back(t);
-                break;
-            }
-        }
+
+        spectrum.push_back(float(data[wl]));
+
     }
     return spectrum;
 }
 
 double LineList::get_spectral_density(double wavelength) {
 
-    return scaling * data[wavelength];
+    return data[wavelength];
 
 }
 

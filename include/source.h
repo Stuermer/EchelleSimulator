@@ -344,6 +344,8 @@ public:
     std::vector<double> event;
     std::vector<double> intensity;
 
+    int length;
+
     double scaling;
 
 private:
