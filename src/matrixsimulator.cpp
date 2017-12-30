@@ -3,7 +3,6 @@
 #include <fstream>
 #include <iterator>
 #include "spline.h"
-#include "Spectra.h"
 #include "Histogram.h"
 #include "H5Cpp.h"
 #include <math.h>
@@ -302,7 +301,7 @@ void MatrixSimulator::set_wavelength(std::vector<double> wavelength){
             if ((wl>min_wl) && (wl<max_wl))
             {
                 wl_in_order.push_back(wl);
-                cout<<wl<<endl;
+                //cout<<wl<<endl;
             }
         }
         this->sim_wavelength.push_back(wl_in_order);
@@ -343,7 +342,7 @@ int MatrixSimulator::simulate(double t, unsigned long seed) {
 
     this->prepare_matrix_lookup(1000);
 
-    std::vector<Spectra> wl_s(orders.size());
+    std::vector<Histogram> wl_s(orders.size());
     std::vector<int> N_photons(orders.size());
 
     double psf_scaling = (*this->ccd->get_pixelsize() / this->psfs->pixelsampling );
@@ -355,7 +354,7 @@ int MatrixSimulator::simulate(double t, unsigned long seed) {
         std::vector<double> a(sim_wavelength[o].begin(), sim_wavelength[o].end()); //units are um
         std::vector<double> b(sim_spectra_time_efficieny[o].begin(), sim_spectra_time_efficieny[o].end()); //units are uW per um
 
-        wl_s[o] = Spectra(a,b);
+        wl_s[o] = Histogram(a,b);
             wl_s[o].mode = this -> mode;
         //units are assumed to be t=[s], area=[m^2], wl_s.dflux=[Num of Photons]/([s] * [m^2] * [um]), wl_s.Calc_flux = [Num of Photons]/([s]*[m^2])
 //        N_photons[o] = 1000000;
@@ -656,7 +655,7 @@ void MatrixSimulator::save_1d_to_fits(std::string filename) {
 
 void MatrixSimulator::add_background(double bias, double noise, unsigned int seed) {
     std::mt19937 gen;
-    
+
     if(seed==0) {
         std::random_device rd;
         gen.seed(rd());

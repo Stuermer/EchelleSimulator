@@ -28,7 +28,9 @@ public:
     vector<double> cdf;
     vector<double> event;
     vector<double> intensity;
+    vector<double> flux;
 
+    vector<double> d_flux;
     vector<double> d_event;
     vector<double> d_intensity;
     vector<double> d_cdf; //This is the same as a pdf vector
@@ -42,6 +44,9 @@ public:
     Histogram(vector<double> events, vector<double> weights); //Generate histogram manually
     Histogram(int num,Histogram &histogram); //Generate sample histogram from original with custom number of elements
     Histogram(int num,int res, Histogram &histogram);//Same as above, but also allows for res x the sampling resolution of the original histogram
+
+    double Calc_flux();
+    void Create_flux();
 
     double Kolmogorov_Smirnov_test(Histogram &sim_histogram);
     //Returns a test statistic regarding whether or not two histograms are similar
@@ -65,6 +70,11 @@ public:
 
     bool mode = true;
 
+    double magnitude;
+
+    double v_zp=8660006000.0; //The reference flux is obtained by integrating vega
+    // over a bessel filter and has units photons/m^2/s
+
 };
 
 Histogram::Histogram() {
@@ -72,11 +82,13 @@ Histogram::Histogram() {
 
 Histogram::Histogram(string file_path){
     Read_Data(file_path);
+    Create_flux();
     Create_cdf();
 }
 
 Histogram::Histogram(string path_1, string path_2){
     Read_Data(path_1,path_2);
+    Create_flux();
     Create_cdf();
 }
 
@@ -85,6 +97,7 @@ Histogram::Histogram(vector<double> events, vector<double> weights){
     event=events;
     intensity=weights;
     length=events.size();
+    Create_flux();
     Create_cdf();
 
 }
@@ -112,6 +125,7 @@ Histogram::Histogram(int num,Histogram &histogram){
     event=histogram.event;
     intensity=emp_weights;
     length=histogram.length;
+    Create_flux();
     Create_cdf();
 
 }
@@ -152,6 +166,7 @@ Histogram::Histogram(int num,int res, Histogram &histogram){
 
     event=emp_lambdas;
     intensity=emp_weights;
+    Create_flux();
     Create_cdf();
 
 }
@@ -227,20 +242,20 @@ void Histogram::Create_cdf(){
 
         for (int i = 0; i < length - 1; i++) {
             d_event.push_back(event[i + 1] - event[i]);
-            d_intensity.push_back(intensity[i + 1] - intensity[i]);
+            d_flux.push_back(flux[i + 1] - flux[i]);
             //The factor of 1/2 comes from the fact we are numerically integrating and thus
             //taking the average of intensity at two nearby points
-            cdf.push_back(cdf[i] + (0.5) * (d_event[i]) * (intensity[i + 1] + intensity[i]));
-            d_cdf.push_back((0.5) * (d_event[i]) * (intensity[i + 1] + intensity[i]));
+            cdf.push_back(cdf[i] + (0.5) * (d_event[i]) * (flux[i + 1] + flux[i]));
+            d_cdf.push_back((0.5) * (d_event[i]) * (flux[i + 1] + flux[i]));
         }
 
         d_event.push_back(event[length - 1] - event[length - 2]);
-        d_cdf.push_back((0.5) * (d_event[length - 1]) * (intensity[length - 1] + intensity[length - 2]));
-        d_intensity.push_back(intensity[length - 1] - intensity[length - 2]);
+        d_cdf.push_back((0.5) * (d_event[length - 1]) * (flux[length - 1] + flux[length - 2]));
+        d_intensity.push_back(flux[length - 1] - flux[length - 2]);
 
         d_event.push_back(event[length - 1] - event[length - 2]);
-        d_cdf.push_back((0.5) * (d_event[length - 1]) * (intensity[length - 1] + intensity[length - 2]));
-        d_intensity.push_back(intensity[length - 1] - intensity[length - 2]);
+        d_cdf.push_back((0.5) * (d_event[length - 1]) * (flux[length - 1] + flux[length - 2]));
+        d_intensity.push_back(flux[length - 1] - flux[length - 2]);
 
         double norm = cdf[length - 1];
         //We have to create a normalized cdf
@@ -254,6 +269,53 @@ void Histogram::Create_cdf(){
     //std::piecewise_constant_distribution<float> distribution (event.begin(),event.end(),intensity.begin());
 
     return;
+}
+
+void Histogram::Create_flux(){
+
+    //0.503 is for assuming intensity is erg/s/cm^2/cm
+    //and that event~(wavelength) is in A
+
+    //5.03*10^10 is for assuming intensity is uW/m^2/um
+    //and that event is in um
+
+    double ch_factor = 5.03E10;
+
+    for (int i = 0; i < length; i++) {
+        flux.push_back(intensity[i] * (ch_factor) * (event[i]));
+
+    }
+
+    flux.push_back(intensity[length - 1] * (ch_factor) * event[length - 1]);
+
+    return;
+}
+
+double Histogram::Calc_flux(){
+
+    long double tflux = 0;
+
+    if(mode) {
+        for (int i = 0; i < length; i++) {
+
+            tflux = tflux + (0.5) * (flux[i + 1] + flux[i]) * (d_event[i]);
+
+        }
+
+        magnitude = 2.5 * log10(v_zp / tflux);
+        return tflux;
+    }
+    else{
+        for (int i = 0; i < length; i++) {
+
+            tflux = tflux + flux[i];
+
+        }
+
+        magnitude = 2.5 * log10(v_zp / tflux);
+        return tflux;
+    }
+
 }
 
 //There's going to be an issue if the the event elements of the two objects aren't the same.
