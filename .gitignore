@@ -5,3 +5,6 @@ build/
 release/
 *.hdf
 simulations/
+*.xml
+.idea/*
+*.log

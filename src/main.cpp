@@ -144,6 +144,13 @@ int main(int argc, char *argv[])
                               "OPTIONAL: bias level count. (default: 0)", 1
 
                       },
+
+                      {
+
+                              "efficiency", {"--efficiency"},
+                              "OPTIONAL: .csv file with wavelength dependent efficiency values for correct signal scaling. File format is wl;efficiency", 1
+
+                      },
                       }};
 
 
@@ -179,7 +186,7 @@ int main(int argc, char *argv[])
 
     std::string source;
     auto keep = args["keep"].as<bool>(false);
-    auto fiber = args["fiber"].as<double>(1);
+    auto fiber = args["fiber"].as<int>(1);
 
     auto spectrograph = args["spectrograph"].as<std::string>("MaroonX");
     spectrograph = "../data/spectrographs/" + spectrograph + ".hdf";
@@ -216,14 +223,11 @@ int main(int argc, char *argv[])
 
         }
         else{
-
             argagg::fmt_ostream fmt(cerr);
             fmt << usage.str() << argparser;
             return EXIT_FAILURE;
-
         }
         source = "phoenix";
-
     }
     else if (args["coehlo"]) {
 
@@ -232,7 +236,7 @@ int main(int argc, char *argv[])
         cout<<"Simulating coehlo spectra with magnitude = "<< stod(vv[1]) << endl;
 
         cs = new CoehloSpectrum(vv[0],stod(vv[1]));
-
+        source = "choehlo";
     }
     else if (args["custom1"]) {
 
@@ -284,7 +288,14 @@ int main(int argc, char *argv[])
     high_resolution_clock::time_point t1 = high_resolution_clock::now();
     Telescope Gemini = Telescope();
     GratingEfficiency ge = GratingEfficiency(0.8, simulator.get_blaze(), simulator.get_blaze(), simulator.get_gpmm());
-//    ConstantEfficiency ge = ConstantEfficiency(1.);
+    auto ef = args["efficiency"].as<std::string>("");
+
+    Efficiency * eff = new Efficiency();;
+    if (!(ef.empty())){
+        std::cout<< "Loading efficiency curve from " << ef << std::endl;
+        eff = new CSVEfficiency(ef);
+        simulator.add_efficiency(eff);
+    }
 
     simulator.add_efficiency(&ge);
     simulator.set_telescope(&Gemini);
@@ -292,18 +303,13 @@ int main(int argc, char *argv[])
     cs->set_doppler_shift(rv);
     simulator.set_source(cs);
 
-//    simulator.set_wavelength(10000);
     // in case of 'normal' continuous spectrum
-    if(cs -> mode == true){
-
+    if(cs->mode){
         simulator.set_wavelength(10000);
-
     }
     else {
-
         simulator.set_wavelength(cs -> get_wavelength());
         cout<<"Running LineList Test"<<endl;
-
     }
 
     auto t = args["integration_time"].as<double>(1.);

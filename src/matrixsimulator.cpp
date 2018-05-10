@@ -14,6 +14,7 @@
 #include <string>
 #include <fstream>
 #include <chrono>
+#include <utility>
 #include <omp.h>
 #include "random_generator.h"
 #include "opencv2/core/core.hpp"
@@ -52,7 +53,7 @@ typedef struct transformation_hdf
 
 MatrixSimulator::MatrixSimulator(std::string path, int fiber_number, bool keep_ccd)
 {
-    this->load_spectrograph_model(path, fiber_number, keep_ccd);
+    this->load_spectrograph_model(std::move(path), fiber_number, keep_ccd);
 }
 
 void MatrixSimulator::load_spectrograph_model(std::string path, int fiber_number, bool keep_ccd) {
@@ -63,7 +64,7 @@ void MatrixSimulator::load_spectrograph_model(std::string path, int fiber_number
         std::cout << "Spectrograph file not found" << std::endl;
 //        download_spectrograph_model()https://github.com/Stuermer/EchelleSimulator/blob/master/data/MaroonX.hdf
     }
-    const H5std_string filename(path);
+    const H5std_string &filename(path);
     this->efficiencies.clear();
     this->orders.clear();
     this->raw_transformations.clear();
@@ -348,30 +349,28 @@ int MatrixSimulator::simulate(double t, unsigned long seed) {
     double psf_scaling = (*this->ccd->get_pixelsize() / this->psfs->pixelsampling );
 
     std::cout << "Number of photons per order:" << std::endl;
+    int N_tot = 0;
     for(int o=0; o<this->orders.size(); ++o){
         if (sim_wavelength[o].size() > 0) {
+            std::vector<double> a(sim_wavelength[o].begin(), sim_wavelength[o].end()); //units are um
+            std::vector<double> b(sim_spectra_time_efficieny[o].begin(), sim_spectra_time_efficieny[o].end()); //units are uW per um
 
-        std::vector<double> a(sim_wavelength[o].begin(), sim_wavelength[o].end()); //units are um
-        std::vector<double> b(sim_spectra_time_efficieny[o].begin(), sim_spectra_time_efficieny[o].end()); //units are uW per um
-
-        wl_s[o] = Histogram(a,b);
+            wl_s[o] = Histogram(a,b);
             wl_s[o].mode = this -> mode;
-        //units are assumed to be t=[s], area=[m^2], wl_s.dflux=[Num of Photons]/([s] * [m^2] * [um]), wl_s.Calc_flux = [Num of Photons]/([s]*[m^2])
-//        N_photons[o] = 1000000;
-        N_photons[o] = static_cast<int>(floor(wl_s[o].Calc_flux()*t));
-//            N_photons[o] = 10;
+            //units are assumed to be t=[s], area=[m^2], wl_s.dflux=[Num of Photons]/([s] * [m^2] * [um]), wl_s.Calc_flux = [Num of Photons]/([s]*[m^2])
+            N_photons[o] = static_cast<int>(floor(wl_s[o].Calc_flux()*t));
+            N_tot += N_photons[o];
         //this->telescope->get_area();
         //t*area*wl_s[o].Calc_flux()
-        cout << "Order "<< o+this->min_order <<": " <<N_photons[o]<<endl;
+            std::cout << "Order "<< o+this->min_order <<": " << N_photons[o] << std::endl;
         }
         else
         {
             N_photons[o] = 0;
-            cout << "Order "<< o+this->min_order <<": " <<N_photons[o] <<endl;
+            std::cout << "Order "<< o+this->min_order <<": " << N_photons[o] << std::endl;
         }
-
     }
-
+    std::cout<< "Total number of photons:" << N_tot << std::endl ;
     std::cout <<"Start tracing ..." <<std::endl;
     std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
 
@@ -382,8 +381,10 @@ int MatrixSimulator::simulate(double t, unsigned long seed) {
         {
             std::uniform_real_distribution<float> dist(0.0, 1.0);
             std::discrete_distribution<int> disf (wl_s[o].intensity.begin(), wl_s[o].intensity.end());
-            std::uniform_real_distribution<float> rgx(0., this->slit->slit_sampling);
-            std::uniform_real_distribution<float> rgy(0., this->slit->slit_sampling * this->slit->h / this->slit->w);
+//            std::uniform_real_distribution<float> rgx(0., this->slit->slit_sampling);
+//            std::uniform_real_distribution<float> rgy(0., this->slit->slit_sampling * this->slit->h / this->slit->w);
+            std::uniform_real_distribution<float> rgx(0., 1.);
+            std::uniform_real_distribution<float> rgy(0., 1.);
 //            std::default_random_engine gen;
             std::mt19937 gen;
             if(seed==0) {
@@ -396,8 +397,6 @@ int MatrixSimulator::simulate(double t, unsigned long seed) {
                 #else
                 gen.seed(seed);
                 #endif
-
-
             }
 
             #pragma omp for reduction(vec_int_plus : local_data)
@@ -406,7 +405,7 @@ int MatrixSimulator::simulate(double t, unsigned long seed) {
                 double wl = wl_s[o].event[disf(gen)];
                 //cout<<wl<<endl;
 
-                int idx_matrix = floor((wl - this->sim_wavelength[o].front()) / this->sim_matrix_dwavelength[o]);
+                int idx_matrix = (floor((wl - this->sim_wavelength[o].front()) / this->sim_matrix_dwavelength[o]));
 
                 float x = rgx(gen);
                 float y = rgy(gen);

@@ -21,7 +21,7 @@
 #define EFFICIENCY_H
 #include <string>
 #include <vector> 
-
+#include <map>
 
 class Efficiency
 {
@@ -89,6 +89,17 @@ private:
     double R;
     double cF;
 
+};
+
+class CSVEfficiency : public Efficiency{
+public:
+    CSVEfficiency(std::string path);
+    std::vector<double> get_efficiency(int order, std::vector<double> &wavelength);
+    std::vector<double> get_efficiency(int order, std::vector<double> &wavelength, int N);
+private:
+    std::vector<double> wl;
+    std::vector<double> ef;
+    std::map<double, double> data;
 };
 
 #endif // EFFICIENCY_H

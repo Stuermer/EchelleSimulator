@@ -21,6 +21,9 @@
 #include "efficiency.h"
 #include <cmath>
 #include <iostream>
+#include <fstream>
+#include <csv_reader.h>
+#include <helper.h>
 
 
 inline double deg2rad(double deg)
@@ -174,3 +177,32 @@ double EtalonEfficiency::integral_s(double a, double b, int n) {
     }
     return area;
 }
+
+CSVEfficiency::CSVEfficiency(std::string path) {
+
+    std::ifstream       file(path.c_str());
+    for(CSVIterator loop(file); loop != CSVIterator(); ++loop)
+    {
+        std::cout << (*loop)[0] << std::endl;
+        wl.push_back(stod((*loop)[0]));
+        ef.push_back(stod((*loop)[1]));
+        this->data.insert(std::pair<double, double> (stod((*loop)[0]), stod((*loop)[1])));
+    }
+
+}
+
+std::vector<double> CSVEfficiency::get_efficiency(int order, std::vector<double> &wavelength){
+    std::vector<double> res;
+    for(auto& w : wavelength)
+        res.push_back(interpolate(this->data, w));
+    return res;
+};
+
+std::vector<double> CSVEfficiency::get_efficiency(int order, std::vector<double> &wavelength, int N){
+    std::vector<double> res;
+    for(std::vector<int>::size_type i = 0; i != N; i++)
+    {
+        res.push_back(interpolate(this->data, wavelength[i]));
+    }
+    return res;
+};
