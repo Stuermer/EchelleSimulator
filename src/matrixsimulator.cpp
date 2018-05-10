@@ -19,6 +19,12 @@
 #include "random_generator.h"
 #include "opencv2/core/core.hpp"
 #include "opencv2/highgui/highgui.hpp"
+#include <curand.h>
+#include "random_generator.h"
+
+#include <helper_functions.h>  // helper for shared functions common to CUDA Samples
+#include <helper_cuda.h>       // helper for CUDA Error handling
+
 
 #ifdef USE_GPU
 #include "opencv2/gpu/gpu.hpp"
@@ -342,6 +348,7 @@ int MatrixSimulator::simulate(double t, unsigned long seed) {
     this->prepare_psfs(1000);
 
     this->prepare_matrix_lookup(1000);
+    int devID = findCudaDevice(0, (const char **) NULL);
 
     std::vector<Histogram> wl_s(orders.size());
     std::vector<int> N_photons(orders.size());
@@ -380,11 +387,19 @@ int MatrixSimulator::simulate(double t, unsigned long seed) {
         #pragma omp parallel
         {
             std::uniform_real_distribution<float> dist(0.0, 1.0);
-            std::discrete_distribution<int> disf (wl_s[o].intensity.begin(), wl_s[o].intensity.end());
+//            std::discrete_distribution<int> disf (wl_s[o].intensity.begin(), wl_s[o].intensity.end());
 //            std::uniform_real_distribution<float> rgx(0., this->slit->slit_sampling);
 //            std::uniform_real_distribution<float> rgy(0., this->slit->slit_sampling * this->slit->h / this->slit->w);
             std::uniform_real_distribution<float> rgx(0., 1.);
             std::uniform_real_distribution<float> rgy(0., 1.);
+//            RG_uniform_real<float> rg_real(0., 1.);
+//            std::vector<float> rr = rg_real.draw(N_photons[o]*2);
+
+            RG_uniform_float rg_float = RG_uniform_float(devID);
+            rg_float.alloc_mem(N_photons[o]*3);
+            std::vector<float> rr = rg_float.draw(N_photons[o]*3);
+//            std::vector<float> rr_y = rg_float.draw(N_photons[o]);
+
 //            std::default_random_engine gen;
             std::mt19937 gen;
             if(seed==0) {
@@ -401,14 +416,16 @@ int MatrixSimulator::simulate(double t, unsigned long seed) {
 
             #pragma omp for reduction(vec_int_plus : local_data)
             for (int i = 0; i < N_photons[o]; ++i) {
-                //double wl = wl_s[o].Sample(dist(gen));
-                double wl = wl_s[o].event[disf(gen)];
+                double wl = wl_s[o].Sample(rr[3*i]);
+//                double wl = wl_s[o].event[disf(gen)];
                 //cout<<wl<<endl;
 
                 int idx_matrix = (floor((wl - this->sim_wavelength[o].front()) / this->sim_matrix_dwavelength[o]));
 
-                float x = rgx(gen);
-                float y = rgy(gen);
+//                float x = rgx(gen);
+//                float y = rgy(gen);
+                float x = rr[3*i+1];
+                float y = rr[3*i+2];
 
                 float newx = (sim_m00[o][idx_matrix] * x + sim_m01[o][idx_matrix] * y + this->tr_tx[o](wl));
                 float newy = (sim_m10[o][idx_matrix]  * x + sim_m11[o][idx_matrix]  * y + this->tr_ty[o](wl));

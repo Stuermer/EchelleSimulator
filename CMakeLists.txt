@@ -16,6 +16,20 @@ find_package(HDF5 COMPONENTS C CXX HL REQUIRED)
 
 FIND_LIBRARY(CFITSIO cfitsio /usr/local/lib64)
 
+
+
+find_package(CUDA 9)
+set(${CUDA_INCLUDE_DIRS} /usr/local/cuda/include)
+include_directories(
+        kernels
+        utility
+        /home/stuermer/Repos/cpp/EchelleSimulator/include/
+        /usr/local/cuda/samples/common/inc
+        ${CUDA_INCLUDE_DIRS}
+)
+
+
+
 include_directories(SYSTEM $OPENCV_INCLUDE_DIRS)
 include_directories(${CMAKE_SOURCE_DIR}/src)
 include_directories(${CMAKE_SOURCE_DIR}/include)
@@ -24,8 +38,8 @@ message(${CMAKE_SOURCE_DIR})
 
 INCLUDE_DIRECTORIES (${HDF5_INCLUDE_DIRS})
 #find_package(Qt5 REQUIRED COMPONENTS Core Widgets Gui )
-
-set (LINK_LIBS ${LINK_LIBS} ${HDF5_LIBRARIES} ${CCFITS_LIB} ${CFITSIO} ${HDF5_HL_LIBRARIES} curl)
+message(${CUDA_curand_LIBRARY})
+set (LINK_LIBS ${LINK_LIBS} ${HDF5_LIBRARIES} ${CCFITS_LIB} ${CFITSIO} ${HDF5_HL_LIBRARIES} curl ${CUDA_curand_LIBRARY})
 MESSAGE(${LINK_LIBS})
 #for optimized speed use following flags
 
@@ -49,5 +63,10 @@ ENDIF()
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/build")
 
-add_executable(echellesimulator src/main.cpp src/helper.cpp src/source.cpp src/efficiency.cpp src/Slit.cpp src/matrixsimulator.cpp src/noise.cpp src/PSF.cpp src/CCD.cpp src/hdf5opencv.cpp include/csv_reader.h src/telescope.cpp include/telescope.h include/argagg.hpp)
+add_definitions(-DUSE_CUDA)
+
+cuda_add_executable(echellesimulator src/main.cpp src/helper.cpp src/source.cpp src/efficiency.cpp src/Slit.cpp src/matrixsimulator.cpp src/noise.cpp src/PSF.cpp src/CCD.cpp src/hdf5opencv.cpp include/csv_reader.h src/telescope.cpp include/telescope.h include/argagg.hpp include/random_generator.h)
 target_link_libraries(echellesimulator ${LINK_LIBS})
+link_directories(
+        ${CUDA_curand_LIBRARY}
+)

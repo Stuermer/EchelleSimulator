@@ -1,7 +1,7 @@
 import subprocess
 
 def std_call():
-    cmd = ['../build/echellesimulator', '-s', 'MaroonX', '-t' ,'500' ,'-o','tmp.fit', '-k','0' ,'--fiber' ,'1']
+    cmd = ['../build/echellesimulator', '-s', 'MaroonX', '-t' ,'1' ,'-o','tmp.fit', '-k','0' ,'--fiber' ,'1']
 
     p = subprocess.Popen(cmd, stdout=subprocess.PIPE)
     td = ''
