@@ -17,7 +17,7 @@ struct raw_transformation {
     int order;
     double wavelength;
     std::array<float,6> transformation_matrix;
-    std::vector<double> decomposed_matrix;
+    std::vector<float> decomposed_matrix;
 
 };
 

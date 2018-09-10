@@ -124,7 +124,7 @@ void MatrixSimulator::load_spectrograph_model(const std::string path, int fiber_
                     wavelength_limit_min = t.wavelength;
                 if (t.wavelength>this->wavelength_limit_max)
                     wavelength_limit_max = t.wavelength;
-                std::vector<double> result;
+                std::vector<float> result;
                 result.push_back(data[i].scale_x);
                 result.push_back(data[i].scale_y);
                 result.push_back(wrap_rads(data[i].shear));
@@ -297,7 +297,7 @@ void MatrixSimulator::set_wavelength(std::vector<double> wavelength){
 
 
 std::array<float,6> MatrixSimulator::get_transformation_matrix_lookup(int o, double wavelength){
-    std::vector<double> parameters;
+    std::vector<float> parameters;
     int idx_matrix = floor((wavelength - this->sim_wavelength[o].front()) / this->sim_matrix_dwavelength[o]);
 
     parameters.push_back(this->sim_p[o][idx_matrix]);
@@ -310,7 +310,7 @@ std::array<float,6> MatrixSimulator::get_transformation_matrix_lookup(int o, dou
 
 }
 std::array<float,6> MatrixSimulator::get_transformation_matrix(int o, double wavelength){
-    std::vector<double> parameters;
+    std::vector<float> parameters;
     parameters.push_back(this->tr_p[o](wavelength));
     parameters.push_back(this->tr_q[o](wavelength));
     parameters.push_back(this->tr_r[o](wavelength));
@@ -525,7 +525,7 @@ void MatrixSimulator::prepare_matrix_lookup(int N){
             tx.push_back(this->tr_tx[o](this->sim_matrix_wavelength[o][i]));
             ty.push_back(this->tr_ty[o](this->sim_matrix_wavelength[o][i]));
 
-            std::vector<double> params;
+            std::vector<float> params;
             params.push_back(p[i]);
             params.push_back(q[i]);
             params.push_back(r[i]);

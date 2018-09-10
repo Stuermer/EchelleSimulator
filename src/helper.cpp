@@ -43,21 +43,21 @@ std::array<float,6> decompose_matrix(std::array<float,6> mat){
      * d e ty       m3 m4 m5
      */
 
-    double a = mat[0];
-    double b = mat[1];
-    double d = mat[3];
-    double e = mat[4];
-    double tx = mat[2];
-    double ty = mat[5];
-    
-    double sx = sqrt(a*a+d*d);
-    double sy = sqrt(b*b+e*e);
-    
-    double phi = atan2(d,a);
+    float a = mat[0];
+    float b = mat[1];
+    float d = mat[3];
+    float e = mat[4];
+    float tx = mat[2];
+    float ty = mat[5];
+
+    float sx = sqrt(a*a+d*d);
+    float sy = sqrt(b*b+e*e);
+
+    float phi = atan2(d,a);
     if (phi<0.1)
       phi += 2.*M_PI;
-    
-    double shear = atan2(-b,e) - phi;
+
+    float shear = atan2(-b,e) - phi;
     if (shear < -6.1)
         shear += 2.*M_PI;
 
@@ -66,18 +66,18 @@ std::array<float,6> decompose_matrix(std::array<float,6> mat){
     return result;
 }
 
-std::array<float, 6> compose_matrix(std::vector<double> parameters){
-double sx = parameters[0];
-double sy = parameters[1];
-double shear = parameters[2];
-double rot = parameters[3];
+std::array<float, 6> compose_matrix(std::vector<float> parameters){
+    float sx = parameters[0];
+    float sy = parameters[1];
+    float shear = parameters[2];
+    float rot = parameters[3];
 
 std::array<float, 6> m = {
-    sx *cos(rot),
-    -sy *sin(rot + shear),
+    sx * (float) cos(rot),
+    -sy * (float) sin(rot + shear),
     parameters[4],
-    sx *sin(rot),
-    sy *cos(rot + shear),
+    sx * (float) sin(rot),
+    sy * (float) cos(rot + shear),
     parameters[5],
 };
   return m;

@@ -57,6 +57,6 @@ file(GLOB SOURCES
         src/*.cpp
         )
 
-add_executable(echellesimulator src/main.cpp src/helper.cpp src/source.cpp src/efficiency.cpp src/Slit.cpp src/matrixsimulator.cpp src/noise.cpp src/PSF.cpp src/CCD.cpp include/csv_reader.h src/telescope.cpp ${SOURCES})
+add_executable(echellesimulator ${SOURCES})
 target_include_directories(echellesimulator PRIVATE ${FMT_INCLUDE_DIR})
 target_link_libraries(echellesimulator ${LINK_LIBS} )

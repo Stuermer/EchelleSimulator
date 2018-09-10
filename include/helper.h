@@ -53,7 +53,7 @@ std::array<float,6> decompose_matrix(std::array<float,6> mat);
  * @param parameters [sx, sy, shear, \f$ \phi \f$, tx, ty]
  * @return 2x3 transformation matrix
  */
-std::array<float, 6> compose_matrix(std::vector<double> parameters);
+std::array<float, 6> compose_matrix(std::vector<float> parameters);
 
 /*!
  * Calculates sorted index array of a given vector.
