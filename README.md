@@ -56,6 +56,7 @@ Part of a simulated flat spectrum for the MAROON-X spectrograph.
  * [CFITSIO](https://heasarc.gsfc.nasa.gov/fitsio/fitsio.html)
  * [HDF 5.0 library](https://www.hdfgroup.org/hdf5/)
  * [Curl](https://curl.haxx.se/libcurl/)
+ * [fmt](https://github.com/fmtlib/fmt) Header-only library will be downloaded automatically by CMake
  
 ## Example usage
 ```bash
