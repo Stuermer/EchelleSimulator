@@ -1,6 +1,6 @@
 #ifndef SLIT_H
 #define SLIT_H
-#include "opencv2/core/core.hpp"
+#include "PSF.h"
 #ifdef USE_GPU
     #include "opencv2/gpu/gpu.hpp"
 #endif
@@ -61,7 +61,7 @@ public:
         cv::gpu::GpuMat slit_image;
         bool use_gpu = true;
     #else
-        cv::Mat slit_image;
+        Matrix slit_image;
         bool use_gpu = false;
     #endif
 };

@@ -103,7 +103,7 @@ private:
      * @param n number of subintervalls
      * @return integrated spectrum within [a, b]
      *
-     * \todo This integrator should be replaved with a more accurate one. For highly unresolved spectra this integrator
+     * \todo This integrator should be replaced with a more accurate one. For highly unresolved spectra this integrator
      * might not be very precise.
      */
     double integral_s(double a, double b, int n);
@@ -307,11 +307,11 @@ private:
 
 class CustomSpectrum : public Source{
 public:
-    CustomSpectrum(std::string spectrum_file, double min_w, double max_w, double mag);
-    CustomSpectrum(std::string spectrum_file, std::string wave_file, double mag);
+    CustomSpectrum(const std::string spectrum_file, double min_w, double max_w, double mag);
+    CustomSpectrum(const std::string spectrum_file, std::string wave_file, double mag);
 
-    void read_spectrum(std::string spectrum_file);
-    void read_spectrum(std::string spectrum_file, std::string wave_file);
+    void read_spectrum(const std::string spectrum_file);
+    void read_spectrum(const std::string spectrum_file, std::string wave_file);
 
     double get_spectral_density(double wavelength);
 
@@ -334,7 +334,7 @@ private:
  */
 class LineList : public Source{
 public:
-    LineList(std::string linelist_file, double scaling);
+    LineList(const std::string linelist_file, double scaling);
     void read_spectrum(std::string linelist_file);
     void smooth_spectrum();
     double get_spectral_density(double wavelength);

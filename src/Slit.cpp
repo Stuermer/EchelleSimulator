@@ -1,10 +1,8 @@
 #include "Slit.h"
-#include "opencv2/highgui/highgui.hpp"
 #include <iostream>
 
 Slit::Slit()
-{
-}
+= default;
 
 Slit::Slit(double w, double h, int slit_sampling){
     this->set_slit(w,h,slit_sampling);
@@ -16,7 +14,7 @@ void Slit::set_slit(double w, double h, int slit_sampling){
     this->ratio = h/w;
     this->slit_sampling = slit_sampling;
     this->w_px = slit_sampling;
-    this->h_px = slit_sampling * this->ratio;
+    this->h_px = static_cast<int>(slit_sampling * this->ratio);
 
     #ifdef USE_GPU
     {
@@ -26,7 +24,7 @@ void Slit::set_slit(double w, double h, int slit_sampling){
     }
     #else
     {
-        this->slit_image = cv::Mat::ones(round(this->h_px), this->w_px, CV_64F);
+        this->slit_image = Matrix(static_cast<size_t>(this->h_px), static_cast<size_t>(this->w_px));
 
 //        cv::Point rook_points[1][3];
 //        rook_points[0][0] = cv::Point( 0., 0. );
@@ -43,7 +41,7 @@ void Slit::set_slit(double w, double h, int slit_sampling){
 }
 
 void Slit::show(){
-    cv::imshow("Slit Image", this->slit_image);
-    cv::waitKey(0);
+//    cv::imshow("Slit Image", this->slit_image);
+//    cv::waitKey(0);
 
 }

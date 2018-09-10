@@ -1,10 +1,7 @@
 #ifndef MATRIXSIMULATOR_H
 #define MATRIXSIMULATOR_H
 
-#include "opencv2/core/core.hpp"
-#include "opencv2/highgui/highgui.hpp"
 #include <memory>
-
 #include "helper.h"
 #include "spline.h"
 #include "efficiency.h"
@@ -15,9 +12,6 @@
 #include "telescope.h"
 #include <array>
 
-struct point2d{
-    double x,y;
-};
 
 struct raw_transformation {
     int order;
@@ -43,7 +37,7 @@ public:
      * @param keep_ccd if true it assumes that a CCD has already been added to the spectrograph model. It keeps it and
      * adds the new simulations to it. This can be used to simplify the simulation of multiple fibers.
      */
-    MatrixSimulator(std::string path, int fiber_number, bool keep_ccd);
+    MatrixSimulator(const std::string path, int fiber_number, bool keep_ccd);
 
     /**
      * Set wavelength grid on which the input spectrum will be interpolated.
@@ -77,7 +71,7 @@ public:
      * @param bleed bleed overexposed pixel TODO: not implemented yet
      * @param overwrite True to overwrite existing file TODO: not working yet
      */
-    void save_to_hdf(std::string filename, bool downsample = true, bool bleed = true, bool overwrite = false);
+    void save_to_hdf(const std::string filename, bool downsample = true, bool bleed = true, bool overwrite = false);
 
     /**
      *
@@ -85,7 +79,7 @@ public:
      * @param bleed bleed overexposed pixel TODO: not implemented yet
      * @param overwrite True to overwrite existing file TODO: not working yet
      */
-    void save_to_fits(std::string filename, bool downsample = true, bool bleed = true, bool overwrite = false);
+    void save_to_fits(const std::string filename, bool downsample = true, bool bleed = true, bool overwrite = false);
 
     /**
      * Save 1d spectra in fits file.
@@ -93,7 +87,7 @@ public:
      * It is therefore a perfectly reduced spectrum.
      * @param filename path to the fits file
      */
-    void save_1d_to_fits(std::string filename);
+    void save_1d_to_fits(const std::string filename);
 
     /**
      * Returns blaze angle in degrees
@@ -141,7 +135,7 @@ public:
      * @param noise standard deviation for noise
      * @param seed optional: random seed
      */
-    void add_background(double bias, double noise, unsigned int seed);
+    void add_background(double bias, double noise, unsigned long seed);
 
     bool mode = true;
 
@@ -153,7 +147,7 @@ private:
      * @param keep_ccd if true it assumes that a CCD has already been added to the spectrograph model. It keeps it and
      * adds the new simulations to it. This can be used to simplify the simulation of multiple fibers.
      */
-    void load_spectrograph_model(std::string path, int fiber_number, bool keep_ccd = false);
+    void load_spectrograph_model(const std::string path, int fiber_number, bool keep_ccd = false);
 
     /**
      *
@@ -190,7 +184,7 @@ private:
     void prepare_matrix_lookup(int N);
 
     std::vector<int> orders;
-    cv::Mat img;
+//    cv::Mat img;
     int fiber_number;
     int n_orders;
     int min_order;
@@ -214,7 +208,7 @@ private:
     std::vector<std::vector<float>> sim_spectra_time_efficieny;
 
     std::vector<float> sim_total_efficiency_per_order;
-    std::vector<std::vector<cv::Mat>> sim_psfs;
+    std::vector<std::vector<Matrix>> sim_psfs;
     std::vector<std::vector<double>> sim_psfs_wavelength;
     std::vector<double> sim_psfs_dwavelength;
 

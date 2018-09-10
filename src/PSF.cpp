@@ -4,11 +4,12 @@
 
 #include <vector>
 #include <iostream>
-#include <highgui.h>
-#include "opencv2/imgproc/imgproc.hpp"
+//#include <highgui.h>
+//#include "opencv2/imgproc/imgproc.hpp"
 #include "PSF.h"
 #include "H5Cpp.h"
 #include "helper.h"
+
 
 
 //herr_t
@@ -42,19 +43,19 @@ herr_t read_psfs(hid_t loc_id, const char *name, const H5L_info_t *linfo, void *
 
     const int ndims = H5Sget_simple_extent_ndims(dspace);
     hsize_t dims[ndims];
-    H5Sget_simple_extent_dims(dspace, dims, NULL);
+    H5Sget_simple_extent_dims(dspace, dims, nullptr);
 
-    double *buffer = new double[dims[0] * dims[1]];
+    auto *buffer = new double[dims[0] * dims[1]];
 
     H5::DataSpace mspace1 = H5::DataSpace(2, dims);
     H5::DataSet dataset = H5::DataSet(ds);
     dataset.read(buffer, H5::PredType::NATIVE_INT, mspace1, dspace);
 
-    auto psfs = reinterpret_cast< std::vector<cv::Mat> * >(opdata);
-    cv::Mat psf(dims[0], dims[1], CV_32FC1);
+    auto psfs = reinterpret_cast< std::vector<Matrix> * >(opdata);
+    Matrix psf(dims[0], dims[1]);
     for (int i = 0; i < dims[0]; ++i) {
         for (int j = 0; j < dims[1]; ++j) {
-            psf.at<double>(i, j) = buffer[i * dims[1] + j];
+            psf.data[i][j] = static_cast<float>(buffer[i * dims[1] + j]);
         }
     }
 
@@ -66,17 +67,13 @@ herr_t read_psfs(hid_t loc_id, const char *name, const H5L_info_t *linfo, void *
     return 0;
 }
 
-PSF::PSF() {
+PSF::PSF() = default;
 
-}
-
-PSF::~PSF() {
-
-}
+PSF::~PSF() = default;
 
 PSF_ZEMAX::PSF_ZEMAX(const std::string filename, int fiber_number) {
 
-    H5::H5File * file = new H5::H5File(filename, H5F_ACC_RDONLY);
+    auto * file = new H5::H5File(filename, H5F_ACC_RDONLY);
     std::cout << std::endl << "Iterating over elements in the file" << std::endl;
     H5::Group * rootGr = new H5::Group(file->openGroup("fiber_"+std::to_string(fiber_number)));
     std::vector<std::string> group_names;
@@ -97,9 +94,9 @@ PSF_ZEMAX::PSF_ZEMAX(const std::string filename, int fiber_number) {
             H5::Group * wlGr = new H5::Group(rootGr->openGroup(dt_path));
 
 
-            herr_t idx2 = H5Literate(wlGr->getId(), H5_INDEX_NAME, H5_ITER_INC, NULL, dataset_info, &wl_names);
+            herr_t idx2 = H5Literate(wlGr->getId(), H5_INDEX_NAME, H5_ITER_INC, nullptr, dataset_info, &wl_names);
             for(auto& w : wl_names){
-                std::vector< cv::Mat > raw_psfs;
+                std::vector< Matrix > raw_psfs;
 
                 hid_t ds;
 
@@ -125,16 +122,16 @@ PSF_ZEMAX::PSF_ZEMAX(const std::string filename, int fiber_number) {
                 ndims = dspace.getSimpleExtentDims( dims );
 
 
-                double * buffer = new double[dims[0] * dims[1]];
+                auto * buffer = new double[dims[0] * dims[1]];
 
                 H5::DataSpace mspace1 = H5::DataSpace(2, dims);
                 dataset.read( buffer, H5::PredType::NATIVE_DOUBLE, mspace1, dspace );
 
 
-                cv::Mat psf((int) dims[0], (int) dims[1], CV_64FC1);
+                Matrix psf((int) dims[0], (int) dims[1]);
                 for(int i=0; i<dims[0]; ++i){
                     for(int j=0; j<dims[1]; ++j){
-                        psf.at<double>(i,j) = buffer[i*dims[1]+j];
+                        psf.data[i][j] = buffer[i*dims[1]+j];
                     }
                 }
                 // cv::cvtColor(psf,psf,CV_32FC1,0);
@@ -142,13 +139,14 @@ PSF_ZEMAX::PSF_ZEMAX(const std::string filename, int fiber_number) {
 
                 if ( this->psfs.find(order) == this->psfs.end() ) {
                     // not found
-                    psf_vec.push_back(p);
+                    psf_vec.emplace_back(p);
                     this->psfs.insert(std::make_pair(order, psf_vec));
                 } else {
-                    this->psfs[order].push_back(p);
+                    this->psfs[order].emplace_back(p);
                     // found
                 }
-                psf.release();
+//                psf.release();
+//                delete psf;
 
             }
             delete wlGr;
@@ -162,19 +160,20 @@ PSF_ZEMAX::PSF_ZEMAX(const std::string filename, int fiber_number) {
     delete file;
 }
 
-cv::Mat PSF_ZEMAX::get_PSF(int order, double wavelength) {
+Matrix PSF_ZEMAX::get_PSF(int order, double wavelength) {
     std::vector<double> distance;
     for(auto& psf : this->psfs[order])
     {
-        distance.push_back(psf.wavelength -wavelength );
+        distance.push_back(psf.wavelength - wavelength);
     }
     std::vector<size_t > idx;
     idx = compute_sort_order(distance);
+//    std::cout << wavelength << "\t" << this->psfs[order][idx[0]].wavelength << std::endl;
     return this->interpolate_PSF(this->psfs[order][idx[0]].psf, this->psfs[order][idx[1]].psf,
                                  this->psfs[order][idx[0]].wavelength, this->psfs[order][idx[1]].wavelength, wavelength);
 }
 
-cv::Mat PSF_ZEMAX::get_PSF_nocut(int order, double wavelength) {
+Matrix PSF_ZEMAX::get_PSF_nocut(int order, double wavelength) {
     std::vector<double> distance;
     for(auto& psf : this->psfs[order])
     {
@@ -186,15 +185,15 @@ cv::Mat PSF_ZEMAX::get_PSF_nocut(int order, double wavelength) {
                                  this->psfs[order][idx[0]].wavelength, this->psfs[order][idx[1]].wavelength, wavelength);
 }
 
-cv::Mat PSF_ZEMAX::interpolate_PSF(cv::Mat psf1, cv::Mat psf2, double w1, double w2, double w) {
+Matrix PSF_ZEMAX::interpolate_PSF(Matrix psf1, Matrix psf2, double w1, double w2, double w) {
     double p1 = fabs((w-w1)/(w2-w1));
     double p2 = fabs((w-w2)/(w2-w1));
     double p_sum = p1+p2;
     p1 /= p_sum;
     p2 /= p_sum;
-    cv::Mat comb_psf(psf1.rows, psf1.cols, psf1.type());
-    double psf1_total = cv::sum(psf1)[0];
-    double psf2_total = cv::sum(psf2)[0];
+    Matrix comb_psf(psf1.rows, psf1.cols);
+    double psf1_total = psf1.sum();
+    double psf2_total = psf2.sum();
 
     int minX, maxX, minY, maxY;
     minX = comb_psf.cols;
@@ -202,48 +201,61 @@ cv::Mat PSF_ZEMAX::interpolate_PSF(cv::Mat psf1, cv::Mat psf2, double w1, double
     maxX = 0;
     maxY = 0;
 
+    float max_val=0;
     for(int i=0; i<comb_psf.rows; ++i){
         for(int j=0; j< comb_psf.cols; ++j){
-            double val = (p2 * psf1.at<double>(i,j)/psf1_total + p1 * psf2.at<double>(i,j)/psf2_total);
+            double val = (p2 * psf1.data[i][j]/psf1_total + p1 * psf2.data[i][j]/psf2_total);
             if(val>0.001){
                 minX = j<minX ? j : minX;
                 minY = i<minY ? i : minY;
                 maxX = j>maxX ? j : maxX;
                 maxY = i>maxY ? i : maxY;
             }
-            comb_psf.at<double>(i,j) = val;
+            comb_psf.data[i][j] = val;
+            if (val>max_val)
+                max_val=val;
         }
     }
 
     int cenX = psf1.cols / 2;
     int cenY = psf1.rows / 2;
 
+
     int size_x = ((cenX-minX)>(maxX-cenX)) ? cenX-minX : maxX-cenX;
     int size_y = ((cenY-minY)>(maxY-cenY)) ? cenY-minY : maxY-cenY;
+    Matrix result(size_y*2,size_x*2);
 
-
-
-    return comb_psf.rowRange(cenY-size_y, cenY+size_y).colRange(cenX-size_x, cenX+size_x);
+//    comb_psf.delete_n_rows_symmetrically(comb_psf.rows-size_y*2);
+//    comb_psf.delete_n_cols_symmetrically(comb_psf.cols-size_x*2);
+    //normalize maximum value to 1:
+    for(int i=0; i<result.rows; ++i) {
+        for (int j = 0; j < result.cols; ++j) {
+            result.data[i][j] = comb_psf.data[comb_psf.rows-size_y*2+i][comb_psf.cols-size_x*2+j] / max_val;
+        }
+    }
+//    std::cout<< result.cols << "\t" << result.rows << std::endl;
+    return result;
 
 }
 
-cv::Mat PSF_ZEMAX::interpolate_PSF_nocut(cv::Mat psf1, cv::Mat psf2, double w1, double w2, double w) {
+Matrix PSF_ZEMAX::interpolate_PSF_nocut(Matrix psf1, Matrix psf2, double w1, double w2, double w) {
     double p1 = fabs((w-w1)/(w2-w1));
     double p2 = fabs((w-w2)/(w2-w1));
     double p_sum = p1+p2;
     p1 /= p_sum;
     p2 /= p_sum;
-    cv::Mat comb_psf(psf1.rows, psf1.cols, psf1.type());
-    double psf1_total = cv::sum(psf1)[0];
-    double psf2_total = cv::sum(psf2)[0];
+    Matrix comb_psf(psf1.rows, psf1.cols);
+    double psf1_total = psf1.sum();
+    double psf2_total = psf2.sum();
+
 
     for(int i=0; i<comb_psf.rows; ++i){
-        const double * ptr1 = psf1.ptr<double>(i);
-        const double * ptr2 = psf2.ptr<double>(i);
-        double * ptr3 = comb_psf.ptr<double>(i);
+//        const double * ptr1 = psf1.ptr<double>(i);
+//        const double * ptr2 = psf2.ptr<double>(i);
+//        double * ptr3 = comb_psf.ptr<double>(i);
         for(int j=0; j< comb_psf.cols; ++j){
-            double val = (p2 * ptr1[j]/psf1_total + p1 * ptr2[j]/psf2_total);
-            ptr3[j] = val;
+            double val = (p2 * psf1.data[i][j]/psf1_total + p1 * psf2.data[i][j]/psf2_total);
+            comb_psf.data[i][j] = val;
         }
     }
 
@@ -258,6 +270,7 @@ PSF_gaussian::PSF_gaussian(double sigma, double aperture): sigma(sigma) {
 }
 
 
-cv::Mat PSF_gaussian::get_PSF(int order, double wavelength) {
-    return cv::getGaussianKernel(this->ksize, this->sigma, CV_32F);
+Matrix PSF_gaussian::get_PSF(int order, double wavelength) {
+
+    return Matrix(30,30);
 }

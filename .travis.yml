@@ -9,7 +9,6 @@ matrix:
         apt:
           packages:
             - g++-5
-            - libopencv-dev
             - libhdf5-serial-dev
             - libhdf5-dev
             - libcurl3

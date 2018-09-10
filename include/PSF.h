@@ -7,14 +7,74 @@
 
 #include <string>
 #include <map>
-#include "opencv2/core/core.hpp"
+#include <vector>
+
+class Matrix{
+public:
+    Matrix(size_t rows, size_t cols) {
+        this->cols=cols;
+        this->rows=rows;
+        data = std::vector<std::vector<float>>(rows, std::vector<float> (cols, 0.));
+    }
+
+
+    Matrix(std::vector<std::vector<float>> mat) {
+        cols=mat[0].size();
+        rows=mat.size();
+        data=mat;
+    }
+
+    Matrix() {
+
+    }
+
+    ~Matrix() = default;
+
+    std::vector<std::vector<float>> data;
+    size_t cols{};
+    size_t rows{};
+
+    float sum(){
+        float total=0;
+        for(int i=0; i<data.size(); ++i){
+            for(int j=0; j<data[i].size(); ++j){
+                total += data[i][j];
+            }
+        }
+        return total;
+    }
+
+    void delete_n_rows_symmetrically(int n){
+        rows -= n;
+        data.erase(data.begin(), data.begin()+n);
+        data.erase(data.end()-n, data.end());
+    }
+
+    void delete_n_cols_symmetrically(int n){
+        cols -= n;
+        for (unsigned i=0; i<rows; ++i)
+        {
+            data[i].erase(data[i].begin(), data[i].begin()+n-1);
+            data[i].erase(data[i].end()-n+1, data[i].end());
+        }
+    }
+
+    Matrix& operator=(const Matrix &M){
+        this->cols = M.cols;
+        this->rows = M.rows;
+        this->data = M.data;
+    }
+
+};
 
 struct PSFdata
 {
     double wavelength;
-    cv::Mat psf;
+    Matrix psf;
 
-    PSFdata(double w, cv::Mat p) : wavelength(w), psf(p.clone()) {};
+    PSFdata(double w, Matrix p) : wavelength(w) {
+        psf=Matrix(p);
+    };
 
     bool operator < (const PSFdata& str) const
     {
@@ -39,8 +99,8 @@ class PSF {
 public:
     PSF();
     virtual ~PSF();
-    virtual cv::Mat get_PSF(int order, double wavelength) = 0;
-    virtual cv::Mat get_PSF_nocut(int order, double wavelength) = 0;
+    virtual Matrix get_PSF(int order, double wavelength) = 0;
+    virtual Matrix get_PSF_nocut(int order, double wavelength) = 0;
     double pixelsampling;
 };
 
@@ -58,8 +118,8 @@ public:
      * @param fiber_number fiber number for the PSF model
      */
     PSF_ZEMAX(std::string filename, int fiber_number);
-    cv::Mat get_PSF(int order, double wavelength);
-    cv::Mat get_PSF_nocut(int order, double wavelength);
+    Matrix get_PSF(int order, double wavelength) override;
+    Matrix get_PSF_nocut(int order, double wavelength) override;
 private:
     /**
      * Interpolates between neighboring PSFs as a simple linear sum
@@ -70,8 +130,8 @@ private:
      * @param w wavelength to use for calculating PSF
      * @return
      */
-    cv::Mat interpolate_PSF(cv::Mat psf1, cv::Mat psf2, double w1, double w2, double w);
-    cv::Mat interpolate_PSF_nocut(cv::Mat psf1, cv::Mat psf2, double w1, double w2, double w);
+    Matrix interpolate_PSF(Matrix psf1, Matrix psf2, double w1, double w2, double w);
+    Matrix interpolate_PSF_nocut(Matrix psf1, Matrix psf2, double w1, double w2, double w);
     std::map< int, std::vector<PSFdata> > psfs;
 
 };
@@ -97,7 +157,7 @@ public:
      * @param wavelength  wavelength in microns
      * @return
      */
-    cv::Mat get_PSF(int order, double wavelength);
+    Matrix get_PSF(int order, double wavelength);
 
 private:
     double sigma;

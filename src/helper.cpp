@@ -1,7 +1,7 @@
 #include "helper.h"
 #include <vector>
 #include <cmath>
-#include "opencv2/core/core.hpp"
+//#include "opencv2/core/core.hpp"
 #include <vector>
 #include <iterator>
 #include <iostream>
@@ -9,8 +9,8 @@
 #include <fstream>
 #include <string>
 #include <cstdlib>
-#include "opencv2/imgproc/imgproc.hpp"
-#include "opencv2/highgui/highgui.hpp"
+//#include "opencv2/imgproc/imgproc.hpp"
+//#include "opencv2/highgui/highgui.hpp"
 #include <CCfits/FITS.h>
 #include <CCfits/ExtHDU.h>
 #include <map>
@@ -19,6 +19,8 @@
 #include <unistd.h>
 #include <string>
 
+#define FMT_HEADER_ONLY
+#include <fmt/format.h>
 
 void vectorToFile(std::vector<double> const& vec, std::string const& filename) {
   std::ofstream file(filename);
@@ -94,35 +96,6 @@ std::vector<std::size_t> compute_sort_order(const std::vector<double> &v) {
     return res;
 }
 
-void show_cv_matrix(cv::Mat img, std::string windowname="image") {
-    double minVal, maxVal;
-
-    cv::Mat img_show = img.clone();
-    cv::minMaxLoc(img_show, &minVal, &maxVal); //find minimum and maximum intensities
-    int ty = img_show.type();
-    std::cout << "Min/Max: " << minVal << "\t " << maxVal << std::endl;
-    img_show.convertTo(img_show, CV_8U,255.0/(maxVal - minVal), -minVal * 255.0/(maxVal - minVal));
-
-     cv::cvtColor(img_show, img_show, CV_GRAY2RGB);
-
-    cv::namedWindow(windowname,CV_WINDOW_NORMAL);
-    cv::imshow(windowname, img_show);
-    cv::resizeWindow(windowname, 1024,1024);
-    cv::waitKey(0 );
-
-}
-
-void print_cv_matrix_info(cv::Mat img, std::string imagename="Image") {
-    std::cout<< "------------" << imagename << "----------------:" << std::endl;
-    std::cout << "Dimensions: " << img.rows << " x " << img.cols << std::endl;
-    std::cout << "Type: " << img.type() << std::endl;
-    double minVal, maxVal;
-    cv::minMaxLoc(img, &minVal, &maxVal); //find minimum and maximum intensities
-    std::cout << "Min/Max: " << minVal << " / " << maxVal << std::endl;
-    std::cout<< "------------------------------------------:"<<std::endl << std::endl;
-
-
-}
 
 double wrap_rads(double r)
 {
@@ -190,156 +163,55 @@ size_t write_data(void *ptr, size_t size, size_t nmemb, FILE *stream) {
     return written;
 }
 
-int download_phoenix(std::string Teff, std::string log_g, std::string z, std::string alpha){
+int download_phoenix(int Teff, double log_g, double z, double alpha) {
+    // check for valid inputs:
+    std::cout << "Trying to download PHOENIX Spectrum with: T_eff=" << Teff << " log_g=" <<log_g << " z=" << z <<" Alpha="<<alpha << std::endl;
 
-    //input positive z without '+'
-    if(z.at(0) != '-' && z.at(0) != '+' && z.at(0) != '0'){
+    std::vector<int> valid_T;
+    std::vector<double> valid_g, valid_z, valid_a;
+    for(int i=2300; i<7000; i+=100) { valid_T.push_back(i); }
+    for(int i=7000; i<12200; i+=200) { valid_T.push_back(i); }
 
-        z = "+" + z;
+    for(int i=0; i<12; ++i) { valid_g.push_back(i*0.5); }
+    for(int i=-4; i<-2; ++i) { valid_z.push_back(i); }
+    for(int i=-4; i<3; ++i) { valid_z.push_back(i*0.5); }
 
+    for(int i=-1; i<7; ++i) { valid_a.push_back(i*0.5); }
+
+    bool found = (std::find(valid_T.begin(), valid_T.end(), Teff) != valid_T.end());
+    if (!found){
+        std::cout<<"Invalid Effective temperature value for Phoenix spectra." << std::endl;
+        return false;
     }
 
-    //input positive alpha without '+'
-    if(alpha.at(0) != '-' && alpha.at(0) != '+' && alpha.at(0) != '0'){
-
-        alpha = "+" + alpha;
-
+    found = (std::find(valid_g.begin(), valid_g.end(), log_g) != valid_g.end());
+    if (!found){
+        std::cout<<"Invalid log_g value for Phoenix spectra." << std::endl;
+        return false;
     }
 
-    //fix attempts at inputting z = -0.0
-    if(z == "0"){
-
-        z = "-" + z + ".0";
-
-    }
-    else if(z == "0."){
-
-        z = "-" + z + "0";
-
-    }
-    else if(z == "0.0"){
-
-        z = "-" + z;
-
-    }
-    else{
-
+    found = (std::find(valid_z.begin(), valid_z.end(), z) != valid_z.end());
+    if (!found){
+        std::cout<<"Invalid z value for Phoenix spectra." << std::endl;
+        return false;
     }
 
-    //fix attempts at inputting alpha = -0.0
-    if(alpha == "0"){
-
-        alpha = "-" + alpha + ".00";
-
-    }
-    else if(alpha == "0."){
-
-        alpha = "-" + alpha + "00";
-
-    }
-    else if(alpha == "0.0"){
-
-        alpha = "-" + alpha + "0";
-
-    }
-    else if(alpha == "0.00"){
-
-        alpha = "-" + alpha;
-
-    }
-    else{
-
+    found = (std::find(valid_a.begin(), valid_a.end(), alpha) != valid_a.end());
+    if (!found){
+        std::cout<<"Invalid alpha value for Phoenix spectra." << std::endl;
+        return false;
     }
 
-    //fix attempts at inputting log_g = -0.00
-    if(log_g == "0"){
+    std::string baseurl = "ftp://phoenix.astro.physik.uni-goettingen.de/HiResFITS/PHOENIX-ACES-AGSS-COND-2011/";
+    std::string subgrid = "Z";
+    (z>0) ? subgrid += fmt::format("{:+2.1f}", z) : subgrid += "-"+ fmt::format("{:-2.1f}", z);
+    (fabs(alpha)<1E-10) ? subgrid+="" : subgrid+=".Alpha=";
+    (fabs(alpha)<1E-10) ? subgrid+="" : subgrid+=fmt::format("{:+2.2f}", alpha);
 
-        log_g = "-" + log_g + ".00";
-
-    }
-    else if(log_g == "0."){
-
-        log_g = "-" + log_g + "00";
-
-    }
-    else if(log_g == "0.0"){
-
-        log_g = "-" + log_g + "0";
-
-    }
-    else if(log_g == "0.00"){
-
-        log_g = "-" + log_g;
-
-    }
-    else{
-
-    }
-
-    //pad for z inputs
-    if(z.length() == 2){
-        z = z + ".0";
-    }
-    else if(z.length() == 3){
-        z = z + "0";
-    }
-    else{
-
-    }
-
-    //pad for log_g inputs
-    if(log_g.length() == 1){
-        log_g = log_g + ".00";
-    }
-    else if(log_g.length() == 2){
-        log_g = log_g + "00";
-    }
-    else if(log_g.length() == 3){
-        log_g = log_g + "0";
-    }
-    else{
-
-    }
-
-    //pad for alpha inputs
-    if(alpha.length() == 2){
-        alpha = alpha + ".00";
-    }
-    else if(alpha.length() == 3){
-        alpha = alpha + "00";
-    }
-    else if(alpha.length() == 4){
-        alpha = alpha + "0";
-    }
-
-    std::string url = "ftp://phoenix.astro.physik.uni-goettingen.de/HiResFITS/PHOENIX-ACES-AGSS-COND-2011/";
-
-    url += "Z" + z;
-
-    if(alpha != "-0.00"){
-
-        url += ".Alpha=" + alpha;
-
-    }
-
-    url += "/lte";
-
-    for(int i = 0; i < 5 - Teff.length(); i++){
-
-        Teff = "0" + Teff;
-
-    }
-
-    url += Teff + "-" + log_g;
-
-    url += z;
-
-    if(alpha != "-0.00"){
-
-        url += ".Alpha=" + alpha;
-
-    }
-
+    std::string url = baseurl + subgrid + "/lte" + fmt::format("{:05}", Teff) +"-"+ fmt::format("{:2.2f}", log_g) +"-";
+    (z>0) ? url+=fmt::format("{:+2.1f}", z) : url+=fmt::format("{:-2.1f}", z);
+    (fabs(alpha)<1E-10) ? url += "" : url+=".Alpha=";
+    (fabs(alpha)<1E-10) ? url+="" : url+=fmt::format("{:+2.2f}", alpha);
     url += ".PHOENIX-ACES-AGSS-COND-2011-HiRes.fits";
 
     std::cout<<"Downloading spectra from: "<<url<<std::endl; //cover z = 0 case also see if adding x.0 and + | - is doable
@@ -363,7 +235,6 @@ int download_phoenix(std::string Teff, std::string log_g, std::string z, std::st
     }
 
     return res;
-
 
 }
 

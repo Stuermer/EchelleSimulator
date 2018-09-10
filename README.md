@@ -1,18 +1,23 @@
 ![EchelleSimulator](https://github.com/Stuermer/EchelleSimulator/blob/master/doc/logo.png "Echelle Simulator")
 
 
-Échelle++, a fast generic échelle simulator.
+Échelle++, a fast generic spectrum simulator.
 [![Build Status](https://travis-ci.org/Stuermer/EchelleSimulator.svg?branch=master)](https://travis-ci.org/Stuermer/EchelleSimulator)
 
-Échelle++ is a simulation tool, to generate realistic 2D echelle spectra.
+Échelle++ is a simulation tool, to generate realistic 2D spectra, in particular cross-dispersed echelle spectra.
 It allows to simulate arbitrary spectra for any fiber-fed or slit spectrograph, where a model file
 is available. Optical aberrations are treated accurately, the simulated spectra include photon and read-out noise.  
  
-The basic idea is that any (fiber-fed) echelle spectrograph can be modelled with a set of wavelength-dependent transformation matrices and point spread functions which describe the spectrographs optics:
+The basic idea is that any (fiber-fed) echelle spectrograph can be modelled with a set of wavelength-dependent 
+transformation matrices and point spread functions which describe the spectrographs optics:
 
-First, wavelength-dependent **affine transformation matrices** are extracted from the ZEMAX model of the spectrograph. As the underlying geometric transformations (scaling, rotation, shearing, translation) vary smoothly across an echelle order, these matrices can be interpolated for any intermediate wavelength.
+First, wavelength-dependent **affine transformation matrices** are extracted from the ZEMAX model of the spectrograph. 
+As the underlying geometric transformations (scaling, rotation, shearing, translation) vary smoothly across an echelle 
+order, these matrices can be interpolated for any intermediate wavelength.
 
-Second, a wavelength-dependent **point spread functions (PSFs)** is applied on the transformed slit images to properly account for optical aberrations. Again, the PSF is only slowly varying across an echelle order, allowing for interpolation at intermediate wavelength.
+Second, a wavelength-dependent **point spread functions (PSFs)** is applied on the transformed slit images to properly 
+account for optical aberrations. Again, the PSF is only slowly varying across an echelle order, allowing for 
+interpolation at intermediate wavelength.
 
 #### Concept:
 ---
@@ -20,7 +25,8 @@ Second, a wavelength-dependent **point spread functions (PSFs)** is applied on t
 
 ---
 
-**Both, the matrices and the PSFs have to be extracted from ZEMAX only once. It is therefore possible to simulate spectra without access to ZEMAX**
+**Both, the matrices and the PSFs have to be extracted from ZEMAX only once. It is therefore possible to simulate 
+spectra without access to ZEMAX**
 
 ---
 
@@ -36,7 +42,7 @@ Part of a simulated flat spectrum for the MAROON-X spectrograph.
 
 ---
  * parallelized C++ code for fast simulations
- * arbitrary 1D spectra
+ * arbitrary 1D input spectra
  * arbitrary PSFs
  * arbitrary efficiency models can be applied
  * works with any spectrograph (needs access to ZEMAX model only once)
@@ -45,8 +51,10 @@ Part of a simulated flat spectrum for the MAROON-X spectrograph.
 
 ## Prerequisites
  * GCC > 4.9 (or equivalent MSVC), capable of handling C++11 syntax
+ * CMake >=3.0
+ * [CCFits](https://heasarc.gsfc.nasa.gov/fitsio/ccfits/)
+ * [CFITSIO](https://heasarc.gsfc.nasa.gov/fitsio/fitsio.html)
  * [HDF 5.0 library](https://www.hdfgroup.org/hdf5/)
- * [OpenCV](http://opencv.org/)
  * [Curl](https://curl.haxx.se/libcurl/)
  
 ## Example usage

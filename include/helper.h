@@ -4,8 +4,6 @@
 
 #include <vector>
 #include <cmath>
-#include "opencv2/core/core.hpp"
-
 #include <vector>
 #include <iterator>
 #include <iostream>
@@ -74,7 +72,7 @@ std::vector<std::size_t> compute_sort_order(const std::vector<double> &v);
  * @param img Matrix/Image to be plotted
  * @param windowname name of the window containing the plot
  */
-void show_cv_matrix(cv::Mat img, std::string windowname);
+//void show_cv_matrix(cv::Mat img, std::string windowname);
 
 /*!
  * Prints out basic information about a Matrix/Image.
@@ -84,7 +82,7 @@ void show_cv_matrix(cv::Mat img, std::string windowname);
  * @param img Matrix/Image to be evaluated.
  * @param imagename Name of the matrix
  */
-void print_cv_matrix_info(cv::Mat img, std::string imagename);
+//void print_cv_matrix_info(cv::Mat img, std::string imagename);
 
 /**
  * Wraps an angle around [-pi, pi]
@@ -112,7 +110,7 @@ void split(const std::string &s, char delim, Out result);
 
 std::vector<std::string> split(const std::string &s, char delim);
 
-int download_phoenix(std::string Teff, std::string log_g, std::string z, std::string alpha);
+int download_phoenix(int Teff, double log_g, double z, double alpha);
 int download_wave_grid(std::string path);
 bool check_for(const std::string& name);
 size_t write_data(void *ptr, size_t size, size_t nmemb, FILE *stream);

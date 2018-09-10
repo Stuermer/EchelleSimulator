@@ -1,5 +1,4 @@
 #include <iostream>
-
 #include <chrono>
 #include <CCfits/FITS.h>
 #include <CCfits/PHDU.h>
@@ -45,8 +44,7 @@ int main(int argc, char *argv[])
                       {
 
                               "keep", {"-k", "--keep-ccd"},
-                              "if 1 it assumes that a CCD has already been added to the spectrograph model. It keeps it and "
-                               "adds the new simulations to it. This can be used to simplify the simulation of multiple fibers.", 1
+                              "if 1 it adds simulated spectrum to .fits file rather than overwrites it. This can be used for the simulation of multiple fibers/slits.", 1
 
                       },
 
@@ -89,7 +87,7 @@ int main(int argc, char *argv[])
                       {
                               "phoenix", {"-p", "--phoenix"},
                               "OPTIONAL: Simulate a mdwarf phoenix spectra with effective temperature T, magnitude M, log g, metalicity, alpha."
-                              "Check http://phoenix.astro.physik.uni-goettingen.de/?page_id=15 for parameter ranges - intermediate values will be rounded to available spectra."
+                              "Check http://phoenix.astro.physik.uni-goettingen.de/?page_id=15 for parameter ranges."
                               "general usage: --phoenix <T>,<Z>,<alpha>,<log g>,<mag>"
                               "example usage: --phoenix 3200,-1.,0.,-5.5,1", 1
                       },
@@ -193,10 +191,7 @@ int main(int argc, char *argv[])
 
     MatrixSimulator simulator(spectrograph, fiber, false);
 
-    double temp;
-    double mag;
-
-    Source * cs = new Source();
+    auto * cs = new Source();
 
     if (args["blackbody"]) {
         auto v = args["blackbody"].as<string>();
@@ -210,15 +205,13 @@ int main(int argc, char *argv[])
         auto v = args["phoenix"].as<string>();
         std::vector<std::string> vv = split(v, ',');
         cout<<"Simulating phoenix spectra with magnitude = "<< stod(vv[4]) << endl;
-        if(download_phoenix(vv[0], vv[3], vv[1], vv[2]) == 0){
+        if(download_phoenix(std::stoi(vv[0]), std::stod(vv[3]), std::stod(vv[1]), std::stod(vv[2])) == 0){
 
             const std::string& w_file = "../data/phoenix_spectra/WAVE_PHOENIX-ACES-AGSS-COND-2011.fits";
 
             if(!check_for(w_file)) {
                 download_wave_grid("../data/phoenix_spectra/WAVE_PHOENIX-ACES-AGSS-COND-2011.fits");
             }
-            //cs = new CustomSpectrum("../data/phoenix_spectra/test.fits", "../data/phoenix_spectra/WAVE_PHOENIX-ACES-AGSS-COND-2011.fits", stod(vv[4]));
-//            cout<<"Downloaded";
             cs = new PhoenixSpectrum("../data/phoenix_spectra/test.fits", "../data/phoenix_spectra/WAVE_PHOENIX-ACES-AGSS-COND-2011.fits", stod(vv[4]));
 
         }
@@ -290,7 +283,7 @@ int main(int argc, char *argv[])
     GratingEfficiency ge = GratingEfficiency(0.8, simulator.get_blaze(), simulator.get_blaze(), simulator.get_gpmm());
     auto ef = args["efficiency"].as<std::string>("");
 
-    Efficiency * eff = new Efficiency();;
+    auto * eff = new Efficiency();;
     if (!(ef.empty())){
         std::cout<< "Loading efficiency curve from " << ef << std::endl;
         eff = new CSVEfficiency(ef);
@@ -325,11 +318,10 @@ int main(int argc, char *argv[])
     std::cout << "Total Duration: "  << duration << std::endl;
 
     auto path = args["output"].as<std::string>("test.fit");
-    if (path.find("/") == std::string::npos) {
+    if (path.find('/') == std::string::npos) {
         simulator.save_to_fits("../simulations/" + path, false, false, !keep);
         std::string filename = "../simulations/" + path;
-        std::vector<std::string> * keys;
-        std::auto_ptr<CCfits::FITS> pFits(0);
+        std::unique_ptr<CCfits::FITS> pFits;
         pFits.reset( new CCfits::FITS(filename, CCfits::Write));
 
         try {
