@@ -1,0 +1,8 @@
+*/build
+cmake-build-*
+*/doc
+*/simulations
+examples
+*/phoenix_spectra/*
+**/*.fit
+**/*.save

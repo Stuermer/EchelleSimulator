@@ -5,14 +5,9 @@
 #ifndef ECHELLESIMULATOR_CCD_H
 #define ECHELLESIMULATOR_CCD_H
 
-
 #include "hdf5.h"
 #include <string>
 #include <vector>
-
-#ifdef USE_GPU
-#include "opencv2/gpu/gpu.hpp"
-#endif
 
 /*!
  * \class CCD
@@ -31,7 +26,7 @@ public:
 
     ~CCD();
 
-    void save_to_hdf(std::string filename, bool downsample = true, bool bleed = true, bool overwrite = false);
+    void save_to_hdf(std::string filename, bool down_sample = true, bool bleed = true, bool overwrite = false);
 
     void save_to_fits(std::string filename, bool overwrite);
 
@@ -43,16 +38,10 @@ public:
 //    static void do_bleed(cv::Mat &input, double limit);
 
 
-#ifdef USE_GPU
-    cv::gpu::GpuMat data;
-    bool use_gpu = true;
-#else
     std::vector<int> data;
     bool use_gpu = false;
-#endif
-
     int Nx, Ny;
-    double pixelsize;
+    double pixel_size;
 
 
 };

@@ -1,52 +1,35 @@
-//
-// Created by julian on 21.09.16.
-//
-
 #include "CCD.h"
 #include <CCfits/CCfits>
 #include "helper.h"
 
-CCD::CCD(int Nx, int Ny, double pixelsize) :Nx(Nx), Ny(Ny), pixelsize(pixelsize) {
-
-#ifdef USE_GPU
+CCD::CCD(int Nx, int Ny, double pixelsize) : Nx(Nx), Ny(Ny), pixel_size(pixelsize) {
     {
-        cv::Mat ones =  cv::Mat::zeros(Ny, Nx, CV_32FC1);
-        this->data = cv::gpu::GpuMat();
-        this->data.upload(ones);
+        this->data = std::vector<int>(Ny * Nx, 0);
     }
-#else
-    {
-//        this->data = cv::Mat::zeros(Ny, Nx, CV_16U);
-        this->data = std::vector<int>(Ny*Nx, 0);
-    }
-#endif
-
-    // this->data = cv::Mat::zeros(Ny, Nx, data_type);
-
 }
 
-double * CCD::get_pixelsize() {
-    return &this->pixelsize;
+double *CCD::get_pixelsize() {
+    return &this->pixel_size;
 }
 
-void CCD::save_to_hdf(std::string filename, bool downsample, bool bleed, bool overwrite) {
-//    cv::Mat res = this->get_image(downsample, bleed);
+void CCD::save_to_hdf(std::string filename, bool down_sample, bool bleed, bool overwrite) {
+//    cv::Mat res = this->get_image(down_sample, bleed);
 //    hdf5opencv::hdf5save(filename.c_str(), "image", res, overwrite);
     // MatToFile(res, filename);
 }
 
 void CCD::save_to_fits(std::string filename, bool overwrite) {
-    int n_axis    =   2;
-    long n_axes[2] = { Nx, Ny };
+    int n_axis = 2;
+    long n_axes[2] = {Nx, Ny};
     std::unique_ptr<CCfits::FITS> pFits;
     // Try to read in old image
-    long old_img_ax1=0;
-    long old_img_ax2=0;
-    std::valarray<int>  contents;
-    try{
+    long old_img_ax1 = 0;
+    long old_img_ax2 = 0;
+    std::valarray<int> contents;
+    try {
 
         pFits.reset(new CCfits::FITS(filename, CCfits::Read));
-        CCfits::PHDU& image = pFits->pHDU();
+        CCfits::PHDU &image = pFits->pHDU();
 
         image.readAllKeys();
         image.read(contents);
@@ -57,37 +40,32 @@ void CCD::save_to_fits(std::string filename, bool overwrite) {
         std::cout << "Old data found" << std::endl;
     }
     catch (...) {
-    // no old data
+        // no old data
         std::cout << "No old data found" << std::endl;;
-        pFits.reset( new CCfits::FITS(filename, LONG_IMG , n_axis , n_axes ) );
+        pFits.reset(new CCfits::FITS(filename, LONG_IMG, n_axis, n_axes));
         pFits->flush();
         pFits->destroy();
     }
 
-    try
-    {
-        pFits.reset( new CCfits::FITS(filename, CCfits::Write));
+    try {
+        pFits.reset(new CCfits::FITS(filename, CCfits::Write));
 
     }
-    catch (CCfits::FITS::CantCreate)
-    {
+    catch (CCfits::FITS::CantCreate) {
         // ... or not, as the case may be.
-        std::cout<<"Can't create FITS file."<< std::endl;
+        std::cout << "Can't create FITS file." << std::endl;
     }
     long n_elements(1);
-    n_elements = std::accumulate(&n_axes[0],&n_axes[n_axis],1,std::multiplies<long>());
-    long  f_pixel(1);
-    std::valarray<int> data_array(Nx*Ny);
-    if ((old_img_ax1>0) & (old_img_ax2>0) & !overwrite)
-    {
-        for (int i=0; i<Nx*Ny; ++i) {
+    n_elements = std::accumulate(&n_axes[0], &n_axes[n_axis], 1, std::multiplies<long>());
+    long f_pixel(1);
+    std::valarray<int> data_array(Nx * Ny);
+    if ((old_img_ax1 > 0) & (old_img_ax2 > 0) & !overwrite) {
+        for (int i = 0; i < Nx * Ny; ++i) {
             data_array[i] = (int) this->data[i] + contents[i];
         }
-    }
-    else
-    {
+    } else {
 
-    for (int i=0; i<Nx*Ny; ++i) {
+        for (int i = 0; i < Nx * Ny; ++i) {
             data_array[i] = (int) this->data[i];
         }
     }
@@ -96,9 +74,10 @@ void CCD::save_to_fits(std::string filename, bool overwrite) {
     pFits->flush();
 
 }
+
 CCD::~CCD() = default;
 
-//cv::Mat CCD::get_image(bool downsample, bool bleed) {
+//cv::Mat CCD::get_image(bool down_sample, bool bleed) {
 //    cv::Mat result;
 //    cv::Mat initial(Ny,Nx, CV_16UC1);
 //    for(int i=0; i<Ny; ++i){
@@ -106,7 +85,7 @@ CCD::~CCD() = default;
 //            initial.at<unsigned short>(j, i) = (unsigned short) this->data[j*Nx+i];
 //        }
 //    }
-//    if (downsample){
+//    if (down_sample){
 //        #ifdef  USE_GPU
 //                {
 //                this->data.download(result)
@@ -129,7 +108,7 @@ CCD::~CCD() = default;
 //    return result;
 //}
 
-//void do_bleed_updown(cv::Mat &input, double & limit, int i, int j){
+//void do_bleed_up_down(cv::Mat &input, double & limit, int i, int j){
 //    //find limit
 //    int k = i;
 //    while ((k>1) && (k<input.rows-1) && (input.at<unsigned short>(k, j)))
@@ -141,7 +120,7 @@ CCD::~CCD() = default;
 //    if(i>0)
 //    {
 //        if (input.at<unsigned short>(i-1,j) > limit)
-//            do_bleed_updown(input, limit, i-1, j);
+//            do_bleed_up_down(input, limit, i-1, j);
 //    }
 //    double diff = input.at<double>(i, j) - limit;
 //    if ((diff > 0) && (i + 2 < input.rows) && (i - 2 > 0)) {
@@ -150,8 +129,8 @@ CCD::~CCD() = default;
 //        input.at<double>(i - 1, j) += diff/2.;
 ////        input.at<double>(i - 1, j) += diff / 2.;
 //        input.at<double>(i, j) -= diff;
-//        do_bleed_updown(input, limit, i - 1, j);
-//        do_bleed_updown(input, limit, i + 1, j);
+//        do_bleed_up_down(input, limit, i - 1, j);
+//        do_bleed_up_down(input, limit, i + 1, j);
 //    }
 //}
 
@@ -169,7 +148,7 @@ CCD::~CCD() = default;
 //    for(int i=0; i<input.cols; ++i) {
 //        for (int j = 0; j < input.rows; ++j) {
 //            if(input.at<unsigned short>(j,i) > limit){
-//                do_bleed_updown(input, limit, j, i);
+//                do_bleed_up_down(input, limit, j, i);
 //            }
 //        }
 //    }

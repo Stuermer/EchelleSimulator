@@ -22,7 +22,6 @@
 #include "source.h"
 #include <CCfits/CCfits>
 #include <helper.h>
-//#include <Histogram.h>
 
 Source::Source()
 {
@@ -104,7 +103,6 @@ void Source::scale_spectral_density() {
     }
 
     s_val = s_val * pow(10, mag/(-2.5))*v_zp / (area);
-    //std::cout<<s_val<<std::endl;
 
 }
 

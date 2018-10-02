@@ -1,7 +1,7 @@
 project(echellesimulator)
+cmake_minimum_required(VERSION 3.0)
 include(ExternalProject)
 
-cmake_minimum_required(VERSION 3.0)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/src/CMakeModules/")
 INSTALL_FILES("${CMAKE_ROOT}/Modules" FILES "${CMAKE_SOURCE_DIR}/FindCCOIFITS.cmake")
 
@@ -39,16 +39,18 @@ ELSEIF(CMAKE_BUILD_TYPE MATCHES RelWithDebInfo)
  set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -std=c++11 -O3 -g")
 ENDIF()
 
-# Download JSON c++
+# Download fmt
 ExternalProject_Add(fmt
         GIT_REPOSITORY https://github.com/fmtlib/fmt.git
-#        GIT_TAG v5.0.0
+        GIT_TAG 3e75ad9822980e41bc591938f26548f24eb88907
         INSTALL_COMMAND ""
         UPDATE_COMMAND ""
+        BUILD_COMMAND ""
         )
 ExternalProject_Get_Property(fmt source_dir)
 set(FMT_INCLUDE_DIR ${source_dir}/include)
-MESSAGE(${FMT_INCLUDE_DIR})
+#MESSAGE(${FMT_INCLUDE_DIR})
+INCLUDE_DIRECTORIES(${FMT_INCLUDE_DIR})
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/build")
 
@@ -58,5 +60,6 @@ file(GLOB SOURCES
         )
 
 add_executable(echellesimulator ${SOURCES})
+add_dependencies(echellesimulator fmt)
 target_include_directories(echellesimulator PRIVATE ${FMT_INCLUDE_DIR})
 target_link_libraries(echellesimulator ${LINK_LIBS} )

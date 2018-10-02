@@ -17,139 +17,138 @@ using std::ostream;
 using std::ostringstream;
 using std::string;
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
 
-    parser argparser {{
+    parser argparser{{
 
-                      {
-                              "help", {"-h", "--help"},
-                              "Print help and exit", 0
-                      },
+                             {
+                                     "help", {"-h", "--help"},
+                                     "Print help and exit", 0
+                             },
 
-                      {
+                             {
 
-                              "spectrograph", {"-s", "--spectrograph"},
-                              "name of spectrograph (default: MaroonX), name has to match filename", 1
+                                     "spectrograph", {"-s", "--spectrograph"},
+                                     "name of spectrograph (default: MaroonX), name has to match filename", 1
 
-                      },
+                             },
 
-                      {
+                             {
 
-                              "fiber", {"-f", "--fiber"},
-                              "fiber number to use for simulations. Starts at 1. (default: 1) ", 1
+                                     "fiber", {"-f", "--fiber"},
+                                     "fiber number to use for simulations. Starts at 1. (default: 1) ", 1
 
-                      },
+                             },
 
-                      {
+                             {
 
-                              "keep", {"-k", "--keep-ccd"},
-                              "if 1 it adds simulated spectrum to .fits file rather than overwrites it. This can be used for the simulation of multiple fibers/slits.", 1
+                                     "keep", {"-k", "--keep-ccd"},
+                                     "if 1 it adds simulated spectrum to .fits file rather than overwrites it. This can be used for the simulation of multiple fibers/slits.", 1
 
-                      },
+                             },
 
-                      {
-                              "blackbody", {"-b", "--blackbody"},
-                              "OPTIONAL: Simulate a blackbody with effective temperature K and magnitude M. example usage: --blackbody 3500,1.0 ", 1
-                      },
+                             {
+                                     "blackbody", {"-b", "--blackbody"},
+                                     "OPTIONAL: Simulate a blackbody with effective temperature K and magnitude M. example usage: --blackbody 3500,1.0 ", 1
+                             },
 
-                      {
+                             {
 
-                              "coehlo", {"--coehlo"},
-                              "OPTIONAL: Simulate a solar coehlo spectra from a file."
-                              "Check http://specmodels.iag.usp.br/fits_search/?refer=s_coelho05 for available files."
-                              "Example usage: --coehlo file_path,magnitude", 1
+                                     "coehlo", {"--coehlo"},
+                                     "OPTIONAL: Simulate a solar coehlo spectra from a file."
+                                     "Check http://specmodels.iag.usp.br/fits_search/?refer=s_coelho05 for available files."
+                                     "Example usage: --coehlo file_path,magnitude", 1
 
-                      },
+                             },
 
-                      {
+                             {
 
-                              "custom1", {"--custom1"},
-                              "OPTIONAL: Simulate a spectra given by the user."
-                              "Example usage: --custom spectra_file,min_w,max_w,magnitude",1
+                                     "custom1", {"--custom1"},
+                                     "OPTIONAL: Simulate a spectra given by the user."
+                                     "Example usage: --custom spectra_file,min_w,max_w,magnitude", 1
 
-                      },
+                             },
 
-                      {
+                             {
 
-                              "custom2", {"--custom2"},
-                              "OPTIONAL: Simulate a spectra given by the user."
-                              "Example usage: --custom spectra_file,wave_file,magnitude",1
+                                     "custom2", {"--custom2"},
+                                     "OPTIONAL: Simulate a spectra given by the user."
+                                     "Example usage: --custom spectra_file,wave_file,magnitude", 1
 
-                      },
+                             },
 
-                      {
+                             {
 
-                              "linelist", {"--linelist"},"Hello",1
+                                     "linelist", {"--linelist"}, "Hello", 1
 
-                      },
+                             },
 
-                      {
-                              "phoenix", {"-p", "--phoenix"},
-                              "OPTIONAL: Simulate a mdwarf phoenix spectra with effective temperature T, magnitude M, log g, metalicity, alpha."
-                              "Check http://phoenix.astro.physik.uni-goettingen.de/?page_id=15 for parameter ranges."
-                              "general usage: --phoenix <T>,<Z>,<alpha>,<log g>,<mag>"
-                              "example usage: --phoenix 3200,-1.,0.,-5.5,1", 1
-                      },
+                             {
+                                     "phoenix", {"-p", "--phoenix"},
+                                     "OPTIONAL: Simulate a mdwarf phoenix spectra with effective temperature T, magnitude M, log g, metalicity, alpha."
+                                     "Check http://phoenix.astro.physik.uni-goettingen.de/?page_id=15 for parameter ranges."
+                                     "general usage: --phoenix <T>,<Z>,<alpha>,<log g>,<mag>"
+                                     "example usage: --phoenix 3200,-1.,0.,-5.5,1", 1
+                             },
 
-                      {
+                             {
 
-                              "constant", {"-c", "--constant"},
-                              "OPTIONAL: Simulate a constant spectra with density in units [micro watt] / ([micro meter] * [meter]^2) "
-                              "in a wavelength range min_w to max_w [micro meter] "
-                              "general usage:  constant <micro watt>,<min_wavelength>,<max_wavelength>"
-                              "(default: --constant 0.01,0,1)", 1
+                                     "constant", {"-c", "--constant"},
+                                     "OPTIONAL: Simulate a constant spectra with density in units [micro watt] / ([micro meter] * [meter]^2) "
+                                     "in a wavelength range min_w to max_w [micro meter] "
+                                     "general usage:  constant <micro watt>,<min_wavelength>,<max_wavelength>"
+                                     "(default: --constant 0.01,0,1)", 1
 
-                      },
+                             },
 
-                      {
+                             {
 
-                              "radial_velocity", {"-r", "--radial-velocity"},
-                              "OPTIONAL: radial velocity shift [m/s] (default: 0) ", 1
+                                     "radial_velocity", {"-r", "--radial-velocity"},
+                                     "OPTIONAL: radial velocity shift [m/s] (default: 0) ", 1
 
-                      },
-                      {
+                             },
+                             {
 
-                              "integration_time", {"-t", "--integration-time"},
-                              "OPTIONAL: integration time of the spectrograph [s] (default: 1) ", 1
+                                     "integration_time", {"-t", "--integration-time"},
+                                     "OPTIONAL: integration time of the spectrograph [s] (default: 1) ", 1
 
-                      },
-                      {
+                             },
+                             {
 
-                              "output", {"-o", "--output"},
-                              "OPTIONAL: path of the output fits file. If only a filename is given, the image will be saved in "
-                                      "../simulations/filename. Otherwise it's assumed the path is absolute (default: test.fit) ", 1
+                                     "output", {"-o", "--output"},
+                                     "OPTIONAL: path of the output fits file. If only a filename is given, the image will be saved in "
+                                     "../simulations/filename. Otherwise it's assumed the path is absolute (default: test.fit) ", 1
 
-                      },
+                             },
 
-                      {
+                             {
 
-                              "seed", {"--seed"},
-                              "OPTIONAL: random seed used for simulations. If 0, random seed is generated by std::random_device. (default: 0) ", 1
+                                     "seed", {"--seed"},
+                                     "OPTIONAL: random seed used for simulations. If 0, random seed is generated by std::random_device. (default: 0) ", 1
 
-                      },
+                             },
 
-                      {
+                             {
 
-                              "readnoise", {"--readnoise"},
-                              "OPTIONAL: std deviation of readnoise (default:0) ", 1
+                                     "readnoise", {"--readnoise"},
+                                     "OPTIONAL: std deviation of readnoise (default:0) ", 1
 
-                      },
+                             },
 
-                      {
+                             {
 
-                              "bias", {"--bias"},
-                              "OPTIONAL: bias level count. (default: 0)", 1
+                                     "bias", {"--bias"},
+                                     "OPTIONAL: bias level count. (default: 0)", 1
 
-                      },
+                             },
 
-                      {
+                             {
 
-                              "efficiency", {"--efficiency"},
-                              "OPTIONAL: .csv file with wavelength dependent efficiency values for correct signal scaling. File format is wl;efficiency", 1
+                                     "efficiency", {"--efficiency"},
+                                     "OPTIONAL: .csv file with wavelength dependent efficiency values for correct signal scaling. File format is wl;efficiency", 1
 
-                      },
-                      }};
+                             },
+                     }};
 
 
     // Define our usage text. (Really poor quality)
@@ -166,7 +165,7 @@ int main(int argc, char *argv[])
 
     try {
         args = argparser.parse(argc, argv);
-    } catch (const std::exception& e) {
+    } catch (const std::exception &e) {
         argagg::fmt_ostream fmt(cerr);
         fmt << usage.str() << argparser << endl
             << "Encountered exception while parsing arguments: " << e.what()
@@ -191,87 +190,82 @@ int main(int argc, char *argv[])
 
     MatrixSimulator simulator(spectrograph, fiber, false);
 
-    auto * cs = new Source();
+    auto *cs = new Source();
 
     if (args["blackbody"]) {
         auto v = args["blackbody"].as<string>();
         std::vector<std::string> vv = split(v, ',');
-        cout<<"Simulating a blackbody with T = "<< stod(vv[0])  <<" and magnitude K = " << stod(vv[0]) << endl;
+        cout << "Simulating a blackbody with T = " << stod(vv[0]) << " and magnitude K = " << stod(vv[0]) << endl;
 
-        cs = new Blackbody(stod(vv[0]) , stod(vv[1]));
+        cs = new Blackbody(stod(vv[0]), stod(vv[1]));
         source = "blackbody";
-    }
-    else if (args["phoenix"]) {
+    } else if (args["phoenix"]) {
         auto v = args["phoenix"].as<string>();
         std::vector<std::string> vv = split(v, ',');
-        cout<<"Simulating phoenix spectra with magnitude = "<< stod(vv[4]) << endl;
-        if(download_phoenix(std::stoi(vv[0]), std::stod(vv[3]), std::stod(vv[1]), std::stod(vv[2])) == 0){
+        cout << "Simulating phoenix spectra with magnitude = " << stod(vv[4]) << endl;
+        if (download_phoenix(std::stoi(vv[0]), std::stod(vv[3]), std::stod(vv[1]), std::stod(vv[2])) == 0) {
 
-            const std::string& w_file = "../data/phoenix_spectra/WAVE_PHOENIX-ACES-AGSS-COND-2011.fits";
+            const std::string &w_file = "../data/phoenix_spectra/WAVE_PHOENIX-ACES-AGSS-COND-2011.fits";
 
-            if(!check_for(w_file)) {
+            if (!check_for(w_file)) {
                 download_wave_grid("../data/phoenix_spectra/WAVE_PHOENIX-ACES-AGSS-COND-2011.fits");
             }
-            cs = new PhoenixSpectrum("../data/phoenix_spectra/test.fits", "../data/phoenix_spectra/WAVE_PHOENIX-ACES-AGSS-COND-2011.fits", stod(vv[4]));
+            cs = new PhoenixSpectrum("../data/phoenix_spectra/test.fits",
+                                     "../data/phoenix_spectra/WAVE_PHOENIX-ACES-AGSS-COND-2011.fits", stod(vv[4]));
 
-        }
-        else{
+        } else {
             argagg::fmt_ostream fmt(cerr);
             fmt << usage.str() << argparser;
             return EXIT_FAILURE;
         }
         source = "phoenix";
-    }
-    else if (args["coehlo"]) {
+    } else if (args["coehlo"]) {
 
         auto v = args["choehlo"].as<string>();
         std::vector<std::string> vv = split(v, ',');
-        cout<<"Simulating coehlo spectra with magnitude = "<< stod(vv[1]) << endl;
+        cout << "Simulating coehlo spectra with magnitude = " << stod(vv[1]) << endl;
 
-        cs = new CoehloSpectrum(vv[0],stod(vv[1]));
+        cs = new CoehloSpectrum(vv[0], stod(vv[1]));
         source = "choehlo";
-    }
-    else if (args["custom1"]) {
+    } else if (args["custom1"]) {
 
         auto v = args["custom1"].as<string>();
         std::vector<std::string> vv = split(v, ',');
-        cout<<"Simulating coehlo spectra with magnitude = "<< stod(vv[3]) << endl;
+        cout << "Simulating coehlo spectra with magnitude = " << stod(vv[3]) << endl;
 
-        cs = new CustomSpectrum(vv[0],stod(vv[1]),stod(vv[2]),stod(vv[3]));
+        cs = new CustomSpectrum(vv[0], stod(vv[1]), stod(vv[2]), stod(vv[3]));
 
-    }
-    else if (args["custom2"]) {
+    } else if (args["custom2"]) {
 
         auto v = args["custom2"].as<string>();
         std::vector<std::string> vv = split(v, ',');
-        cout<<"Simulating coehlo spectra with magnitude = "<< stod(vv[2]) << endl;
+        cout << "Simulating coehlo spectra with magnitude = " << stod(vv[2]) << endl;
 
-        cs = new CustomSpectrum(vv[0],vv[1],stod(vv[2]));
+        cs = new CustomSpectrum(vv[0], vv[1], stod(vv[2]));
 
-    }
-    else if (args["linelist"]){
+    } else if (args["linelist"]) {
 
         auto v = args["linelist"].as<string>();
         std::vector<std::string> vv = split(v, ',');
-        cout<<"Simulating line list spectra with scaling factor = "<< stod(vv[1]) << endl;
+        cout << "Simulating line list spectra with scaling factor = " << stod(vv[1]) << endl;
         cs = new LineList(vv[0], stod(vv[1]));
 
         simulator.mode = false;
 
         source = "line list";
 
-    }
-    else if (args["constant"]) {
+    } else if (args["constant"]) {
         auto v = args["constant"].as<string>();
         std::vector<std::string> vv = split(v, ',');
-        cout<<"Simulating constant source with spectral density = "<< stod(vv[0]) << " [micro watt] / ([micro meter] * [meter]^2)" << endl;
+        cout << "Simulating constant source with spectral density = " << stod(vv[0])
+             << " [micro watt] / ([micro meter] * [meter]^2)" << endl;
 
-        cs = new Constant(stod(vv[0]),stod(vv[1]),stod(vv[2]));
+        cs = new Constant(stod(vv[0]), stod(vv[1]), stod(vv[2]));
         source = "constant";
-    }
-    else{
+    } else {
 
-        cout<<"Simulating constant source with spectral density = 1 [micro watt] / ([micro meter] * [meter]^2)" << endl;
+        cout << "Simulating constant source with spectral density = 1 [micro watt] / ([micro meter] * [meter]^2)"
+             << endl;
         cs = new Constant();
         source = "constant";
     }
@@ -283,9 +277,9 @@ int main(int argc, char *argv[])
     GratingEfficiency ge = GratingEfficiency(0.8, simulator.get_blaze(), simulator.get_blaze(), simulator.get_gpmm());
     auto ef = args["efficiency"].as<std::string>("");
 
-    auto * eff = new Efficiency();;
-    if (!(ef.empty())){
-        std::cout<< "Loading efficiency curve from " << ef << std::endl;
+    auto *eff = new Efficiency();;
+    if (!(ef.empty())) {
+        std::cout << "Loading efficiency curve from " << ef << std::endl;
         eff = new CSVEfficiency(ef);
         simulator.add_efficiency(eff);
     }
@@ -297,12 +291,11 @@ int main(int argc, char *argv[])
     simulator.set_source(cs);
 
     // in case of 'normal' continuous spectrum
-    if(cs->mode){
+    if (cs->mode) {
         simulator.set_wavelength(10000);
-    }
-    else {
-        simulator.set_wavelength(cs -> get_wavelength());
-        cout<<"Running LineList Test"<<endl;
+    } else {
+        simulator.set_wavelength(cs->get_wavelength());
+        cout << "Running LineList Test" << endl;
     }
 
     auto t = args["integration_time"].as<double>(1.);
@@ -314,28 +307,27 @@ int main(int argc, char *argv[])
     simulator.add_background(bias, readnoise, seed);
 
     high_resolution_clock::time_point t2 = high_resolution_clock::now();
-    auto duration = duration_cast<microseconds>( t2 - t1 ).count()/1000000.;
-    std::cout << "Total Duration: "  << duration << std::endl;
+    auto duration = duration_cast<microseconds>(t2 - t1).count() / 1000000.;
+    std::cout << "Total Duration: " << duration << std::endl;
 
     auto path = args["output"].as<std::string>("test.fit");
     if (path.find('/') == std::string::npos) {
         simulator.save_to_fits("../simulations/" + path, false, false, !keep);
         std::string filename = "../simulations/" + path;
         std::unique_ptr<CCfits::FITS> pFits;
-        pFits.reset( new CCfits::FITS(filename, CCfits::Write));
+        pFits.reset(new CCfits::FITS(filename, CCfits::Write));
 
         try {
             pFits->pHDU().addKey("EXPTIME", t, "exposure time");
             pFits->pHDU().addKey("Spectrograph", spectrograph, "Used spectrograph model");
         }
-        catch(...) {
+        catch (...) {
 
-                std::cout<< "keys already exists - skipping";
+            std::cout << "keys already exists - skipping";
         };
-        pFits->pHDU().addKey("Fiber_"+std::to_string(fiber), source, "Source for Fiber "+std::to_string(fiber));
+        pFits->pHDU().addKey("Fiber_" + std::to_string(fiber), source, "Source for Fiber " + std::to_string(fiber));
 
-    }
-    else {
+    } else {
         simulator.save_to_fits(path, false, false, !keep);
     }
 

@@ -12,13 +12,11 @@
 #include "telescope.h"
 #include <array>
 
-
 struct raw_transformation {
     int order;
     double wavelength;
-    std::array<float,6> transformation_matrix;
+    std::array<float, 6> transformation_matrix;
     std::vector<float> decomposed_matrix;
-
 };
 
 struct spectrograph_information {
@@ -153,13 +151,14 @@ private:
      *
      */
     void calc_splines();
+
     /**
  * Get affine transformation matrix at specific wavelength and order
  * @param order echelle diffraction order
  * @param wavelength wavelength [micron]
  * @return 2x3 affine transformation matrix
  */
-    std::array<float,6> get_transformation_matrix(int order, double wavelength);
+    std::array<float, 6> get_transformation_matrix(int order, double wavelength);
 
     /**
      * Get affine transformation matrix, but use lookup tables for speedup.
@@ -169,7 +168,7 @@ private:
      * @param wavelength wavelength [micron]
      * @return 2x3 affine transformation matrix
      */
-    inline std::array<float,6> get_transformation_matrix_lookup(int o, double wavelength);
+    inline std::array<float, 6> get_transformation_matrix_lookup(int o, double wavelength);
 
     void set_efficiencies(std::vector<Efficiency *> &efficiencies);
 
@@ -180,7 +179,9 @@ private:
     void set_psfs(PSF *psfs);
 
     void prepare_sources(std::vector<Source *> sources);
+
     void prepare_psfs(int N);
+
     void prepare_matrix_lookup(int N);
 
     std::vector<int> orders;
@@ -202,7 +203,7 @@ private:
     Slit *slit;
 
     std::vector<std::vector<double>> sim_wavelength;
-    std::vector<std::vector<std::array<float,6> >> sim_matrices;
+    std::vector<std::vector<std::array<float, 6> >> sim_matrices;
     std::vector<std::vector<double>> sim_efficiencies;
     std::vector<std::vector<float>> sim_spectra;
     std::vector<std::vector<float>> sim_spectra_time_efficieny;

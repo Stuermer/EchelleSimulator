@@ -19,69 +19,83 @@
 
 #ifndef EFFICIENCY_H
 #define EFFICIENCY_H
+
 #include <string>
-#include <vector> 
+#include <vector>
 #include <map>
 
-class Efficiency
-{
+class Efficiency {
 public:
     Efficiency();
+
     virtual ~Efficiency();
+
     virtual std::vector<double> get_efficiency(int order, std::vector<double> &wavelength);
+
     virtual std::vector<double> get_efficiency(int order, std::vector<double> &wavelength, int N);
+
 private:
-  
+
 };
-class ConstantEfficiency: public Efficiency
-{
+
+class ConstantEfficiency : public Efficiency {
 public:
     ConstantEfficiency(double efficiency);
+
     std::vector<double> get_efficiency(int order, std::vector<double> &wavelength);
+
     std::vector<double> get_efficiency(int order, std::vector<double> &wavelength, int N);
+
 private:
     double eff;
 };
 
-class GratingEfficiency : public Efficiency
-{
+class GratingEfficiency : public Efficiency {
 public:
-    GratingEfficiency(double scalingfactor, double alpha, double blaze, double gpmm);
+    GratingEfficiency(double scaling_factor, double alpha, double blaze, double gpmm);
 
     std::vector<double> get_efficiency(int order, std::vector<double> &wavelength);
+
     std::vector<double> get_efficiency(int order, std::vector<double> &wavelength, int N);
 
 private:
-  double scalingfactor=0.8;
-  double alpha=76.;
-  double blaze=76.;
-  double gpmm=31.6;
-  double calc_eff(double scalingfactor, int order, double alpha, double blaze, double wl, double n);
-      
+    double scalingfactor = 0.8;
+    double alpha = 76.;
+    double blaze = 76.;
+    double gpmm = 31.6;
+
+    double calc_eff(double scalingfactor, int order, double alpha, double blaze, double wl, double n);
+
 };
 
-class EtalonEfficiency : public Efficiency
-{
+class EtalonEfficiency : public Efficiency {
 public:
-        /*!
-     * Constructor.
-     *
-     * @param d mirror distance in mm
-     * @param n refractive index of the medium between mirrors
-     * @param theta angle of incidence
-     * @param R reflectivity of the mirrors
-     */
+    /*!
+ * Constructor.
+ *
+ * @param d mirror distance in mm
+ * @param n refractive index of the medium between mirrors
+ * @param theta angle of incidence
+ * @param R reflectivity of the mirrors
+ */
     EtalonEfficiency(double d, double n, double theta, double R);
+
     ~EtalonEfficiency();
+
     std::vector<double> get_efficiency(int order, std::vector<double> &wavelength);
+
     std::vector<double> get_efficiency(int order, std::vector<double> &wavelength, int N);
 
 
 private:
     double coefficient_of_finesse(double R);
+
     double get_local_efficiency(double wavelength);
+
     double integral_s(double a, double b, int n);
+
     double T(double wl, double theta, double d, double n, double cF);
+
     int integration_steps;
     double d;
     double n;
@@ -91,11 +105,14 @@ private:
 
 };
 
-class CSVEfficiency : public Efficiency{
+class CSVEfficiency : public Efficiency {
 public:
     CSVEfficiency(std::string path);
+
     std::vector<double> get_efficiency(int order, std::vector<double> &wavelength);
+
     std::vector<double> get_efficiency(int order, std::vector<double> &wavelength, int N);
+
 private:
     std::vector<double> wl;
     std::vector<double> ef;
