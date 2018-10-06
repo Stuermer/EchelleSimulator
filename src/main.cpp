@@ -15,7 +15,6 @@ using std::endl;
 using std::ofstream;
 using std::ostream;
 using std::ostringstream;
-using std::string;
 
 int main(int argc, char *argv[]) {
 
@@ -88,7 +87,7 @@ int main(int argc, char *argv[]) {
                                      "OPTIONAL: Simulate a mdwarf phoenix spectra with effective temperature T, magnitude M, log g, metalicity, alpha."
                                      "Check http://phoenix.astro.physik.uni-goettingen.de/?page_id=15 for parameter ranges."
                                      "general usage: --phoenix <T>,<Z>,<alpha>,<log g>,<mag>"
-                                     "example usage: --phoenix 3200,-1.,0.,-5.5,1", 1
+                                     "example usage: --phoenix 3200,-1.,0.,5.5,1", 1
                              },
 
                              {
@@ -193,24 +192,24 @@ int main(int argc, char *argv[]) {
     auto *cs = new Source();
 
     if (args["blackbody"]) {
-        auto v = args["blackbody"].as<string>();
+        auto v = args["blackbody"].as<std::string>();
         std::vector<std::string> vv = split(v, ',');
         cout << "Simulating a blackbody with T = " << stod(vv[0]) << " and magnitude K = " << stod(vv[0]) << endl;
 
         cs = new Blackbody(stod(vv[0]), stod(vv[1]));
         source = "blackbody";
     } else if (args["phoenix"]) {
-        auto v = args["phoenix"].as<string>();
+        auto v = args["phoenix"].as<std::string>();
         std::vector<std::string> vv = split(v, ',');
         cout << "Simulating phoenix spectra with magnitude = " << stod(vv[4]) << endl;
-        if (download_phoenix(std::stoi(vv[0]), std::stod(vv[3]), std::stod(vv[1]), std::stod(vv[2])) == 0) {
+        if (download_phoenix(std::stoi(vv[0]), std::stod(vv[3]), std::stod(vv[1]), std::stod(vv[2]), "../data/phoenix_spectra/spectrum.fits") == 0) {
 
             const std::string &w_file = "../data/phoenix_spectra/WAVE_PHOENIX-ACES-AGSS-COND-2011.fits";
 
-            if (!check_for(w_file)) {
+            if (!check_for_file(w_file)) {
                 download_wave_grid("../data/phoenix_spectra/WAVE_PHOENIX-ACES-AGSS-COND-2011.fits");
             }
-            cs = new PhoenixSpectrum("../data/phoenix_spectra/test.fits",
+            cs = new PhoenixSpectrum("../data/phoenix_spectra/spectrum.fits",
                                      "../data/phoenix_spectra/WAVE_PHOENIX-ACES-AGSS-COND-2011.fits", stod(vv[4]));
 
         } else {
@@ -221,7 +220,7 @@ int main(int argc, char *argv[]) {
         source = "phoenix";
     } else if (args["coehlo"]) {
 
-        auto v = args["choehlo"].as<string>();
+        auto v = args["choehlo"].as<std::string>();
         std::vector<std::string> vv = split(v, ',');
         cout << "Simulating coehlo spectra with magnitude = " << stod(vv[1]) << endl;
 
@@ -229,7 +228,7 @@ int main(int argc, char *argv[]) {
         source = "choehlo";
     } else if (args["custom1"]) {
 
-        auto v = args["custom1"].as<string>();
+        auto v = args["custom1"].as<std::string>();
         std::vector<std::string> vv = split(v, ',');
         cout << "Simulating coehlo spectra with magnitude = " << stod(vv[3]) << endl;
 
@@ -237,7 +236,7 @@ int main(int argc, char *argv[]) {
 
     } else if (args["custom2"]) {
 
-        auto v = args["custom2"].as<string>();
+        auto v = args["custom2"].as<std::string>();
         std::vector<std::string> vv = split(v, ',');
         cout << "Simulating coehlo spectra with magnitude = " << stod(vv[2]) << endl;
 
@@ -245,7 +244,7 @@ int main(int argc, char *argv[]) {
 
     } else if (args["linelist"]) {
 
-        auto v = args["linelist"].as<string>();
+        auto v = args["linelist"].as<std::string>();
         std::vector<std::string> vv = split(v, ',');
         cout << "Simulating line list spectra with scaling factor = " << stod(vv[1]) << endl;
         cs = new LineList(vv[0], stod(vv[1]));
@@ -255,7 +254,7 @@ int main(int argc, char *argv[]) {
         source = "line list";
 
     } else if (args["constant"]) {
-        auto v = args["constant"].as<string>();
+        auto v = args["constant"].as<std::string>();
         std::vector<std::string> vv = split(v, ',');
         cout << "Simulating constant source with spectral density = " << stod(vv[0])
              << " [micro watt] / ([micro meter] * [meter]^2)" << endl;
@@ -291,7 +290,7 @@ int main(int argc, char *argv[]) {
     simulator.set_source(cs);
 
     // in case of 'normal' continuous spectrum
-    if (cs->mode) {
+    if (!cs->is_list_like()) {
         simulator.set_wavelength(10000);
     } else {
         simulator.set_wavelength(cs->get_wavelength());

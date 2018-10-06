@@ -26,7 +26,7 @@
  * @param vec vector to be saved
  * @param filename path to output file
  */
-void vectorToFile(std::vector<double> const &vec, std::string const &filename);
+void vector_to_file(std::vector<double> const &vec, std::string const &filename);
 
 /*!
  * Decomposes a 2x3 affine transformation matrix into its underlying geometric components.
@@ -44,7 +44,7 @@ void vectorToFile(std::vector<double> const &vec, std::string const &filename);
  * @param mat 2x3 transformation matrix
  * @return [sx, sy, shear, \f$ \phi \f$, tx, ty]
  */
-std::array<float,6> decompose_matrix(std::array<float,6> mat);
+std::array<float, 6> decompose_matrix(std::array<float, 6> mat);
 
 /*!
  * Composes 2x3 transformation matrix from shear, scale, rotation and translation parameters.
@@ -65,25 +65,6 @@ std::array<float, 6> compose_matrix(std::vector<float> parameters);
  */
 std::vector<std::size_t> compute_sort_order(const std::vector<double> &v);
 
-/*!
- * Plots an OpenCV matrix of type CV_32.
- *
- * For plotting a double/float matrix, the matrix needs to be rescaled before plotted on screen.
- * @param img Matrix/Image to be plotted
- * @param windowname name of the window containing the plot
- */
-//void show_cv_matrix(cv::Mat img, std::string windowname);
-
-/*!
- * Prints out basic information about a Matrix/Image.
- *
- * Prints type, dimensions, min- and max value.
- *
- * @param img Matrix/Image to be evaluated.
- * @param imagename Name of the matrix
- */
-//void print_cv_matrix_info(cv::Mat img, std::string imagename);
-
 /**
  * Wraps an angle around [-pi, pi]
  * @param r in radian
@@ -95,25 +76,64 @@ double wrap_rads(double r);
  * Creates fits file
  * @param filename
  */
-void create_fits_file(std::string filename);
+//void create_fits_file(std::string filename);
 
+/**
+ * Linear interpolation of data at position x
+ * @param data data to interpolate
+ * @param x x
+ * @return interpolated value
+ */
 double interpolate(const std::map<double, double> &data, double x);
 
+/*
+ * Helper for HDF file to get group names
+ */
 herr_t file_info(hid_t loc_id, const char *name, const H5L_info_t *linfo, void *opdata);
 
 
-std::vector<float> random_from_2_distributions(std::vector<float> wl, std::vector<float> density1, std::vector<float> density2, int N_samples);
+//std::vector<float> random_from_2_distributions(std::vector<float> wl, std::vector<float> density1, std::vector<float> density2, int N_samples);
 
-
+/*
+ * Helper for string split
+ */
 template<typename Out>
 void split(const std::string &s, char delim, Out result);
 
+/*
+ * Helper for string split
+ */
 std::vector<std::string> split(const std::string &s, char delim);
 
-int download_phoenix(int Teff, double log_g, double z, double alpha);
+/**
+ * Downloads phoenix spectrum for given parameters.
+ *
+ * @param t_eff effective temperature [Kelvin]
+ * @param log_g surface gravity
+ * @param z overall metallicity
+ * @param alpha alpha element abundance
+ * @param path where to save the spectrum
+ * @return 0 if download succeeded, CURLeCode otherwise
+ */
+int download_phoenix(int t_eff, double log_g, double z, double alpha, const std::string path);
+
+/**
+ * Downloads phoenix wavelength grid file
+ * @param path where to save wavelength grid file
+ * @return 0 if succeeded, CURLeCode otherwise
+ */
 int download_wave_grid(std::string path);
-bool check_for(const std::string& name);
+
+/**
+ * Checks if file exists
+ * @param path file path to check
+ * @return true/false if file exists/doesn't exist
+ */
+bool check_for_file(const std::string &path);
+
+/*
+ * Helper for curl to write data to hard drive
+ */
 size_t write_data(void *ptr, size_t size, size_t nmemb, FILE *stream);
 
-//int save_to_fits(const std::string filename, cv::Mat img);
 #endif

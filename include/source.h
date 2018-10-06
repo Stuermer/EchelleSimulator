@@ -72,7 +72,7 @@ public:
     void scale_spectral_density();
     virtual std::vector<double> get_wavelength() {};
 
-    bool mode = true;
+    bool is_list_like() { return mode;};
 
 protected:
 
@@ -87,6 +87,8 @@ protected:
     double min_w = 0.45;
     /// maximum wavelength recorded for source [micro meters]
     double max_w = 1.0;
+    /// whether the source is list-like or not
+    bool mode;
 
 private:
 
@@ -107,9 +109,11 @@ private:
      * might not be very precise.
      */
     double integral_s(double a, double b, int n);
+    ///< current doppler shift
+    double shift;
+    ///< number of steps for the integrator
+    int integration_steps;
 
-    double shift; ///< current doppler shift
-    int integration_steps; ///< number of steps for the integrator
 };
 
 /*!

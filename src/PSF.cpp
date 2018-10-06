@@ -201,6 +201,8 @@ Matrix PSF_ZEMAX::interpolate_PSF(Matrix psf1, Matrix psf2, double w1, double w2
     maxX = 0;
     maxY = 0;
 
+    // interpolate and cut PSF to smallest rectangle that contains values > 0.001.
+    // When random values are drawn it helps to quicker find valid XY positions since we use the rejection method there
     float max_val=0;
     for(int i=0; i<comb_psf.rows; ++i){
         for(int j=0; j< comb_psf.cols; ++j){
@@ -233,7 +235,6 @@ Matrix PSF_ZEMAX::interpolate_PSF(Matrix psf1, Matrix psf2, double w1, double w2
             result.data[i][j] = comb_psf.data[comb_psf.rows-size_y*2+i][comb_psf.cols-size_x*2+j] / max_val;
         }
     }
-//    std::cout<< result.cols << "\t" << result.rows << std::endl;
     return result;
 
 }

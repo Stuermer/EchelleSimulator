@@ -1,17 +1,7 @@
-//
-// Created by zrobertson on 8/8/17.
-//
-
 #include "telescope.h"
 #include <math.h>
 
-Telescope::Telescope() {
-    this->d = 2/sqrt(M_PI);
-    this->f = 1.;
-}
-
-Telescope::~Telescope() {
-
+Telescope::Telescope(): d(2/sqrt(M_PI)),f(1.) {
 }
 
 Telescope::Telescope(double d, double f): d(d),f(f) {

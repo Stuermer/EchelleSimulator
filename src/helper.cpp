@@ -1,7 +1,6 @@
 #include "helper.h"
 #include <vector>
 #include <cmath>
-//#include "opencv2/core/core.hpp"
 #include <vector>
 #include <iterator>
 #include <iostream>
@@ -9,8 +8,6 @@
 #include <fstream>
 #include <string>
 #include <cstdlib>
-//#include "opencv2/imgproc/imgproc.hpp"
-//#include "opencv2/highgui/highgui.hpp"
 #include <CCfits/FITS.h>
 #include <CCfits/ExtHDU.h>
 #include <map>
@@ -22,20 +19,19 @@
 #define FMT_HEADER_ONLY
 #include <fmt/format.h>
 
-void vectorToFile(std::vector<double> const& vec, std::string const& filename) {
-  std::ofstream file(filename);
-  auto first = true;
-  for (float f : vec) 
-  { 
-      if (!first) { file << ","; } 
-      first = false; 
-      file << f; 
-  }
-  file << std::endl;
-  file.close();  
+void vector_to_file(std::vector<double> const &vec, std::string const &filename) {
+    std::ofstream file(filename);
+    auto first = true;
+    for (float f : vec) {
+        if (!first) { file << ","; }
+        first = false;
+        file << f;
+    }
+    file << std::endl;
+    file.close();
 }
 
-std::array<float,6> decompose_matrix(std::array<float,6> mat){
+std::array<float, 6> decompose_matrix(std::array<float, 6> mat) {
 
     /*
      * Matrix looks like:
@@ -50,37 +46,37 @@ std::array<float,6> decompose_matrix(std::array<float,6> mat){
     float tx = mat[2];
     float ty = mat[5];
 
-    float sx = sqrt(a*a+d*d);
-    float sy = sqrt(b*b+e*e);
+    float sx = sqrt(a * a + d * d);
+    float sy = sqrt(b * b + e * e);
 
-    float phi = atan2(d,a);
-    if (phi<0.1)
-      phi += 2.*M_PI;
+    float phi = atan2(d, a);
+    if (phi < 0.1)
+        phi += 2. * M_PI;
 
-    float shear = atan2(-b,e) - phi;
+    float shear = atan2(-b, e) - phi;
     if (shear < -6.1)
-        shear += 2.*M_PI;
+        shear += 2. * M_PI;
 
-    std::array<float,6> result={sx,sy,shear,phi,tx,ty};
+    std::array<float, 6> result = {sx, sy, shear, phi, tx, ty};
     // return <sx, sy, shear, rot, tx ,ty>
     return result;
 }
 
-std::array<float, 6> compose_matrix(std::vector<float> parameters){
+std::array<float, 6> compose_matrix(std::vector<float> parameters) {
     float sx = parameters[0];
     float sy = parameters[1];
     float shear = parameters[2];
     float rot = parameters[3];
 
-std::array<float, 6> m = {
-    sx * (float) cos(rot),
-    -sy * (float) sin(rot + shear),
-    parameters[4],
-    sx * (float) sin(rot),
-    sy * (float) cos(rot + shear),
-    parameters[5],
-};
-  return m;
+    std::array<float, 6> m = {
+            sx * (float) cos(rot),
+            -sy * (float) sin(rot + shear),
+            parameters[4],
+            sx * (float) sin(rot),
+            sy * (float) cos(rot + shear),
+            parameters[5],
+    };
+    return m;
 }
 
 std::vector<std::size_t> compute_sort_order(const std::vector<double> &v) {
@@ -97,65 +93,40 @@ std::vector<std::size_t> compute_sort_order(const std::vector<double> &v) {
 }
 
 
-double wrap_rads(double r)
-{
-    while ( r > M_PI ) {
+double wrap_rads(double r) {
+    while (r > M_PI) {
         r -= 2 * M_PI;
     }
 
-    while ( r <= -M_PI ) {
+    while (r <= -M_PI) {
         r += 2 * M_PI;
     }
 
     return r;
 }
 
-void create_fits_file(std::string filename){
-
-    CCfits::FITS infile(filename.c_str(), CCfits::Write);
-
-};
-
-double interpolate(const std::map<double,double> &data,
-                    double x)
-{
+double interpolate(const std::map<double, double> &data,
+                   double x) {
     typedef std::map<double, double>::const_iterator i_t;
 
-    i_t i=data.upper_bound(x);
-    if(i==data.end())
-    {
+    i_t i = data.upper_bound(x);
+    if (i == data.end()) {
         return (--i)->second;
     }
-    if (i==data.begin())
-    {
+    if (i == data.begin()) {
         return i->second;
     }
-    i_t l=i; --l;
+    i_t l = i;
+    --l;
 
-    const double delta=(x- l->first)/(i->first - l->first);
-    return delta*i->second +(1-delta)*l->second;
+    const double delta = (x - l->first) / (i->first - l->first);
+    return delta * i->second + (1 - delta) * l->second;
 }
 
-herr_t file_info(hid_t loc_id, const char *name, const H5L_info_t *linfo, void *opdata)
-{
-    hid_t group;
-    auto group_names=reinterpret_cast< std::vector<std::string>* >(opdata);
+herr_t file_info(hid_t loc_id, const char *name, const H5L_info_t *linfo, void *opdata) {
+    auto group_names = reinterpret_cast< std::vector<std::string> * >(opdata);
     group_names->push_back(name);
     return 0;
-}
-
-std::vector<float> random_from_2_distributions(std::vector<float> wl, std::vector<float> density1, std::vector<float> density2, int N_samples){
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::vector<float> result;
-    std::vector<float> combined_vec;
-    for(int i=0; i<density1.size(); ++i)
-        density1[i] *= density2[i];
-
-    std::piecewise_linear_distribution<> combined_dis(wl.begin(), wl.end(), combined_vec.begin());
-    for(int i=0; i<N_samples; ++i)
-        result.push_back(combined_dis(gen));
-    return result;
 }
 
 size_t write_data(void *ptr, size_t size, size_t nmemb, FILE *stream) {
@@ -163,63 +134,65 @@ size_t write_data(void *ptr, size_t size, size_t nmemb, FILE *stream) {
     return written;
 }
 
-int download_phoenix(int Teff, double log_g, double z, double alpha) {
+int download_phoenix(int t_eff, double log_g, double z, double alpha, const std::string path) {
     // check for valid inputs:
-    std::cout << "Trying to download PHOENIX Spectrum with: T_eff=" << Teff << " log_g=" <<log_g << " z=" << z <<" Alpha="<<alpha << std::endl;
+    std::cout << "Trying to download PHOENIX Spectrum with: T_eff=" << t_eff << " log_g=" << log_g << " z=" << z
+              << " Alpha=" << alpha << std::endl;
 
     std::vector<int> valid_T;
     std::vector<double> valid_g, valid_z, valid_a;
-    for(int i=2300; i<7000; i+=100) { valid_T.push_back(i); }
-    for(int i=7000; i<12200; i+=200) { valid_T.push_back(i); }
+    for (int i = 2300; i < 7000; i += 100) { valid_T.push_back(i); }
+    for (int i = 7000; i < 12200; i += 200) { valid_T.push_back(i); }
 
-    for(int i=0; i<12; ++i) { valid_g.push_back(i*0.5); }
-    for(int i=-4; i<-2; ++i) { valid_z.push_back(i); }
-    for(int i=-4; i<3; ++i) { valid_z.push_back(i*0.5); }
+    for (int i = 0; i < 12; ++i) { valid_g.push_back(i * 0.5); }
+    for (int i = -4; i < -2; ++i) { valid_z.push_back(i); }
+    for (int i = -4; i < 3; ++i) { valid_z.push_back(i * 0.5); }
 
-    for(int i=-1; i<7; ++i) { valid_a.push_back(i*0.5); }
+    for (int i = -1; i < 7; ++i) { valid_a.push_back(i * 0.5); }
 
-    bool found = (std::find(valid_T.begin(), valid_T.end(), Teff) != valid_T.end());
-    if (!found){
-        std::cout<<"Invalid Effective temperature value for Phoenix spectra." << std::endl;
-        return false;
+    bool found = (std::find(valid_T.begin(), valid_T.end(), t_eff) != valid_T.end());
+    if (!found) {
+        std::cout << "Invalid Effective temperature value for Phoenix spectra." << std::endl;
+        return true;
     }
 
     found = (std::find(valid_g.begin(), valid_g.end(), log_g) != valid_g.end());
-    if (!found){
-        std::cout<<"Invalid log_g value for Phoenix spectra." << std::endl;
-        return false;
+    if (!found) {
+        std::cout << "Invalid log_g value for Phoenix spectra." << std::endl;
+        return true;
     }
 
     found = (std::find(valid_z.begin(), valid_z.end(), z) != valid_z.end());
-    if (!found){
-        std::cout<<"Invalid z value for Phoenix spectra." << std::endl;
-        return false;
+    if (!found) {
+        std::cout << "Invalid z value for Phoenix spectra." << std::endl;
+        return true;
     }
 
     found = (std::find(valid_a.begin(), valid_a.end(), alpha) != valid_a.end());
-    if (!found){
-        std::cout<<"Invalid alpha value for Phoenix spectra." << std::endl;
-        return false;
+    if (!found) {
+        std::cout << "Invalid alpha value for Phoenix spectra." << std::endl;
+        return true;
     }
 
     std::string baseurl = "ftp://phoenix.astro.physik.uni-goettingen.de/HiResFITS/PHOENIX-ACES-AGSS-COND-2011/";
     std::string subgrid = "Z";
-    (z>0) ? subgrid += fmt::format("{:+2.1f}", z) : subgrid += "-"+ fmt::format("{:-2.1f}", z);
-    (fabs(alpha)<1E-10) ? subgrid+="" : subgrid+=".Alpha=";
-    (fabs(alpha)<1E-10) ? subgrid+="" : subgrid+=fmt::format("{:+2.2f}", alpha);
+    (z > 0) ? subgrid += fmt::format("{:+2.1f}", z) : subgrid += fmt::format("{:-2.1f}", z);
+    (fabs(alpha) < 1E-10) ? subgrid += "" : subgrid += ".Alpha=";
+    (fabs(alpha) < 1E-10) ? subgrid += "" : subgrid += fmt::format("{:+2.2f}", alpha);
 
-    std::string url = baseurl + subgrid + "/lte" + fmt::format("{:05}", Teff) +"-"+ fmt::format("{:2.2f}", log_g) +"-";
-    (z>0) ? url+=fmt::format("{:+2.1f}", z) : url+=fmt::format("{:-2.1f}", z);
-    (fabs(alpha)<1E-10) ? url += "" : url+=".Alpha=";
-    (fabs(alpha)<1E-10) ? url+="" : url+=fmt::format("{:+2.2f}", alpha);
+    std::string url =
+            baseurl + subgrid + "/lte" + fmt::format("{:05}", t_eff) + "-" + fmt::format("{:2.2f}", log_g);
+    (z > 0) ? url += fmt::format("{:+2.1f}", z) : url += fmt::format("{:-2.1f}", z);
+    (fabs(alpha) < 1E-10) ? url += "" : url += ".Alpha=";
+    (fabs(alpha) < 1E-10) ? url += "" : url += fmt::format("{:+2.2f}", alpha);
     url += ".PHOENIX-ACES-AGSS-COND-2011-HiRes.fits";
 
-    std::cout<<"Downloading spectra from: "<<url<<std::endl; //cover z = 0 case also see if adding x.0 and + | - is doable
+    std::cout << "Downloading spectra from: " << url
+              << std::endl; //cover z = 0 case also see if adding x.0 and + | - is doable
 
     CURL *curl;
     FILE *fp;
     CURLcode res;
-    std::string path = "../data/phoenix_spectra/test.fits";
     remove(path.c_str());
 
     curl = curl_easy_init();
@@ -238,7 +211,7 @@ int download_phoenix(int Teff, double log_g, double z, double alpha) {
 
 }
 
-int download_wave_grid(std::string path){
+int download_wave_grid(std::string path) {
 
     std::string url = "ftp://phoenix.astro.physik.uni-goettingen.de/HiResFITS//WAVE_PHOENIX-ACES-AGSS-COND-2011.fits";
 
@@ -262,8 +235,8 @@ int download_wave_grid(std::string path){
 
 }
 
-bool check_for (const std::string& name) {
-    if (FILE *file = fopen(name.c_str(), "r")) {
+bool check_for_file(const std::string &path) {
+    if (FILE *file = fopen(path.c_str(), "r")) {
         fclose(file);
         return true;
     } else {

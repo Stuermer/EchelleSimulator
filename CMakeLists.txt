@@ -17,10 +17,6 @@ message(${CMAKE_SOURCE_DIR})
 
 INCLUDE_DIRECTORIES (${HDF5_INCLUDE_DIRS})
 
-set (LINK_LIBS ${LINK_LIBS} ${HDF5_LIBRARIES} ${CCFITS_LIB} ${CFITSIO} ${HDF5_HL_LIBRARIES} curl)
-MESSAGE(${LINK_LIBS})
-
-#for optimized speed use following flags
 IF(CMAKE_BUILD_TYPE MATCHES Debug)
  message("Debug build.")
  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
@@ -49,8 +45,22 @@ ExternalProject_Add(fmt
         )
 ExternalProject_Get_Property(fmt source_dir)
 set(FMT_INCLUDE_DIR ${source_dir}/include)
-#MESSAGE(${FMT_INCLUDE_DIR})
 INCLUDE_DIRECTORIES(${FMT_INCLUDE_DIR})
+
+# Download argagg
+ExternalProject_Add(argagg
+        GIT_REPOSITORY https://github.com/vietjtnguyen/argagg.git
+        GIT_TAG 4c8c86180cfafb1448f583ed0973da8c2f559dd6
+        INSTALL_COMMAND ""
+        UPDATE_COMMAND ""
+        BUILD_COMMAND ""
+        )
+ExternalProject_Get_Property(argagg source_dir)
+MESSAGE(${source_dir})
+set(ARGAGG_INCLUDE_DIR ${source_dir}/include/argagg)
+MESSAGE(${ARGAGG_INCLUDE_DIR})
+INCLUDE_DIRECTORIES(${ARGAGG_INCLUDE_DIR})
+
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/build")
 
@@ -59,7 +69,19 @@ file(GLOB SOURCES
         src/*.cpp
         )
 
-add_executable(echellesimulator ${SOURCES})
+list(FILTER SOURCES EXCLUDE REGEX ".*main.cpp$")
+
+add_library(echellelib STATIC ${SOURCES})
+set (LINK_LIBS ${LINK_LIBS} ${HDF5_LIBRARIES} ${CCFITS_LIB} ${CFITSIO} ${HDF5_HL_LIBRARIES} curl)
+MESSAGE(${LINK_LIBS})
+target_link_libraries(echellelib ${LINK_LIBS})
+
+
+add_executable(echellesimulator src/main.cpp)
 add_dependencies(echellesimulator fmt)
 target_include_directories(echellesimulator PRIVATE ${FMT_INCLUDE_DIR})
-target_link_libraries(echellesimulator ${LINK_LIBS} )
+target_link_libraries(echellesimulator ${LINK_LIBS} echellelib)
+
+if (${TESTS})
+ add_subdirectory(tests)
+endif ()
