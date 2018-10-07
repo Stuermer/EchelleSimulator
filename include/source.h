@@ -273,28 +273,30 @@ private:
 };
 
 /*!
- * \class Phoenix
+ * \class PhoenixSpectrum
  * \brief Implements a *mdwarf spectrum* using data from the Phoenix data repository (remote)
  *
  */
-
 class PhoenixSpectrum : public Source{
 public:
+    /**
+     * Constructor. Reads in spectrum and wavelength files and scales it for given visual magnitude.
+     * @param spectrum_file file path for spectrum
+     * @param wavelength_file file path for wavelength file
+     * @param mag visual magnitude
+     */
     PhoenixSpectrum(std::string spectrum_file, std::string wavelength_file, double mag);
+
+    double get_spectral_density(double wavelength);
+private:
     /*!
      * read in the spectrum from file between min_wavelength and max_wavelength
      * @param spectrum_file file path of spectrum
      * @param wavelength_file file path of wavelength
-     * @param min_wavelength minimum wavelength in micrometer
-     * @param max_wavelength maximum wavelength in micrometer
      */
     void read_spectrum(std::string spectrum_file, std::string wavelength_file);
-    double get_spectral_density(double wavelength);
-
-private:
-
+    // contains wavelength, spectrum data
     std::map<double, double> data;
-
 };
 
 class CoehloSpectrum : public Source{
@@ -324,12 +326,6 @@ private:
     std::map<double, double> data;
 
 };
-
-/*!
- *
- * \class Phoenix
- *
- */
 
 /*!
  * \class LineList

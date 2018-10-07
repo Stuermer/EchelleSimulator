@@ -47,7 +47,6 @@ void MatrixSimulator::load_spectrograph_model(const std::string path, int fiber_
     this->sim_wavelength.clear();
     this->sim_spectra.clear();
     this->sim_efficiencies.clear();
-    this->sim_matrices.clear();
 
     // open file readonly
     auto *h5file = new H5::H5File(filename, H5F_ACC_RDONLY);
@@ -300,7 +299,7 @@ std::array<float, 6> MatrixSimulator::get_transformation_matrix(int o, double wa
     return compose_matrix(parameters);
 }
 
-int MatrixSimulator::simulate(double t, unsigned long seed) {
+void MatrixSimulator::simulate(double t, unsigned long seed) {
     this->set_efficiencies(this->efficiencies);
 
     this->prepare_sources(this->sources); //put area eventually in sources
@@ -319,8 +318,8 @@ int MatrixSimulator::simulate(double t, unsigned long seed) {
     for (int o = 0; o < this->orders.size(); ++o) {
         if (!sim_wavelength[o].empty()) {
             std::vector<double> a(sim_wavelength[o].begin(), sim_wavelength[o].end()); //units are um
-            std::vector<double> b(sim_spectra_time_efficieny[o].begin(),
-                                  sim_spectra_time_efficieny[o].end()); //units are uW per um
+            std::vector<double> b(sim_spectra_times_efficiency[o].begin(),
+                                  sim_spectra_times_efficiency[o].end()); //units are uW per um
 
             wl_s[o] = Histogram(a, b);
             wl_s[o].mode = this->mode;
@@ -541,7 +540,7 @@ void MatrixSimulator::prepare_sources(std::vector<Source *> sources) {
     // allocate memory so we can use omp parallel for filling
     for (int o = 0; o < this->orders.size(); ++o) {
         this->sim_spectra.push_back(std::vector<float>(this->sim_wavelength[o].size()));
-        this->sim_spectra_time_efficieny.push_back(std::vector<float>(this->sim_wavelength[o].size()));
+        this->sim_spectra_times_efficiency.push_back(std::vector<float>(this->sim_wavelength[o].size()));
     }
 
 #pragma omp parallel for
@@ -551,7 +550,7 @@ void MatrixSimulator::prepare_sources(std::vector<Source *> sources) {
                 std::vector<float> spectrum = s->get_spectrum(this->sim_wavelength[o]);
                 for (int i = 0; i < spectrum.size(); ++i) {
                     this->sim_spectra[o][i] = spectrum[i] * telescope.get_area();
-                    this->sim_spectra_time_efficieny[o][i] = spectrum[i] * this->sim_efficiencies[o][i];
+                    this->sim_spectra_times_efficiency[o][i] = spectrum[i] * this->sim_efficiencies[o][i];
                 }
             }
         }
@@ -566,27 +565,27 @@ void MatrixSimulator::add_efficiency(Efficiency *eff) {
 }
 
 
-void MatrixSimulator::set_ccd(CCD *ccd) {
-    this->ccd = ccd;
-}
+//void MatrixSimulator::set_ccd(CCD *ccd) {
+//    this->ccd = ccd;
+//}
 
-void MatrixSimulator::set_slit(Slit *slit) {
-    this->slit = slit;
-}
+//void MatrixSimulator::set_slit(Slit *slit) {
+//    this->slit = slit;
+//}
 
-void MatrixSimulator::set_psfs(PSF *psfs) {
-    this->psfs = psfs;
-}
+//void MatrixSimulator::set_psfs(PSF *psfs) {
+//    this->psfs = psfs;
+//}
 
 void MatrixSimulator::set_source(Source *src) {
     this->sources.push_back(src);
 }
 
-void MatrixSimulator::save_to_hdf(const std::string filename, bool downsample, bool bleed, bool overwrite) {
-    this->ccd->save_to_hdf(filename, downsample, bleed, overwrite);
+void MatrixSimulator::save_to_hdf(const std::string filename, bool bleed, bool overwrite) {
+    this->ccd->save_to_hdf(filename, bleed, overwrite);
 }
 
-void MatrixSimulator::save_to_fits(const std::string filename, bool downsample, bool bleed, bool overwrite) {
+void MatrixSimulator::save_to_fits(const std::string filename, bool bleed, bool overwrite) {
     this->ccd->save_to_fits(filename, overwrite);
 }
 

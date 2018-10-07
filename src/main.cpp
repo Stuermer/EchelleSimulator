@@ -311,7 +311,7 @@ int main(int argc, char *argv[]) {
 
     auto path = args["output"].as<std::string>("test.fit");
     if (path.find('/') == std::string::npos) {
-        simulator.save_to_fits("../simulations/" + path, false, false, !keep);
+        simulator.save_to_fits("../simulations/" + path, false, !keep);
         std::string filename = "../simulations/" + path;
         std::unique_ptr<CCfits::FITS> pFits;
         pFits.reset(new CCfits::FITS(filename, CCfits::Write));
@@ -327,7 +327,7 @@ int main(int argc, char *argv[]) {
         pFits->pHDU().addKey("Fiber_" + std::to_string(fiber), source, "Source for Fiber " + std::to_string(fiber));
 
     } else {
-        simulator.save_to_fits(path, false, false, !keep);
+        simulator.save_to_fits(path, false, !keep);
     }
 
     return 0;

@@ -1,5 +1,6 @@
-Introduction {#intro}
+Introduction
 ============
+
 
 Echelle spectrographs are named after its main optical component - an *Echelle* *grating* (from French échelle). They are used
 to obtain high-resolution, cross-dispersed spectra and are widely used in astronomy.

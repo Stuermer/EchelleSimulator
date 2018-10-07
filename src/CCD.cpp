@@ -12,7 +12,7 @@ double *CCD::get_pixelsize() {
     return &this->pixel_size;
 }
 
-void CCD::save_to_hdf(std::string filename, bool down_sample, bool bleed, bool overwrite) {
+void CCD::save_to_hdf(std::string filename, bool bleed, bool overwrite) {
 //    cv::Mat res = this->get_image(down_sample, bleed);
 //    hdf5opencv::hdf5save(filename.c_str(), "image", res, overwrite);
     // MatToFile(res, filename);

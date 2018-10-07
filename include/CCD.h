@@ -26,17 +26,28 @@ public:
 
     ~CCD();
 
-    void save_to_hdf(std::string filename, bool down_sample = true, bool bleed = true, bool overwrite = false);
-
+    /**
+     * Saves simulated data to HDF file
+     * @param filename file path
+     * @param bleed bleed overexposed pixel TODO: not implemented yet
+     * @param overwrite set true to overwrite existing file
+     */
+    void save_to_hdf(std::string filename, bool bleed = true, bool overwrite = false);
+    /**
+     * Saves simulated data to FITS file
+     * @param filename file path
+     * @param overwrite set true to overwrite existing file
+     */
     void save_to_fits(std::string filename, bool overwrite);
 
-//    cv::Mat get_image(bool downsample = true, bool bleed = true);
-
+    /**
+     * Returns pixel of the CCD detector size in microns.
+     * @return Pixel size [microns]
+     */
     double * get_pixelsize();
 
     //overload + operator
 //    static void do_bleed(cv::Mat &input, double limit);
-
 
     std::vector<int> data;
     bool use_gpu = false;
