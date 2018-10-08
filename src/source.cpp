@@ -22,7 +22,7 @@
 #include <CCfits/CCfits>
 #include <helper.h>
 
-Source::Source() : integration_steps(10), shift(1.), mode(true) {
+Source::Source() : integration_steps(10), shift(1.), list_like(true) {
 }
 
 Source::~Source() {
@@ -38,7 +38,7 @@ double Source::get_spectral_density(double wavelength) {
 }
 
 std::vector<float> Source::get_spectrum(std::vector<double> wavelength) {
-    if (this->mode) {
+    if (this->list_like) {
         std::vector<float> spectrum;
         std::vector<double> diff;
 
@@ -108,6 +108,7 @@ Constant::Constant(double value, double min_w, double max_w) {
     this->value = value; // uW per um (micro watts per micro meter// )
     this->min_w = min_w;
     this->max_w = max_w;
+    list_like = false;
 }
 
 Constant::Constant() {
@@ -117,7 +118,7 @@ Constant::Constant() {
 }
 
 Blackbody::Blackbody(double T, double mag) : T(T) {
-    this->mode = false;
+    this->list_like = false;
     this->mag = mag;
 
     min_w = 0; // Maybe set a cutoff based off intensity?
@@ -144,7 +145,7 @@ double Blackbody::get_spectral_density(double wavelength) {
 }
 
 PhoenixSpectrum::PhoenixSpectrum(std::string spectrum_file, std::string wavelength_file, double mag) {
-    mode = false;
+    list_like = false;
     this->read_spectrum(spectrum_file, wavelength_file);
     this->mag = mag;
     scale_spectral_density();
@@ -310,7 +311,7 @@ double CustomSpectrum::get_spectral_density(double wavelength) {
 }
 
 LineList::LineList(const std::string linelist_file, double scaling) {
-    mode = false;
+    list_like = false;
     this->scaling = scaling;
     this->read_spectrum(linelist_file);
 

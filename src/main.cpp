@@ -42,7 +42,8 @@ int main(int argc, char *argv[]) {
                              {
 
                                      "keep", {"-k", "--keep-ccd"},
-                                     "if 1 it adds simulated spectrum to .fits file rather than overwrites it. This can be used for the simulation of multiple fibers/slits.", 1
+                                     "if 1 it adds simulated spectrum to .fits file rather than overwrites it. "
+                                     "This can be used for the simulation of multiple fibers/slits.", 1
 
                              },
 
@@ -78,7 +79,7 @@ int main(int argc, char *argv[]) {
 
                              {
 
-                                     "linelist", {"--linelist"}, "Hello", 1
+                                     "linelist", {"--linelist"}, "OPTIONAL: simulates line list", 1
 
                              },
 

@@ -72,7 +72,7 @@ public:
     void scale_spectral_density();
     virtual std::vector<double> get_wavelength() {};
 
-    bool is_list_like() { return mode;};
+    bool is_list_like() { return list_like;};
 
 protected:
 
@@ -88,7 +88,7 @@ protected:
     /// maximum wavelength recorded for source [micro meters]
     double max_w = 1.0;
     /// whether the source is list-like or not
-    bool mode;
+    bool list_like;
 
 private:
 
