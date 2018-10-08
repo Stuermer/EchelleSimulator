@@ -1,7 +1,0 @@
-name: echellesimulator
-
-channels:
-- conda-forge
-
-dependencies:
-- breathe
