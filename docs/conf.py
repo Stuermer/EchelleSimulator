@@ -13,16 +13,20 @@
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
 import os
-# import sys
+import sys
+sys.path.insert(0, os.path.abspath('.'))
+
 on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
 
 if on_rtd:
     import subprocess
     subprocess.call('doxygen', shell=True)
 
-# sys.path.insert(0, os.path.abspath('.'))
-
-
+for dirname, dirnames, filenames in os.walk('.'):
+    # print path to all subdirectories first.
+    for subdirname in dirnames:
+        print(os.path.join(dirname, subdirname))
+        
 # -- Project information -----------------------------------------------------
 
 project = 'Echelle++'
