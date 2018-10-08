@@ -96,8 +96,8 @@ int main(int argc, char *argv[]) {
                                      "constant", {"-c", "--constant"},
                                      "OPTIONAL: Simulate a constant spectra with density in units [micro watt] / ([micro meter] * [meter]^2) "
                                      "in a wavelength range min_w to max_w [micro meter] "
-                                     "general usage:  constant <micro watt>,<min_wavelength>,<max_wavelength>"
-                                     "(default: --constant 0.01,0,1)", 1
+                                     "general usage:  constant <micro watt>"
+                                     "(default: --constant 0.01)", 1
 
                              },
 
@@ -258,7 +258,7 @@ int main(int argc, char *argv[]) {
         std::cout << "Simulating constant source with spectral density = " << stod(vv[0])
              << " [micro watt] / ([micro meter] * [meter]^2)" << std::endl;
 
-        cs = new Constant(stod(vv[0]), stod(vv[1]), stod(vv[2]));
+        cs = new Constant(stod(vv[0]), simulator.get_minimum_wavelength(), simulator.get_maximum_wavelength());
         source = "constant";
     } else {
 

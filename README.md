@@ -1,10 +1,11 @@
-![EchelleSimulator](https://github.com/Stuermer/EchelleSimulator/blob/master/doc/logo.png "Echelle Simulator")
+![EchelleSimulator](https://github.com/Stuermer/EchelleSimulator/blob/master/docs/logo.png "Echelle Simulator")
 
 
-Échelle++, a fast generic spectrum simulator.
+Echelle++, a fast generic spectrum simulator.
 [![Build Status](https://travis-ci.org/Stuermer/EchelleSimulator.svg?branch=master)](https://travis-ci.org/Stuermer/EchelleSimulator)
+[![Doc Status](https://readthedocs.org/projects/echellesimulator/badge/?version=latest)](https://readthedocs.org/projects/echellesimulator/badge/?version=latest)
 
-Échelle++ is a simulation tool, to generate realistic 2D spectra, in particular cross-dispersed echelle spectra.
+Echelle++ is a simulation tool, to generate realistic 2D spectra, in particular cross-dispersed echelle spectra.
 It allows to simulate arbitrary spectra for any fiber-fed or slit spectrograph, where a model file
 is available. Optical aberrations are treated accurately, the simulated spectra include photon and read-out noise.  
 
@@ -15,7 +16,7 @@ is available. Optical aberrations are treated accurately, the simulated spectra 
 simulates a phoenix M-dwarf spectrum with the given stellar parameters, and a RV shift of 100m/s for the MAROON-X spectrograph.
 The output looks similar to:
 
-![Echelle spectrum](https://github.com/Stuermer/EchelleSimulator/blob/master/doc/mdwarf.png "Simulated Echelle")
+![Echelle spectrum](https://github.com/Stuermer/EchelleSimulator/blob/master/docs/mdwarf.png "Simulated Echelle")
 
 See
 ```bash
@@ -47,7 +48,7 @@ Second, a wavelength-dependent **point spread functions (PSFs)** is applied on t
 account for optical aberrations. Again, the PSF is only slowly varying across an echelle order, allowing for 
 interpolation at intermediate wavelength.
 
-![Echelle simulation](https://github.com/Stuermer/EchelleSimulator/blob/master/doc/intro.png "Echelle simulation")
+![Echelle simulation](https://github.com/Stuermer/EchelleSimulator/blob/master/docs/intro.png "Echelle simulation")
 
 **Both, the matrices and the PSFs have to be extracted from ZEMAX only once. It is therefore possible to simulate 
 spectra without access to ZEMAX**
