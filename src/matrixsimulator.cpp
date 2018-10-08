@@ -324,9 +324,8 @@ void MatrixSimulator::simulate(double t, unsigned long seed) {
             wl_s[o] = Histogram(a, b);
             //units are assumed to be t=[s], area=[m^2], wl_s.dflux=[Num of Photons]/([s] * [m^2] * [um]), wl_s.Calc_flux = [Num of Photons]/([s]*[m^2])
             N_photons[o] = static_cast<int>(floor(wl_s[o].Calc_flux() * t));
+
             N_tot += N_photons[o];
-            //this->telescope->get_area();
-            //t*area*wl_s[o].Calc_flux()
             std::cout << "Order " << o + this->min_order << ": " << N_photons[o] << std::endl;
         } else {
             N_photons[o] = 0;
@@ -344,11 +343,8 @@ void MatrixSimulator::simulate(double t, unsigned long seed) {
         {
             std::uniform_real_distribution<float> dist(0.0, 1.0);
             std::discrete_distribution<int> disf(wl_s[o].intensity.begin(), wl_s[o].intensity.end());
-//            std::uniform_real_distribution<float> rgx(0., this->slit->slit_sampling);
-//            std::uniform_real_distribution<float> rgy(0., this->slit->slit_sampling * this->slit->h / this->slit->w);
             std::uniform_real_distribution<float> rgx(0., 1.);
             std::uniform_real_distribution<float> rgy(0., 1.);
-//            std::default_random_engine gen;
             std::mt19937 gen;
             if (seed == 0) {
                 std::random_device rd;
@@ -364,9 +360,9 @@ void MatrixSimulator::simulate(double t, unsigned long seed) {
 
 #pragma omp for reduction(vec_int_plus : local_data)
             for (int i = 0; i < N_photons[o]; ++i) {
-                //double wl = wl_s[o].Sample(dist(gen));
+
+//                double wl = wl_s[o].Linear_sample(dist(gen));
                 double wl = wl_s[o].event[disf(gen)];
-                //cout<<wl<<endl;
 
                 int idx_matrix = (floor((wl - this->sim_wavelength[o].front()) / this->sim_matrix_dwavelength[o]));
 
@@ -548,8 +544,13 @@ void MatrixSimulator::prepare_sources(std::vector<Source *> sources) {
             for (auto &s : sources) {
                 std::vector<float> spectrum = s->get_spectrum(this->sim_wavelength[o]);
                 for (int i = 0; i < spectrum.size(); ++i) {
-                    this->sim_spectra[o][i] = spectrum[i] * telescope.get_area();
-                    this->sim_spectra_times_efficiency[o][i] = spectrum[i] * this->sim_efficiencies[o][i];
+                    if (s->is_stellar_source()){
+                        this->sim_spectra[o][i] = spectrum[i] * telescope.get_area();;
+                    }else{
+                        this->sim_spectra[o][i] = spectrum[i];
+                    }
+
+                    this->sim_spectra_times_efficiency[o][i] = this->sim_spectra[o][i] * this->sim_efficiencies[o][i];
                 }
             }
         }

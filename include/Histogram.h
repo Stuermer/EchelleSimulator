@@ -293,7 +293,7 @@ void Histogram::Create_flux(){
 
 double Histogram::Calc_flux(){
 
-    long double tflux = 0;
+    double tflux = 0;
 
     if(mode) {
         for (int i = 0; i < length; i++) {

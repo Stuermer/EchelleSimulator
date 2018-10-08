@@ -1,4 +1,4 @@
-![EchelleSimulator](https://github.com/Stuermer/EchelleSimulator/blob/master/docs/logo.png "Echelle Simulator")
+![EchelleSimulator](https://github.com/Stuermer/EchelleSimulator/blob/master/docs/plots/logo.png "Echelle Simulator")
 
 
 Echelle++, a fast generic spectrum simulator.
@@ -16,7 +16,7 @@ is available. Optical aberrations are treated accurately, the simulated spectra 
 simulates a phoenix M-dwarf spectrum with the given stellar parameters, and a RV shift of 100m/s for the MAROON-X spectrograph.
 The output looks similar to:
 
-![Echelle spectrum](https://github.com/Stuermer/EchelleSimulator/blob/master/docs/mdwarf.png "Simulated Echelle")
+![Echelle spectrum](https://github.com/Stuermer/EchelleSimulator/blob/master/docs/plots/mdwarf.jpg "Simulated Echelle")
 
 See
 ```bash
@@ -48,7 +48,7 @@ Second, a wavelength-dependent **point spread functions (PSFs)** is applied on t
 account for optical aberrations. Again, the PSF is only slowly varying across an echelle order, allowing for 
 interpolation at intermediate wavelength.
 
-![Echelle simulation](https://github.com/Stuermer/EchelleSimulator/blob/master/docs/intro.png "Echelle simulation")
+![Echelle simulation](https://github.com/Stuermer/EchelleSimulator/blob/master/docs/plots/intro.png "Echelle simulation")
 
 **Both, the matrices and the PSFs have to be extracted from ZEMAX only once. It is therefore possible to simulate 
 spectra without access to ZEMAX**

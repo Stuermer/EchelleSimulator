@@ -38,7 +38,7 @@ double Source::get_spectral_density(double wavelength) {
 }
 
 std::vector<float> Source::get_spectrum(std::vector<double> wavelength) {
-    if (this->list_like) {
+    if (!this->list_like) {
         std::vector<float> spectrum;
         std::vector<double> diff;
 
@@ -109,6 +109,7 @@ Constant::Constant(double value, double min_w, double max_w) {
     this->min_w = min_w;
     this->max_w = max_w;
     list_like = false;
+    stellar_source=false;
 }
 
 Constant::Constant() {
@@ -119,6 +120,7 @@ Constant::Constant() {
 
 Blackbody::Blackbody(double T, double mag) : T(T) {
     this->list_like = false;
+    stellar_source=true;
     this->mag = mag;
 
     min_w = 0; // Maybe set a cutoff based off intensity?
@@ -146,6 +148,7 @@ double Blackbody::get_spectral_density(double wavelength) {
 
 PhoenixSpectrum::PhoenixSpectrum(std::string spectrum_file, std::string wavelength_file, double mag) {
     list_like = false;
+    stellar_source=true;
     this->read_spectrum(spectrum_file, wavelength_file);
     this->mag = mag;
     scale_spectral_density();
@@ -192,6 +195,8 @@ double PhoenixSpectrum::get_spectral_density(double wavelength) {
 CoehloSpectrum::CoehloSpectrum(std::string spectrum_file, double mag) {
     this->read_spectrum(std::move(spectrum_file));
     this->mag = mag;
+    list_like=false;
+    stellar_source=true;
     scale_spectral_density();
 }
 
@@ -311,12 +316,10 @@ double CustomSpectrum::get_spectral_density(double wavelength) {
 }
 
 LineList::LineList(const std::string linelist_file, double scaling) {
-    list_like = false;
+    list_like = true;
+    stellar_source=false;
     this->scaling = scaling;
     this->read_spectrum(linelist_file);
-
-    smooth_spectrum();
-
 }
 
 void LineList::read_spectrum(std::string linelist_file) {
@@ -338,29 +341,18 @@ void LineList::read_spectrum(std::string linelist_file) {
     }
 
     length = i;
-
-
-}
-
-void LineList::smooth_spectrum() {
-
-
 }
 
 std::vector<float> LineList::get_spectrum(std::vector<double> wavelength) {
     std::vector<float> spectrum;
     for (auto const &wl: wavelength) {
-
         spectrum.push_back(float(data[wl]));
-
     }
     return spectrum;
 }
 
 double LineList::get_spectral_density(double wavelength) {
-
     return data[wavelength];
-
 }
 
 std::vector<double> LineList::get_wavelength() {
@@ -369,20 +361,4 @@ std::vector<double> LineList::get_wavelength() {
         wavelength.push_back(m.first);
     }
     return wavelength;
-}
-
-template<typename Out>
-void split(const std::string &s, char delim, Out result) {
-    std::stringstream ss;
-    ss.str(s);
-    std::string item;
-    while (std::getline(ss, item, delim)) {
-        *(result++) = item;
-    }
-}
-
-std::vector<std::string> split_to_vector(const std::string &s, char delim) {
-    std::vector<std::string> elems;
-    split(s, delim, std::back_inserter(elems));
-    return elems;
 }

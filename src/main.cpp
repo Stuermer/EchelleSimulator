@@ -100,6 +100,12 @@ int main(int argc, char *argv[]) {
                                      "(default: --constant 0.01)", 1
 
                              },
+                             {
+                                 "telescope", {"--telescope"},
+                                 "OPTIONAL: uses a telescope with diameter <diam> [meter] and a focal length of <fl> [meter] for calculating the photon flux"
+                                 "generale usage: telescope <diam>, <fl>"
+                                 "example usage: telescope 8.1,128.12 ", 1
+                             },
 
                              {
 
@@ -271,7 +277,10 @@ int main(int argc, char *argv[]) {
     auto rv = args["radial_velocity"].as<double>(0.);
 
     std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
-    Telescope Gemini = Telescope();
+
+    auto diam = args["telescope"].as<double>(1.);
+    auto f_telescope = args["telescope"].as<double>(1.);
+    Telescope telescope = Telescope(diam, f_telescope);
     GratingEfficiency ge = GratingEfficiency(0.8, simulator.get_blaze(), simulator.get_blaze(), simulator.get_gpmm());
     auto ef = args["efficiency"].as<std::string>("");
 
@@ -283,7 +292,7 @@ int main(int argc, char *argv[]) {
     }
 
     simulator.add_efficiency(&ge);
-    simulator.set_telescope(&Gemini);
+    simulator.set_telescope(&telescope);
 
     cs->set_doppler_shift(rv);
     simulator.set_source(cs);

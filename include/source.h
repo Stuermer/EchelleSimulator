@@ -73,6 +73,7 @@ public:
     virtual std::vector<double> get_wavelength() {};
 
     bool is_list_like() { return list_like;};
+    bool is_stellar_source() {return stellar_source; };
 
 protected:
 
@@ -89,6 +90,8 @@ protected:
     double max_w = 1.0;
     /// whether the source is list-like or not
     bool list_like;
+    /// stellar source or not?
+    bool stellar_source;
 
 private:
 
@@ -113,7 +116,6 @@ private:
     double shift;
     ///< number of steps for the integrator
     int integration_steps;
-
 };
 
 /**
@@ -340,7 +342,6 @@ class LineList : public Source{
 public:
     LineList(const std::string linelist_file, double scaling);
     void read_spectrum(std::string linelist_file);
-    void smooth_spectrum();
     double get_spectral_density(double wavelength);
     std::vector<float> get_spectrum(std::vector<double> wavelength);
     std::vector<double> get_wavelength();
