@@ -33,7 +33,7 @@ Build Echelle++:
     cd build
     cmake ../
     make
-    ```
+
 
 After Echelle++ is successfully built, use the *echellesimulator* executable and start simulating spectra !
 

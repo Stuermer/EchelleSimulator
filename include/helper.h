@@ -1,5 +1,6 @@
 #ifndef HELPER_H
 #define HELPER_H
+/// load pi
 #define _USE_MATH_DEFINES
 
 #include <vector>
@@ -19,7 +20,7 @@
 #include <numeric>
 #include <random>
 
-/*!
+/**
  * Saves vector to CSV File
  *
  * This function saves a std double vector to a CSV file e.g. for easy plotting with python
@@ -28,7 +29,7 @@
  */
 void vector_to_file(std::vector<double> const &vec, std::string const &filename);
 
-/*!
+/**
  * Decomposes a 2x3 affine transformation matrix into its underlying geometric components.
  *
  * A transformation matrix \f$ \begin{pmatrix} a & b & c \\ d & e & f \end{pmatrix} \f$ can be decomposed in
@@ -46,7 +47,7 @@ void vector_to_file(std::vector<double> const &vec, std::string const &filename)
  */
 std::array<float, 6> decompose_matrix(std::array<float, 6> mat);
 
-/*!
+/**
  * Composes 2x3 transformation matrix from shear, scale, rotation and translation parameters.
  *
  *
@@ -55,7 +56,7 @@ std::array<float, 6> decompose_matrix(std::array<float, 6> mat);
  */
 std::array<float, 6> compose_matrix(std::vector<float> parameters);
 
-/*!
+/**
  * Calculates sorted index array of a given vector.
  *
  * Equivalent to numpy.argsort
@@ -73,12 +74,6 @@ std::vector<std::size_t> compute_sort_order(const std::vector<double> &v);
 double wrap_rads(double r);
 
 /**
- * Creates fits file
- * @param filename
- */
-//void create_fits_file(std::string filename);
-
-/**
  * Linear interpolation of data at position x
  * @param data data to interpolate
  * @param x x
@@ -92,18 +87,23 @@ double interpolate(const std::map<double, double> &data, double x);
 herr_t file_info(hid_t loc_id, const char *name, const H5L_info_t *linfo, void *opdata);
 
 
-//std::vector<float> random_from_2_distributions(std::vector<float> wl, std::vector<float> density1, std::vector<float> density2, int N_samples);
-
-/*
- * Helper for string split
+/**
+ * 
+ * @tparam Out 
+ * @param s 
+ * @param delim 
+ * @param result 
  */
 template<typename Out>
 void split(const std::string &s, char delim, Out result);
 
-/*
- * Helper for string split
+/**
+ * Split string at delimiter and fill vector
+ * @param s string to split
+ * @param delim delimiter
+ * @return vector of strings
  */
-std::vector<std::string> split(const std::string &s, char delim);
+std::vector<std::string> split_to_vector(const std::string &s, char delim);
 
 /**
  * Downloads phoenix spectrum for given parameters.

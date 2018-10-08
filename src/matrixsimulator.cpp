@@ -322,7 +322,6 @@ void MatrixSimulator::simulate(double t, unsigned long seed) {
                                   sim_spectra_times_efficiency[o].end()); //units are uW per um
 
             wl_s[o] = Histogram(a, b);
-            wl_s[o].mode = this->mode;
             //units are assumed to be t=[s], area=[m^2], wl_s.dflux=[Num of Photons]/([s] * [m^2] * [um]), wl_s.Calc_flux = [Num of Photons]/([s]*[m^2])
             N_photons[o] = static_cast<int>(floor(wl_s[o].Calc_flux() * t));
             N_tot += N_photons[o];

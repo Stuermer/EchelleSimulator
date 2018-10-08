@@ -160,6 +160,7 @@ public:
     Matrix get_PSF(int order, double wavelength);
 
 private:
+    // sigma of gaussian in px
     double sigma;
     int ksize;
 

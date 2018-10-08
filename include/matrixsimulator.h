@@ -12,15 +12,28 @@
 #include "telescope.h"
 #include <array>
 
+/**
+ * raw transformation matrix as read from HDF file
+ */
 struct raw_transformation {
+    /// echelle order
     int order;
+    /// wavelength [micron]
     double wavelength;
+    /// transformation matrix
     std::array<float, 6> transformation_matrix;
+    /// transformation matrix decomposed in canonical parameters
     std::vector<float> decomposed_matrix;
 };
 
+/**
+ * Spectrograph information read from HDF file.
+ * Used only for calculating the blaze efficiency curve.
+ */
 struct spectrograph_information {
+    /// blaze angle
     double blaze;
+    /// grooves per mm
     double gpmm;
 };
 
@@ -143,8 +156,6 @@ public:
      * @param seed optional: random seed
      */
     void add_background(double bias, double noise, unsigned long seed);
-
-    bool mode = true;
 
 private:
     /**

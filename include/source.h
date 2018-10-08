@@ -3,7 +3,7 @@
 
 #include <vector>
 #include <map>
-/*!
+/**
  * \class Source
  * \brief Base class of all spectral sources.
  *
@@ -19,7 +19,7 @@ public:
     /* Destructor - it's important that this is virtual ! */
     virtual ~Source();
 
-    /*!
+    /**
      * \overload virtual std::vector<double> get_spectral_density(std::vector<double> wavelength);
      * Returns the spectral density of the Source at the given wavelength vector.
      *
@@ -28,7 +28,7 @@ public:
      */
     virtual std::vector<double> get_spectral_density(std::vector<double> wavelength);
 
-    /*!
+    /**
      * \fn virtual double get_spectral_density(double wavelength)
      * This function returns the spectral density at a given wavelength. It is the essential function for all subclasses.
      *
@@ -38,7 +38,7 @@ public:
      */
     virtual double get_spectral_density(double wavelength);
 
-    /*!
+    /**
      * Returns spectrum at given wavelength
      *
      * This function returns the integrated spectral density for a given wavelength vector.
@@ -47,20 +47,20 @@ public:
      */
     virtual std::vector<float> get_spectrum(std::vector<double> wavelength);
 
-    /*!
+    /**
      * Applies a spectral shift on the spectrum to simulate radial velocity shifts.
      *
      * @param shift doppler shift in [m/s]
      */
     void set_doppler_shift(double shift);
 
-    /*!
+    /**
      * Sets the number of sub steps of the integrator.
      * @param n number of subintervalls
      */
     void set_integration_steps(int n);
 
-    /*!
+    /**
      * Scales the spectral density of the source by converting to photon density and normalizing against integrated photon flux
      *
      * Spectral density is assumed to be in the units [micro watt] / ([micro meter] * [meter]^2). To convert to photon density we divide the spectral density by
@@ -92,7 +92,7 @@ protected:
 
 private:
 
-    /*!
+    /**
      * Integrates the \see{Source::spectral_density()} function between limits a and b.
      *
      * This is a simple integrator, which integrates the \see{Source::spectral_density} function between a and b.
@@ -100,9 +100,9 @@ private:
      * \f[
      * I = \int_{a}^{b}(s(\lambda) d\lambda \approx \sum_{i=0}^{n} s(a + (i+0.5)frac{b-a}{n}) * \frac{(b-a)}{n}
      * \f]
-     * @param min_w lower wavelength limit
-     * @param max_w upper wavelength limit
-     * @param n number of subintervalls
+     * @param n number of sub-intervals
+     * @param a lower limit for integration [micron]
+     * @param b upper limit for integration [micron]
      * @return integrated spectrum within [a, b]
      *
      * \todo This integrator should be replaced with a more accurate one. For highly unresolved spectra this integrator
@@ -116,7 +116,7 @@ private:
 
 };
 
-/*!
+/**
  * \class Constant
  * \brief Implements constant spectral density.
  *
@@ -127,14 +127,16 @@ private:
  */
 class Constant : public Source{
 public:
-    /* Constructor */
+    /* Default Constructor */
     Constant();
-    /*!
+    /**
      * Constructor with a wavelength range of 0 to 1 meter
      * @param value constant spectral density value
+     * @param min_w minimum wavelength [micron]
+     * @param max_w maximum wavelength [micron]
      */
     Constant(double value, double min_w, double max_w);
-    /*!
+    /**
      * Returns constant spectral density.
      *
      * @param wavelength wavelength
@@ -146,7 +148,7 @@ private:
     double value;
 };
 
-/*!
+/**
  * \class IdealEtalon
  * \brief Implements the spectral density of an ideal fabry-perot etalon.
  *
@@ -164,7 +166,7 @@ private:
  */
 class IdealEtalon : public Source{
 public:
-    /*!
+    /**
      * Constructor.
      *
      * @param d mirror distance in mm
@@ -173,7 +175,7 @@ public:
      * @param R reflectivity of the mirrors
      */
     IdealEtalon(double d, double n, double theta, double R);
-    /*!
+    /**
      * Calculates the coefficient of Finesse.
      *
      * \f[ cF = \frac{4 R}{(1-R)^2}
@@ -191,7 +193,7 @@ public:
 
     double F();
 
-    /*!
+    /**
      * Transmission function of an ideal etalon.
      * \f[ T(\lambda) = \frac{1}{cF sin(\frac{\delta} {2})^2}
      * \f], where
@@ -209,7 +211,7 @@ public:
      * @return transmission at given wavelength
      */
     static double T(double wl, double theta, double d, double n, double cF);
-    /*!
+    /**
      * Spectral density at given wavelegnth.
      *
      * @param wavelength wavelength [micron]
@@ -225,7 +227,7 @@ private:
 };
 
 
-/*!
+/**
  * \class Blackbody
  * \brief Implements a *blackbody spectrum.*
  *
@@ -246,19 +248,20 @@ private:
  */
 class Blackbody : public Source{
 public:
-    /*!
+    /**
      * Constructor
      * @param T Temperature [K]
+     * @param mag visual magnitude
      */
     Blackbody(double T, double mag);
-    /*!
+    /**
      * Planck function for spectral density of a blackbody with Temperature T
      * @param T Temperature [K]
      * @param wavelength wavelength [m]
      * @return spectral density
      */
     double planck(const double& T, const double& wavelength);
-    /*!
+    /**
      * spectral density of a blackbody
      * \f[
      * s(\lambda) = \frac{2hc^2}{\lambda^5}\frac{1}{\exp{\frac{hc}{\lambda k_B T}}-1}
@@ -269,10 +272,11 @@ public:
     double get_spectral_density(double wavelength);
 
 private:
-    double T; ///< Temperature [K]
+    /// Temperature [K]
+    double T;
 };
 
-/*!
+/**
  * \class PhoenixSpectrum
  * \brief Implements a *mdwarf spectrum* using data from the Phoenix data repository (remote)
  *
@@ -289,7 +293,7 @@ public:
 
     double get_spectral_density(double wavelength);
 private:
-    /*!
+    /**
      * read in the spectrum from file between min_wavelength and max_wavelength
      * @param spectrum_file file path of spectrum
      * @param wavelength_file file path of wavelength
@@ -327,7 +331,7 @@ private:
 
 };
 
-/*!
+/**
  * \class LineList
  * \brief Implements line list spectrum
  *

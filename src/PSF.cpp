@@ -4,25 +4,11 @@
 
 #include <vector>
 #include <iostream>
-//#include <highgui.h>
-//#include "opencv2/imgproc/imgproc.hpp"
 #include "PSF.h"
 #include "H5Cpp.h"
 #include "helper.h"
 
 
-
-//herr_t
-//file_info(hid_t loc_id, const char *name, const H5L_info_t *linfo, void *opdata) {
-//    hid_t group;
-//    auto group_names = reinterpret_cast< std::vector<std::string> * >(opdata);
-//    group = H5Gopen2(loc_id, name, H5P_DEFAULT);
-//
-//    group_names->push_back(name);
-//    // std::cout << "Name : " << name << std::endl;
-//    H5Gclose(group);
-//    return 0;
-//}
 
 herr_t
 dataset_info(hid_t loc_id, const char *name, const H5L_info_t *linfo, void *opdata) {
@@ -265,9 +251,6 @@ Matrix PSF_ZEMAX::interpolate_PSF_nocut(Matrix psf1, Matrix psf2, double w1, dou
 
 PSF_gaussian::PSF_gaussian(double sigma, double aperture): sigma(sigma) {
     this->ksize = ceil(sigma*aperture)*2+1;
-
-    //this->ksize = ksize%2==0 ? ksize+1 : ksize;
-
 }
 
 

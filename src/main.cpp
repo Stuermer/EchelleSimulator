@@ -6,16 +6,16 @@
 #include "helper.h"
 #include "matrixsimulator.h"
 
-using namespace std::chrono;
 using argagg::parser_results;
 using argagg::parser;
-using std::cerr;
-using std::cout;
-using std::endl;
-using std::ofstream;
-using std::ostream;
-using std::ostringstream;
 
+/**
+ * Main entry point for Echelle++
+ * See echellesimulator -h for all arguments
+ * @param argc program arguments
+ * @param argv program arguments
+ * @return
+ */
 int main(int argc, char *argv[]) {
 
     parser argparser{{
@@ -151,12 +151,12 @@ int main(int argc, char *argv[]) {
 
 
     // Define our usage text. (Really poor quality)
-    ostringstream usage;
+    std::ostringstream usage;
     usage
-            << argv[0] << " 1.0" << endl
-            << endl
-            << "Usage: " << argv[0] << " [OPTIONS]... [FILES]..." << endl
-            << endl;
+            << argv[0] << " 1.0" << std::endl
+            << std::endl
+            << "Usage: " << argv[0] << " [OPTIONS]... [FILES]..." << std::endl
+            << std::endl;
 
     // Use our argument parser to... parse the command line arguments. If there
     // are any problems then just spit out the usage and help text and exit.
@@ -165,17 +165,17 @@ int main(int argc, char *argv[]) {
     try {
         args = argparser.parse(argc, argv);
     } catch (const std::exception &e) {
-        argagg::fmt_ostream fmt(cerr);
-        fmt << usage.str() << argparser << endl
+        argagg::fmt_ostream fmt(std::cerr);
+        fmt << usage.str() << argparser << std::endl
             << "Encountered exception while parsing arguments: " << e.what()
-            << endl;
+            << std::endl;
         return EXIT_FAILURE;
     }
 
     // If the help flag was specified then spit out the usage and help text and
     // exit.
     if (args["help"]) {
-        argagg::fmt_ostream fmt(cerr);
+        argagg::fmt_ostream fmt(std::cerr);
         fmt << usage.str() << argparser;
         return EXIT_SUCCESS;
     }
@@ -193,15 +193,15 @@ int main(int argc, char *argv[]) {
 
     if (args["blackbody"]) {
         auto v = args["blackbody"].as<std::string>();
-        std::vector<std::string> vv = split(v, ',');
-        cout << "Simulating a blackbody with T = " << stod(vv[0]) << " and magnitude K = " << stod(vv[0]) << endl;
+        std::vector<std::string> vv = split_to_vector(v, ',');
+        std::cout << "Simulating a blackbody with T = " << stod(vv[0]) << " and magnitude K = " << stod(vv[0]) << std::endl;
 
         cs = new Blackbody(stod(vv[0]), stod(vv[1]));
         source = "blackbody";
     } else if (args["phoenix"]) {
         auto v = args["phoenix"].as<std::string>();
-        std::vector<std::string> vv = split(v, ',');
-        cout << "Simulating phoenix spectra with magnitude = " << stod(vv[4]) << endl;
+        std::vector<std::string> vv = split_to_vector(v, ',');
+        std::cout << "Simulating phoenix spectra with magnitude = " << stod(vv[4]) << std::endl;
         if (download_phoenix(std::stoi(vv[0]), std::stod(vv[3]), std::stod(vv[1]), std::stod(vv[2]), "../data/phoenix_spectra/spectrum.fits") == 0) {
 
             const std::string &w_file = "../data/phoenix_spectra/WAVE_PHOENIX-ACES-AGSS-COND-2011.fits";
@@ -213,7 +213,7 @@ int main(int argc, char *argv[]) {
                                      "../data/phoenix_spectra/WAVE_PHOENIX-ACES-AGSS-COND-2011.fits", stod(vv[4]));
 
         } else {
-            argagg::fmt_ostream fmt(cerr);
+            argagg::fmt_ostream fmt(std::cerr);
             fmt << usage.str() << argparser;
             return EXIT_FAILURE;
         }
@@ -221,57 +221,55 @@ int main(int argc, char *argv[]) {
     } else if (args["coehlo"]) {
 
         auto v = args["choehlo"].as<std::string>();
-        std::vector<std::string> vv = split(v, ',');
-        cout << "Simulating coehlo spectra with magnitude = " << stod(vv[1]) << endl;
+        std::vector<std::string> vv = split_to_vector(v, ',');
+        std::cout << "Simulating coehlo spectra with magnitude = " << stod(vv[1]) << std::endl;
 
         cs = new CoehloSpectrum(vv[0], stod(vv[1]));
         source = "choehlo";
     } else if (args["custom1"]) {
 
         auto v = args["custom1"].as<std::string>();
-        std::vector<std::string> vv = split(v, ',');
-        cout << "Simulating coehlo spectra with magnitude = " << stod(vv[3]) << endl;
+        std::vector<std::string> vv = split_to_vector(v, ',');
+        std::cout << "Simulating coehlo spectra with magnitude = " << stod(vv[3]) << std::endl;
 
         cs = new CustomSpectrum(vv[0], stod(vv[1]), stod(vv[2]), stod(vv[3]));
 
     } else if (args["custom2"]) {
 
         auto v = args["custom2"].as<std::string>();
-        std::vector<std::string> vv = split(v, ',');
-        cout << "Simulating coehlo spectra with magnitude = " << stod(vv[2]) << endl;
+        std::vector<std::string> vv = split_to_vector(v, ',');
+        std::cout << "Simulating coehlo spectra with magnitude = " << stod(vv[2]) << std::endl;
 
         cs = new CustomSpectrum(vv[0], vv[1], stod(vv[2]));
 
     } else if (args["linelist"]) {
 
         auto v = args["linelist"].as<std::string>();
-        std::vector<std::string> vv = split(v, ',');
-        cout << "Simulating line list spectra with scaling factor = " << stod(vv[1]) << endl;
+        std::vector<std::string> vv = split_to_vector(v, ',');
+        std::cout << "Simulating line list spectra with scaling factor = " << stod(vv[1]) << std::endl;
         cs = new LineList(vv[0], stod(vv[1]));
-
-        simulator.mode = false;
 
         source = "line list";
 
     } else if (args["constant"]) {
         auto v = args["constant"].as<std::string>();
-        std::vector<std::string> vv = split(v, ',');
-        cout << "Simulating constant source with spectral density = " << stod(vv[0])
-             << " [micro watt] / ([micro meter] * [meter]^2)" << endl;
+        std::vector<std::string> vv = split_to_vector(v, ',');
+        std::cout << "Simulating constant source with spectral density = " << stod(vv[0])
+             << " [micro watt] / ([micro meter] * [meter]^2)" << std::endl;
 
         cs = new Constant(stod(vv[0]), stod(vv[1]), stod(vv[2]));
         source = "constant";
     } else {
 
-        cout << "Simulating constant source with spectral density = 1 [micro watt] / ([micro meter] * [meter]^2)"
-             << endl;
+        std::cout << "Simulating constant source with spectral density = 1 [micro watt] / ([micro meter] * [meter]^2)"
+             << std::endl;
         cs = new Constant();
         source = "constant";
     }
 
     auto rv = args["radial_velocity"].as<double>(0.);
 
-    high_resolution_clock::time_point t1 = high_resolution_clock::now();
+    std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
     Telescope Gemini = Telescope();
     GratingEfficiency ge = GratingEfficiency(0.8, simulator.get_blaze(), simulator.get_blaze(), simulator.get_gpmm());
     auto ef = args["efficiency"].as<std::string>("");
@@ -294,7 +292,7 @@ int main(int argc, char *argv[]) {
         simulator.set_wavelength(10000);
     } else {
         simulator.set_wavelength(cs->get_wavelength());
-        cout << "Running LineList Test" << endl;
+        std::cout << "Running LineList Test" << std::endl;
     }
 
     auto t = args["integration_time"].as<double>(1.);
@@ -305,8 +303,8 @@ int main(int argc, char *argv[]) {
     simulator.simulate(t, seed);
     simulator.add_background(bias, readnoise, seed);
 
-    high_resolution_clock::time_point t2 = high_resolution_clock::now();
-    auto duration = duration_cast<microseconds>(t2 - t1).count() / 1000000.;
+    std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(t2 - t1).count() / 1000000.;
     std::cout << "Total Duration: " << duration << std::endl;
 
     auto path = args["output"].as<std::string>("test.fit");

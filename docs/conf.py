@@ -74,7 +74,7 @@ exhale_args = {
     # Suggested optional arguments
     "createTreeView":        True,
     # TIP: if using the sphinx-bootstrap-theme, you need
-    # "treeViewIsBootstrap": True,
+    "treeViewIsBootstrap": True,
     "exhaleExecutesDoxygen": False,
     "exhaleDoxygenStdin":    "xml"
 }
