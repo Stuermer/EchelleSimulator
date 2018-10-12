@@ -20,7 +20,6 @@ protected:
 
     void Read_Data(string file_path);
     void Read_Data(string path_1, string path_2);
-    void Create_cdf();
 
 public:
     unsigned long length=0; //This is the number of elements in the histogram object
@@ -40,37 +39,11 @@ public:
     Histogram();
     Histogram(string file_path); //Generate histogram from file path
     Histogram(string path_1, string path_2);
+    virtual double Calc_flux() {return 1.;};
 
     Histogram(vector<double> events, vector<double> weights); //Generate histogram manually
-    Histogram(int num,Histogram &histogram); //Generate sample histogram from original with custom number of elements
-    Histogram(int num,int res, Histogram &histogram);//Same as above, but also allows for res x the sampling resolution of the original histogram
-
-    double Calc_flux();
-    void Create_flux();
-
-    double Kolmogorov_Smirnov_test(Histogram &sim_histogram);
-    //Returns a test statistic regarding whether or not two histograms are similar
-    //Null hypothesis: The histograms are drawn from the same source.
-    //We want the test statistic to be less than c(a)*sqrt((n+m)/(n*m)) to keep the null hypothesis
-    //...Otherwise we reject it
-    //a|    0.10	0.05	0.025	0.01	0.005	0.001
-    //c(a)| 1.22	1.36	1.48	1.63	1.73	1.95
-
-    template<class T>
-    double Sample(T sample_value); //Sample using point methods
-
-    template<class T>
-    vector<double> Sample(vector<T> sample_value);
-
-    template<class T>
-    double Linear_sample(T sample_value); //Sample using point methods and then correct error to first order
-
-    template<class T>
-    vector<double> Linear_sample(vector<T> sample_value);
 
     bool mode = true;
-
-    double magnitude;
 
     double v_zp=8660006000.0; //The reference flux is obtained by integrating vega
     // over a bessel filter and has units photons/m^2/s
@@ -82,14 +55,10 @@ Histogram::Histogram() {
 
 Histogram::Histogram(string file_path){
     Read_Data(file_path);
-    Create_flux();
-    Create_cdf();
 }
 
 Histogram::Histogram(string path_1, string path_2){
     Read_Data(path_1,path_2);
-    Create_flux();
-    Create_cdf();
 }
 
 Histogram::Histogram(vector<double> events, vector<double> weights){
@@ -97,80 +66,8 @@ Histogram::Histogram(vector<double> events, vector<double> weights){
     event=events;
     intensity=weights;
     length=events.size();
-    Create_flux();
-    Create_cdf();
 
 }
-
-//This constructor is different from the rest
-//It takes another object in the class and then creates a new object of a different size
-Histogram::Histogram(int num,Histogram &histogram){
-
-    vector<double> emp_weights(histogram.length);
-
-    long long int seed = std::chrono::system_clock::now().time_since_epoch().count();
-    std::default_random_engine generator (seed);
-    std::uniform_real_distribution<double> uniform_distribution (0.0,1.0);
-
-    for(int i=0; i<num; i++) {
-        double sample_value = uniform_distribution(generator);
-        long dist=distance(histogram.cdf.begin(),lower_bound(histogram.cdf.begin(),histogram.cdf.end(),sample_value))-1;
-        if(dist == -1){dist=0;};
-
-        emp_weights[dist]=emp_weights[dist]+1;
-
-        //cout<<spectra.Linear_sample(sample_value)<<":"<<sample_value<<endl;
-    }
-
-    event=histogram.event;
-    intensity=emp_weights;
-    length=histogram.length;
-    Create_flux();
-    Create_cdf();
-
-}
-
-Histogram::Histogram(int num,int res, Histogram &histogram){
-    //more resolution means more elements
-    length=histogram.length*(res);
-    vector<double> emp_weights(static_cast<unsigned>(histogram.length*res));
-    vector<double> emp_lambdas(static_cast<unsigned>(histogram.length*res));
-
-    for(int i=0; i<length; i++){
-        emp_weights[i]=0;
-        //We have to resize the event space i.e the lambdas
-        emp_lambdas[i]=histogram.event[0]+static_cast<double>(i-1) * (histogram.event[histogram.length-1]-histogram.event[0]) / static_cast<double>(length);
-    }
-
-    int place;
-    resolution=res;
-
-    long long int seed = std::chrono::system_clock::now().time_since_epoch().count();
-    std::default_random_engine generator (seed);
-    std::uniform_real_distribution<double> uniform_distribution (0.0,1.0);
-
-    for(int i=0; i<num; i++) {
-        double sample_value = uniform_distribution(generator);
-        //CDF[0] is not meaningful so we subtract 1 to discard it with an iff statement
-        long dist = distance(histogram.cdf.begin(), lower_bound(histogram.cdf.begin(), histogram.cdf.end(), sample_value))-1;
-        if(dist == -1){dist=0;};
-
-        //finds the new index for wheights given the new resolution
-        place=static_cast<int>((dist)*res+floor(res*(histogram.cdf[dist+1]-sample_value)/(histogram.cdf[dist+1]-histogram.cdf[dist])));
-        emp_weights[place]=emp_weights[place]+1;
-
-        //cout<<emp_weights[place]<<":"<<emp_lambdas[place]<<endl;
-
-        //cout<<spectra.Linear_sample(sample_value)<<":"<<sample_value<<endl;
-    }
-
-    event=emp_lambdas;
-    intensity=emp_weights;
-    Create_flux();
-    Create_cdf();
-
-}
-
 
 void Histogram::Read_Data(string file_path) {
 
@@ -236,42 +133,69 @@ void Histogram::Read_Data(string path_1, string path_2) {
 
 }
 
-void Histogram::Create_cdf(){
+class Smooth_Spectra: public Histogram {
+public:
+    Smooth_Spectra() {
+    }
 
-        cdf.push_back(0);
+    Smooth_Spectra(vector<double> events, vector<double> weights) : Histogram(events,weights) {
+        Create_flux();
+        Create_cdf();
+    }
 
-        for (int i = 0; i < length - 1; i++) {
-            d_event.push_back(event[i + 1] - event[i]);
-            d_flux.push_back(flux[i + 1] - flux[i]);
-            //The factor of 1/2 comes from the fact we are numerically integrating and thus
-            //taking the average of intensity at two nearby points
-            cdf.push_back(cdf[i] + (0.5) * (d_event[i]) * (flux[i + 1] + flux[i]));
-            d_cdf.push_back((0.5) * (d_event[i]) * (flux[i + 1] + flux[i]));
-        }
+    void Create_cdf();
+    void Create_flux();
+    double Calc_flux();
 
-        d_event.push_back(event[length - 1] - event[length - 2]);
-        d_cdf.push_back((0.5) * (d_event[length - 1]) * (flux[length - 1] + flux[length - 2]));
-        d_intensity.push_back(flux[length - 1] - flux[length - 2]);
+    template<class T>
+    double Sample(T sample_value); //Sample using point methods
 
-        d_event.push_back(event[length - 1] - event[length - 2]);
-        d_cdf.push_back((0.5) * (d_event[length - 1]) * (flux[length - 1] + flux[length - 2]));
-        d_intensity.push_back(flux[length - 1] - flux[length - 2]);
+    template<class T>
+    vector<double> Sample(vector<T> sample_value);
 
-        double norm = cdf[length - 1];
-        //We have to create a normalized cdf
-        //So we have to go back through and divide by the integration constant
-        //This is expensive...however note that cdf is already ordered for us
-        for (int i = 0; i < length; i++) {
-            cdf[i] = cdf[i] / norm;
-            d_cdf[i] = d_cdf[i] / norm;
-        }
+    template<class T>
+    double Linear_sample(T sample_value); //Sample using point methods and then correct error to first order
+
+    template<class T>
+    vector<double> Linear_sample(vector<T> sample_value);
+};
+
+void Smooth_Spectra::Create_cdf(){
+
+    cdf.push_back(0);
+
+    for (int i = 0; i < length - 1; i++) {
+        d_event.push_back(event[i + 1] - event[i]);
+        d_flux.push_back(flux[i + 1] - flux[i]);
+        //The factor of 1/2 comes from the fact we are numerically integrating and thus
+        //taking the average of intensity at two nearby points
+        cdf.push_back(cdf[i] + (0.5) * (d_event[i]) * (flux[i + 1] + flux[i]));
+        d_cdf.push_back((0.5) * (d_event[i]) * (flux[i + 1] + flux[i]));
+    }
+
+    d_event.push_back(event[length - 1] - event[length - 2]);
+    d_cdf.push_back((0.5) * (d_event[length - 1]) * (flux[length - 1] + flux[length - 2]));
+    d_intensity.push_back(flux[length - 1] - flux[length - 2]);
+
+    d_event.push_back(event[length - 1] - event[length - 2]);
+    d_cdf.push_back((0.5) * (d_event[length - 1]) * (flux[length - 1] + flux[length - 2]));
+    d_intensity.push_back(flux[length - 1] - flux[length - 2]);
+
+    double norm = cdf[length - 1];
+    //We have to create a normalized cdf
+    //So we have to go back through and divide by the integration constant
+    //This is expensive...however note that cdf is already ordered for us
+    for (int i = 0; i < length; i++) {
+        cdf[i] = cdf[i] / norm;
+        d_cdf[i] = d_cdf[i] / norm;
+    }
 
     //std::piecewise_constant_distribution<float> distribution (event.begin(),event.end(),intensity.begin());
 
     return;
 }
 
-void Histogram::Create_flux(){
+void Smooth_Spectra::Create_flux(){
 
     //0.503 is for assuming intensity is erg/s/cm^2/cm
     //and that event~(wavelength) is in A
@@ -291,76 +215,35 @@ void Histogram::Create_flux(){
     return;
 }
 
-double Histogram::Calc_flux(){
+double Smooth_Spectra::Calc_flux(){
 
     double tflux = 0;
 
-    if(mode) {
-        for (int i = 0; i < length; i++) {
+    for (int i = 0; i < length; i++) {
 
-            tflux = tflux + (0.5) * (flux[i + 1] + flux[i]) * (d_event[i]);
-
-        }
-
-        magnitude = 2.5 * log10(v_zp / tflux);
-        return tflux;
-    }
-    else{
-        for (int i = 0; i < length; i++) {
-
-            tflux = tflux + flux[i];
-
-        }
-
-        magnitude = 2.5 * log10(v_zp / tflux);
-        return tflux;
-    }
-
-}
-
-//There's going to be an issue if the the event elements of the two objects aren't the same.
-//This test works by finding the sup of the difference between the two histograms cdfs
-// then comparing it to a test statistic
-double Histogram::Kolmogorov_Smirnov_test(Histogram &sim_histogram){
-
-    double max_diff=0;
-    double diff=0;
-    long dist_1;
-    long dist_2;
-    for(double k=event[0]; k<event[length-1]; k=k+(event[length-1]-event[0])/max(length,sim_histogram.length)){
-
-        //we need two corresponding distances since the histograms may have different numbers of elements
-        dist_1=distance(event.begin(),lower_bound(event.begin(), event.end(), k));
-        dist_2=distance(sim_histogram.event.begin(),lower_bound(sim_histogram.event.begin(), sim_histogram.event.end(), k));
-
-        //k may run outside the histogram range of lambdas
-        if(dist_1>length-1){dist_1=length-1;};
-        if(dist_2>sim_histogram.length-1){dist_2=sim_histogram.length-1;};
-
-        diff=cdf[dist_1]-sim_histogram.cdf[dist_2];
-
-        if(abs(diff)>max_diff){max_diff=abs(diff);};
+        tflux = tflux + (0.5) * (flux[i + 1] + flux[i]) * (d_event[i]);
 
     }
 
-    return max_diff;
-}
-
-template<class T>
-double Histogram::Sample(T sample_value){
-
-        long dist = distance(cdf.begin(), lower_bound(cdf.begin(), cdf.end(), sample_value)) - 1;
-        if (dist == -1) { dist = 0; };
-        //There's a lot going on here. distance() finds the number of elements seperating two values of cdf
-        //lower_bound finds the closest member of cdf to sample_valuepl
-
-        return event[dist];
+    return tflux;
 
 }
 
 
 template<class T>
-vector<double> Histogram::Sample(vector<T> sample_value){
+double Smooth_Spectra::Sample(T sample_value){
+
+    long dist = distance(cdf.begin(), lower_bound(cdf.begin(), cdf.end(), sample_value)) - 1;
+    if (dist == -1) { dist = 0; };
+    //There's a lot going on here. distance() finds the number of elements seperating two values of cdf
+    //lower_bound finds the closest member of cdf to sample_valuepl
+
+    return event[dist];
+
+}
+
+template<class T>
+vector<double> Smooth_Spectra::Sample(vector<T> sample_value){
     vector<double> vec;
     for(int i=0; i<sample_value.size(); i++){vec.push_back(Sample(sample_value[i]));}
     return vec;
@@ -369,7 +252,7 @@ vector<double> Histogram::Sample(vector<T> sample_value){
 
 
 template<class T>
-double Histogram::Linear_sample(T sample_value) {
+double Smooth_Spectra::Linear_sample(T sample_value) {
     long dist = distance(cdf.begin(), lower_bound(cdf.begin(), cdf.end(), sample_value))-1;
     if(dist == -1){dist=0;};
 
@@ -377,9 +260,118 @@ double Histogram::Linear_sample(T sample_value) {
 }
 
 template<class T>
-vector<double> Histogram::Linear_sample(vector<T> sample_value){
+vector<double> Smooth_Spectra::Linear_sample(vector<T> sample_value){
     vector<double> vec;
     for(int i=0; i<sample_value.size(); i++){vec.push_back(Linear_sample(sample_value[i]));}
+    return vec;
+}
+
+class Discrete_Spectra: public Histogram {
+public:
+    Discrete_Spectra() {
+
+    }
+
+    Discrete_Spectra(vector<double> events, vector<double> weights) : Histogram(events,weights) {
+        Create_flux();
+        Create_cdf();
+        mode = 0;
+    }
+
+    void Create_cdf();
+    void Create_flux();
+    double Calc_flux();
+
+    template<class T>
+    double Sample(T sample_value); //Sample using point methods
+
+    template<class T>
+    vector<double> Sample(vector<T> sample_value);
+
+};
+
+void Discrete_Spectra::Create_cdf(){
+
+    cdf.push_back(0);
+
+    for (int i = 0; i < length - 1; i++) {
+        d_flux.push_back(flux[i + 1] - flux[i]);
+        //The factor of 1/2 comes from the fact we are numerically integrating and thus
+        //taking the average of intensity at two nearby points
+        cdf.push_back(cdf[i] + flux[i]);
+        d_cdf.push_back(flux[i]);
+    }
+
+    d_cdf.push_back(flux[length - 2]);
+    d_intensity.push_back(flux[length - 2]);
+
+    d_cdf.push_back(flux[length - 1]);
+    d_intensity.push_back(flux[length - 1]);
+
+    double norm = cdf[length - 1];
+    //We have to create a normalized cdf
+    //So we have to go back through and divide by the integration constant
+    //This is expensive...however note that cdf is already ordered for us
+    for (int i = 0; i < length; i++) {
+        cdf[i] = cdf[i] / norm;
+        d_cdf[i] = d_cdf[i] / norm;
+    }
+
+    //std::piecewise_constant_distribution<float> distribution (event.begin(),event.end(),intensity.begin());
+
+    return;
+}
+
+void Discrete_Spectra::Create_flux(){
+
+    //0.503 is for assuming intensity is erg/s/cm^2/cm
+    //and that event~(wavelength) is in A
+
+    //5.03*10^10 is for assuming intensity is uW/m^2/um
+    //and that event is in um
+
+    // This needs to be one sense the spectral lines are thin.
+    double ch_factor = 1.;
+
+    for (int i = 0; i < length; i++) {
+        flux.push_back(intensity[i] * (ch_factor) * (event[i]));
+    }
+
+    flux.push_back(intensity[length - 1] * (ch_factor) * event[length - 1]);
+
+    return;
+}
+
+double Discrete_Spectra::Calc_flux(){
+
+    double tflux = 0;
+
+
+    for (int i = 0; i < length; i++) {
+        tflux = tflux + flux[i];
+
+    }
+
+    return tflux;
+
+}
+
+template<class T>
+double Discrete_Spectra::Sample(T sample_value){
+
+    long dist = distance(cdf.begin(), lower_bound(cdf.begin(), cdf.end(), sample_value)) - 1;
+    if (dist == -1) { dist = 0; };
+    //There's a lot going on here. distance() finds the number of elements seperating two values of cdf
+    //lower_bound finds the closest member of cdf to sample_valuepl
+
+    return event[dist];
+
+}
+
+template<class T>
+vector<double> Discrete_Spectra::Sample(vector<T> sample_value){
+    vector<double> vec;
+    for(int i=0; i<sample_value.size(); i++){vec.push_back(Sample(sample_value[i]));}
     return vec;
 }
 
