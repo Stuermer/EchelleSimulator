@@ -112,7 +112,7 @@ void MatrixSimulator::load_spectrograph_model(const std::string path, int fiber_
                     wavelength_limit_min = t.wavelength;
                 if (t.wavelength > this->wavelength_limit_max)
                     wavelength_limit_max = t.wavelength;
-                std::vector<float> result;
+                std::vector<double> result;
                 result.push_back(data[i].scale_x);
                 result.push_back(data[i].scale_y);
                 result.push_back(wrap_rads(data[i].shear));
@@ -278,8 +278,8 @@ void MatrixSimulator::set_wavelength(std::vector<double> wavelength) {
 }
 
 
-std::array<float, 6> MatrixSimulator::get_transformation_matrix_lookup(int o, double wavelength) {
-    std::vector<float> parameters;
+std::array<double, 6> MatrixSimulator::get_transformation_matrix_lookup(int o, double wavelength) {
+    std::vector<double> parameters;
     int idx_matrix = static_cast<int> (floor(
             (wavelength - this->sim_wavelength[o].front()) / this->sim_matrix_dwavelength[o]));
 
@@ -293,8 +293,8 @@ std::array<float, 6> MatrixSimulator::get_transformation_matrix_lookup(int o, do
 
 }
 
-std::array<float, 6> MatrixSimulator::get_transformation_matrix(int o, double wavelength) {
-    std::vector<float> parameters;
+std::array<double, 6> MatrixSimulator::get_transformation_matrix(int o, double wavelength) {
+    std::vector<double> parameters;
     parameters.push_back(this->tr_p[o](wavelength));
     parameters.push_back(this->tr_q[o](wavelength));
     parameters.push_back(this->tr_r[o](wavelength));
@@ -508,14 +508,14 @@ void MatrixSimulator::prepare_matrix_lookup(int N) {
             tx.push_back(this->tr_tx[o](this->sim_matrix_wavelength[o][i]));
             ty.push_back(this->tr_ty[o](this->sim_matrix_wavelength[o][i]));
 
-            std::vector<float> params;
+            std::vector<double> params;
             params.push_back(p[i]);
             params.push_back(q[i]);
             params.push_back(r[i]);
             params.push_back(phi[i]);
             params.push_back(tx[i]);
             params.push_back(ty[i]);
-            std::array<float, 6> tm = compose_matrix(params);
+            std::array<double, 6> tm = compose_matrix(params);
 
             m00.push_back(tm[0]);
             m01.push_back(tm[1]);

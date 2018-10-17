@@ -57,7 +57,7 @@ When simulating stellar sources, a visual magnitude of the source has to be prov
 Here, we specify a telescope of 8.1m diameter and 128.12m focal length, a integration time of 60s. Our source is a simulated M-dwarf spectrum using the `PHOENIX simulations <https://www.aanda.org/articles/aa/abs/2013/05/aa19058-12/aa19058-12.html>`_ with an effective temperature of 3500 K, Z=-1.0, alpha=0. and surface gravity of log_g=5.5.
 We also set the radial velocity to 50 m/s.
 
-.. code-block:: bash
+.. code-block:: none
 
     ./echellesimulator --spectrograph MaroonX --telescope 8.1,128.12 --phoenix 3500,-1.,0.,5.5,6 -t 60 -r 50
     ./echellesimulator --spectrograph MaroonX --telescope 8.1,128.12 --phoenix 3500,-1.,0.,5.5,6 -t 60 -r 50 -k 1 -f 2

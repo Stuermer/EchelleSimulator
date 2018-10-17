@@ -21,9 +21,9 @@ struct raw_transformation {
     /// wavelength [micron]
     double wavelength;
     /// transformation matrix
-    std::array<float, 6> transformation_matrix;
+    std::array<double, 6> transformation_matrix;
     /// transformation matrix decomposed in canonical parameters
-    std::vector<float> decomposed_matrix;
+    std::vector<double> decomposed_matrix;
 };
 
 /**
@@ -178,7 +178,7 @@ private:
     * @param wavelength wavelength [micron]
     * @return 2x3 affine transformation matrix
     */
-    std::array<float, 6> get_transformation_matrix(int order, double wavelength);
+    std::array<double, 6> get_transformation_matrix(int order, double wavelength);
 
     /**
      * Get affine transformation matrix, but use lookup tables for speedup.
@@ -188,7 +188,7 @@ private:
      * @param wavelength wavelength [micron]
      * @return 2x3 affine transformation matrix
      */
-    inline std::array<float, 6> get_transformation_matrix_lookup(int o, double wavelength);
+    inline std::array<double, 6> get_transformation_matrix_lookup(int o, double wavelength);
 
     /**
      *

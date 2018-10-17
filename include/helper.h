@@ -45,7 +45,7 @@ void vector_to_file(std::vector<double> const &vec, std::string const &filename)
  * @param mat 2x3 transformation matrix
  * @return [sx, sy, shear, \f$ \phi \f$, tx, ty]
  */
-std::array<float, 6> decompose_matrix(std::array<float, 6> mat);
+std::array<double, 6> decompose_matrix(std::array<double, 6> mat);
 
 /**
  * Composes 2x3 transformation matrix from shear, scale, rotation and translation parameters.
@@ -54,7 +54,7 @@ std::array<float, 6> decompose_matrix(std::array<float, 6> mat);
  * @param parameters [sx, sy, shear, \f$ \phi \f$, tx, ty]
  * @return 2x3 transformation matrix
  */
-std::array<float, 6> compose_matrix(std::vector<float> parameters);
+std::array<double, 6> compose_matrix(std::vector<double> parameters);
 
 /**
  * Calculates sorted index array of a given vector.
