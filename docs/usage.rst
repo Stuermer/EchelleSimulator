@@ -126,9 +126,10 @@ We add a radial velocity shift to both, the source and a different one to the ca
 
 We also add readout noise and a bias count.
 
-..note:: Only specify readout noise and bias once when simulating multiple fibers, since the signals get added otherwise.
+.. note:: Only specify readout noise and bias once when simulating multiple fibers, since the signals get added otherwise.
 
 .. code-block:: none
+
     ./echellesimulator --spectrograph MaroonX --telescope 8.1,128.12 --phoenix 3500,-1.,0.,5.5,14 -f 2 -t 10 -r 50 -o example6.fit
     ./echellesimulator --spectrograph MaroonX --telescope 8.1,128.12 --phoenix 3500,-1.,0.,5.5,14 -f 3 -k 1 -t 10 -r 50 -o example6.fit
     ./echellesimulator --spectrograph MaroonX --telescope 8.1,128.12 --phoenix 3500,-1.,0.,5.5,14 -f 4 -k 1 -t 10 -r 50 -o example6.fit
