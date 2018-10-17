@@ -154,6 +154,12 @@ int main(int argc, char *argv[]) {
                                      "OPTIONAL: .csv file with wavelength dependent efficiency values for correct signal scaling. File format is wl;efficiency", 1
 
                              },
+                             {
+
+                                     "noblaze", {"--noblaze"},
+                                     "OPTIONAL: if set, the simulation will not scale the efficiency with the grating blaze function that was calculated analytically from the spectrograph optical parameters.", 0
+
+                             },
                      }};
 
 
@@ -194,6 +200,10 @@ int main(int argc, char *argv[]) {
     auto spectrograph = args["spectrograph"].as<std::string>("MaroonX");
     spectrograph = "../data/spectrographs/" + spectrograph + ".hdf";
 
+    auto diam = args["telescope"].as<double>(1.);
+    auto f_telescope = args["telescope"].as<double>(1.);
+    Telescope telescope = Telescope(diam, f_telescope);
+
     MatrixSimulator simulator(spectrograph, fiber, false);
 
     auto *cs = new Source();
@@ -201,9 +211,9 @@ int main(int argc, char *argv[]) {
     if (args["blackbody"]) {
         auto v = args["blackbody"].as<std::string>();
         std::vector<std::string> vv = split_to_vector(v, ',');
-        std::cout << "Simulating a blackbody with T = " << stod(vv[0]) << " and magnitude K = " << stod(vv[0]) << std::endl;
+        std::cout << "Simulating a blackbody with T = " << stod(vv[0]) << " and magnitude K = " << stod(vv[1]) << std::endl;
 
-        cs = new Blackbody(stod(vv[0]), stod(vv[1]));
+        cs = new Blackbody(stod(vv[0]), stod(vv[1]), telescope.get_area());
         source = "blackbody";
     } else if (args["phoenix"]) {
         auto v = args["phoenix"].as<std::string>();
@@ -217,7 +227,7 @@ int main(int argc, char *argv[]) {
                 download_wave_grid("../data/phoenix_spectra/WAVE_PHOENIX-ACES-AGSS-COND-2011.fits");
             }
             cs = new PhoenixSpectrum("../data/phoenix_spectra/spectrum.fits",
-                                     "../data/phoenix_spectra/WAVE_PHOENIX-ACES-AGSS-COND-2011.fits", stod(vv[4]));
+                                     "../data/phoenix_spectra/WAVE_PHOENIX-ACES-AGSS-COND-2011.fits", stod(vv[4]), telescope.get_area());
 
         } else {
             argagg::fmt_ostream fmt(std::cerr);
@@ -227,11 +237,11 @@ int main(int argc, char *argv[]) {
         source = "phoenix";
     } else if (args["coehlo"]) {
 
-        auto v = args["choehlo"].as<std::string>();
+        auto v = args["coehlo"].as<std::string>();
         std::vector<std::string> vv = split_to_vector(v, ',');
         std::cout << "Simulating coehlo spectra with magnitude = " << stod(vv[1]) << std::endl;
 
-        cs = new CoehloSpectrum(vv[0], stod(vv[1]));
+        cs = new CoehloSpectrum(vv[0], stod(vv[1]), telescope.get_area());
         source = "choehlo";
     } else if (args["custom1"]) {
 
@@ -239,7 +249,7 @@ int main(int argc, char *argv[]) {
         std::vector<std::string> vv = split_to_vector(v, ',');
         std::cout << "Simulating coehlo spectra with magnitude = " << stod(vv[3]) << std::endl;
 
-        cs = new CustomSpectrum(vv[0], stod(vv[1]), stod(vv[2]), stod(vv[3]));
+        cs = new CustomSpectrum(stod(vv[3]), telescope.get_area(), vv[1], vv[2]);
 
     } else if (args["custom2"]) {
 
@@ -247,30 +257,29 @@ int main(int argc, char *argv[]) {
         std::vector<std::string> vv = split_to_vector(v, ',');
         std::cout << "Simulating coehlo spectra with magnitude = " << stod(vv[2]) << std::endl;
 
-        cs = new CustomSpectrum(vv[0], vv[1], stod(vv[2]));
+        cs = new CustomSpectrum(std::stod(vv[3]), telescope.get_area(), vv[0], vv[1]);
 
     } else if (args["linelist"]) {
 
         auto v = args["linelist"].as<std::string>();
         std::vector<std::string> vv = split_to_vector(v, ',');
-        std::cout << "Simulating line list spectra with scaling factor = " << stod(vv[1]) << std::endl;
-        cs = new LineList(vv[0], stod(vv[1]));
+        std::cout << "Simulating line list spectra " << vv[0] << std::endl;
+        cs = new LineList(vv[0]);
 
         source = "line list";
 
     } else if (args["constant"]) {
-        auto v = args["constant"].as<std::string>();
-        std::vector<std::string> vv = split_to_vector(v, ',');
-        std::cout << "Simulating constant source with spectral density = " << stod(vv[0])
-             << " [micro watt] / ([micro meter] * [meter]^2)" << std::endl;
+        auto c_val = args["constant"].as<double>(0.01);
+        std::cout << "Simulating constant source with spectral density = " << c_val
+             << " [micro watt] / [micro meter] " << std::endl;
 
-        cs = new Constant(stod(vv[0]), simulator.get_minimum_wavelength(), simulator.get_maximum_wavelength());
+        cs = new Constant(c_val);
         source = "constant";
     } else {
 
-        std::cout << "Simulating constant source with spectral density = 1 [micro watt] / ([micro meter] * [meter]^2)"
+        std::cout << "Simulating constant source with spectral density = 0.01 [micro watt] / [micro meter]"
              << std::endl;
-        cs = new Constant();
+        cs = new Constant(0.01);
         source = "constant";
     }
 
@@ -278,20 +287,25 @@ int main(int argc, char *argv[]) {
 
     std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
 
-    auto diam = args["telescope"].as<double>(1.);
-    auto f_telescope = args["telescope"].as<double>(1.);
-    Telescope telescope = Telescope(diam, f_telescope);
-    GratingEfficiency ge = GratingEfficiency(0.8, simulator.get_blaze(), simulator.get_blaze(), simulator.get_gpmm());
-    auto ef = args["efficiency"].as<std::string>("");
+    auto * global_eff = new Efficiency();
+    if (args["noblaze"]){
+        global_eff = new ConstantEfficiency(1.);
+    }else {
+        global_eff = new GratingEfficiency(1., simulator.get_blaze(), simulator.get_blaze(),
+                                                 simulator.get_gpmm());
+    }
+    simulator.add_efficiency(global_eff);
+
+    auto custom_eff = args["efficiency"].as<std::string>("");
 
     auto *eff = new Efficiency();;
-    if (!(ef.empty())) {
-        std::cout << "Loading efficiency curve from " << ef << std::endl;
-        eff = new CSVEfficiency(ef);
+    if (!(custom_eff.empty())) {
+        std::cout << "Loading efficiency curve from " << custom_eff << std::endl;
+        eff = new CSVEfficiency(custom_eff);
         simulator.add_efficiency(eff);
     }
 
-    simulator.add_efficiency(&ge);
+
     simulator.set_telescope(&telescope);
 
     cs->set_doppler_shift(rv);

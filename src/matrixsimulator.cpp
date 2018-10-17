@@ -2,7 +2,7 @@
 #include <iostream>
 #include <fstream>
 #include <iterator>
-#include "Histogram.h"
+//#include "Histogram.h"
 #include "H5Cpp.h"
 #include <cmath>
 #include "helper.h"
@@ -15,6 +15,10 @@
 #include <utility>
 #include <omp.h>
 #include "random_generator.h"
+/// mark fmt as header only
+#define FMT_HEADER_ONLY
+
+#include <fmt/format.h>
 
 #pragma omp declare reduction(vec_int_plus : std::vector<int> : \
                               std::transform(omp_out.begin(), omp_out.end(), omp_in.begin(), omp_out.begin(), std::plus<int>())) \
@@ -45,7 +49,7 @@ void MatrixSimulator::load_spectrograph_model(const std::string path, int fiber_
     this->orders.clear();
     this->raw_transformations.clear();
     this->sim_wavelength.clear();
-    this->sim_spectra.clear();
+    this->sim_flux.clear();
     this->sim_efficiencies.clear();
 
     // open file readonly
@@ -276,7 +280,8 @@ void MatrixSimulator::set_wavelength(std::vector<double> wavelength) {
 
 std::array<float, 6> MatrixSimulator::get_transformation_matrix_lookup(int o, double wavelength) {
     std::vector<float> parameters;
-    int idx_matrix = floor((wavelength - this->sim_wavelength[o].front()) / this->sim_matrix_dwavelength[o]);
+    int idx_matrix = static_cast<int> (floor(
+            (wavelength - this->sim_wavelength[o].front()) / this->sim_matrix_dwavelength[o]));
 
     parameters.push_back(this->sim_p[o][idx_matrix]);
     parameters.push_back(this->sim_q[o][idx_matrix]);
@@ -302,69 +307,76 @@ std::array<float, 6> MatrixSimulator::get_transformation_matrix(int o, double wa
 void MatrixSimulator::simulate(double t, unsigned long seed) {
     this->set_efficiencies(this->efficiencies);
 
-    this->prepare_sources(this->sources); //put area eventually in sources
+    this->prepare_source(this->source);
 
     this->prepare_psfs(1000);
 
     this->prepare_matrix_lookup(1000);
 
-    std::vector<Histogram> wl_s(orders.size());
+    std::vector<RandomGenerator<double> *> wl_s(orders.size());
     std::vector<int> N_photons(orders.size());
 
     double psf_scaling = (*this->ccd->get_pixelsize() / this->psfs->pixelsampling);
 
-    std::cout << "Number of photons per order:" << std::endl;
-    int N_tot = 0;
+    std::cout << std::endl << fmt::format("{:*^50}", " Number of photons per order ") << std::endl;
+
+    long int N_tot = 0;
     for (int o = 0; o < this->orders.size(); ++o) {
         if (!sim_wavelength[o].empty()) {
-            std::vector<double> a(sim_wavelength[o].begin(), sim_wavelength[o].end()); //units are um
-            std::vector<double> b(sim_spectra_times_efficiency[o].begin(),
-                                  sim_spectra_times_efficiency[o].end()); //units are uW per um
+            double avr = std::accumulate(sim_efficiencies[o].begin(), sim_efficiencies[o].end(), 0.0)/sim_efficiencies[o].size();
+            double total_photons = std::accumulate(flux_times_efficiency[o].begin(), flux_times_efficiency[o].end(), 0.) * t;
+            if (total_photons>UINT_MAX)
+                throw (std::invalid_argument(
+                        "Number of photons is too big. Please check integration time and units in given source spectrum."));
+            N_photons[o] = (unsigned int) nearbyint(total_photons);
 
-            wl_s[o] = Histogram(a, b);
-            //units are assumed to be t=[s], area=[m^2], wl_s.dflux=[Num of Photons]/([s] * [m^2] * [um]), wl_s.Calc_flux = [Num of Photons]/([s]*[m^2])
-            N_photons[o] = static_cast<int>(floor(wl_s[o].Calc_flux() * t));
-
-            N_tot += N_photons[o];
-            std::cout << "Order " << o + this->min_order << ": " << N_photons[o] << std::endl;
         } else {
             N_photons[o] = 0;
-            std::cout << "Order " << o + this->min_order << ": " << N_photons[o] << std::endl;
         }
+        N_tot += N_photons[o];
+        std::cout << fmt::format("Order {:3d}: {:10n}", this->min_order + o, N_photons[o]) << std::endl;
     }
-    std::cout << "Total number of photons:" << N_tot << std::endl;
-    std::cout << "Start tracing ..." << std::endl;
+    std::cout << fmt::format("Total number of photons: {:12n}", N_tot) << std::endl;
+    std::cout << std::endl << fmt::format("{:*^50}", " Start tracing ") << std::endl;
     std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
 
     std::vector<int> local_data = this->ccd->data;
+
     for (int o = 0; o < this->orders.size(); ++o) {
-        cout << "Simulating Order... " << o + this->min_order << "/" << this->max_order << std::endl;
-#pragma omp parallel
+        std::cout << fmt::format("Simulating Order {:3d}/{:3d}", o + this->min_order, this->max_order) << std::endl;
+        #pragma omp parallel
         {
-            std::uniform_real_distribution<float> dist(0.0, 1.0);
-            std::discrete_distribution<int> disf(wl_s[o].intensity.begin(), wl_s[o].intensity.end());
-            std::uniform_real_distribution<float> rgx(0., 1.);
-            std::uniform_real_distribution<float> rgy(0., 1.);
-            std::mt19937 gen;
+            std::uniform_real_distribution<float> rgx( (float) 0., (float) 1.);
+            std::uniform_real_distribution<float> rgy((float) 0., (float) 1.);
+            std::vector<double> a(sim_wavelength[o].begin(), sim_wavelength[o].end()); //units are um
+            std::vector<double> b(flux_times_efficiency[o].begin(),
+                                  flux_times_efficiency[o].end()); //units are photons per s
+
+            std::default_random_engine gen;
             if (seed == 0) {
                 std::random_device rd;
                 gen.seed(rd());
             } else {
-#if defined(_OPENMP)
+                #if defined(_OPENMP)
                 //TODO: better handling of seeds for parallel execution.. (i.e. use random seed sequence)
                 gen.seed(seed + omp_get_thread_num());
-#else
+                #else
                 gen.seed(seed);
-#endif
+                #endif
             }
 
-#pragma omp for reduction(vec_int_plus : local_data)
+            if (this->source->is_list_like())
+                wl_s[o] = new discrete_RNG<double, std::default_random_engine>(a, b);
+            else
+                wl_s[o] = new piecewise_linear_RNG<double, std::default_random_engine>(a, b, gen);
+
+            #pragma omp for reduction(vec_int_plus : local_data)
             for (int i = 0; i < N_photons[o]; ++i) {
+                double wl = wl_s[o]->draw();
 
-//                double wl = wl_s[o].Linear_sample(dist(gen));
-                double wl = wl_s[o].event[disf(gen)];
-
-                int idx_matrix = (floor((wl - this->sim_wavelength[o].front()) / this->sim_matrix_dwavelength[o]));
+                // index for transformation matrix in lookup table
+                int idx_matrix = static_cast<int> (floor(
+                        (wl - this->sim_wavelength[o].front()) / this->sim_matrix_dwavelength[o]));
 
                 float x = rgx(gen);
                 float y = rgy(gen);
@@ -376,7 +388,7 @@ void MatrixSimulator::simulate(double t, unsigned long seed) {
                 //            float newx = (sim_m00[o][idx_matrix] * x + sim_m01[o][idx_matrix] * y + sim_tx[o][idx_matrix]);
                 //            float newy = (sim_m10[o][idx_matrix]  * x + sim_m11[o][idx_matrix]  * y + sim_ty[o][idx_matrix]);
 
-                // lookup psf
+                //  index for PSF in lookup table
                 auto idx_psf = static_cast<int> (floor(
                         (wl - this->sim_wavelength[o].front()) / this->sim_psfs_dwavelength[o]));
 
@@ -407,7 +419,7 @@ void MatrixSimulator::simulate(double t, unsigned long seed) {
 }
 
 void MatrixSimulator::set_efficiencies(std::vector<Efficiency *> &efficiencies) {
-    std::cout << std::endl << "Set Efficiencies ... " << std::endl;
+    std::cout << std::endl << fmt::format("{:*^50}", " Set Efficiencies ") << std::endl;
     std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
 
     for (int o = 0; o < this->orders.size(); ++o) {
@@ -433,7 +445,7 @@ void MatrixSimulator::set_efficiencies(std::vector<Efficiency *> &efficiencies) 
 void MatrixSimulator::prepare_psfs(int N) {
 
     std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
-    std::cout << "Prepare PSFs ..." << std::endl;
+    std::cout << std::endl << fmt::format("{:*^50}", " Prepare PSFs ") << std::endl;
 
     for (int o = 0; o < this->orders.size(); ++o) {
         this->sim_psfs.emplace_back(std::vector<Matrix>(N));
@@ -461,7 +473,7 @@ void MatrixSimulator::prepare_psfs(int N) {
 void MatrixSimulator::prepare_matrix_lookup(int N) {
 
     std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
-    std::cout << "Prepare matrix elements ..." << std::endl;
+    std::cout << std::endl << fmt::format("{:*^50}", " Prepare matrix elements ") << std::endl;
 
     for (int o = 0; o < this->orders.size(); ++o) {
         this->sim_matrix_wavelength.push_back(std::vector<double>(N));
@@ -528,32 +540,25 @@ void MatrixSimulator::prepare_matrix_lookup(int N) {
     std::cout << "Duration: \t" << duration << " s" << std::endl;
 }
 
-void MatrixSimulator::prepare_sources(std::vector<Source *> sources) {
+void MatrixSimulator::prepare_source(Source *source) {
     std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
-    std::cout << "Prepare sources ..." << std::endl;
-    this->sim_spectra.clear();
+    std::cout << std::endl << fmt::format("{:*^50}", " Prepare sources ") << std::endl;
+    this->sim_flux.clear();
     // allocate memory so we can use omp parallel for filling
     for (int o = 0; o < this->orders.size(); ++o) {
-        this->sim_spectra.push_back(std::vector<float>(this->sim_wavelength[o].size()));
-        this->sim_spectra_times_efficiency.push_back(std::vector<float>(this->sim_wavelength[o].size()));
+        this->sim_flux.push_back(std::vector<double>(this->sim_wavelength[o].size()));
+        this->flux_times_efficiency.push_back(std::vector<double>(this->sim_wavelength[o].size()));
     }
 
 #pragma omp parallel for
     for (int o = 0; o < this->orders.size(); ++o) {
-        {
-            for (auto &s : sources) {
-                std::vector<float> spectrum = s->get_spectrum(this->sim_wavelength[o]);
-                for (int i = 0; i < spectrum.size(); ++i) {
-                    if (s->is_stellar_source()){
-                        this->sim_spectra[o][i] = spectrum[i] * telescope.get_area();;
-                    }else{
-                        this->sim_spectra[o][i] = spectrum[i];
-                    }
-
-                    this->sim_spectra_times_efficiency[o][i] = this->sim_spectra[o][i] * this->sim_efficiencies[o][i];
-                }
+            std::vector<double> flux = source->get_photon_flux(this->sim_wavelength[o]);
+            this->sim_flux[o] = flux;
+            double total_flux = 0.;
+            for (int i = 0; i < flux.size(); ++i) {
+                this->flux_times_efficiency[o][i] = this->sim_flux[o][i] * this->sim_efficiencies[o][i];
+                total_flux += this->sim_flux[o][i] * this->sim_efficiencies[o][i];
             }
-        }
     }
     std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::microseconds>(t2 - t1).count() / 1000000.;
@@ -578,7 +583,7 @@ void MatrixSimulator::add_efficiency(Efficiency *eff) {
 //}
 
 void MatrixSimulator::set_source(Source *src) {
-    this->sources.push_back(src);
+    this->source = src;
 }
 
 void MatrixSimulator::save_to_hdf(const std::string filename, bool bleed, bool overwrite) {
@@ -592,13 +597,12 @@ void MatrixSimulator::save_to_fits(const std::string filename, bool bleed, bool 
 void MatrixSimulator::save_1d_to_fits(const std::string filename) {
     CCfits::FITS infile(filename.c_str(), CCfits::Write);
     string hduName("1Dspectrum_Fiber_" + std::to_string(this->fiber_number));
-    int n_orders = this->orders.size();
 
     CCfits::Table *newTable = infile.addTable(hduName, 2);
 
     for (auto const &o: this->orders) {
-        newTable->addColumn(CCfits::Tdouble, "Order_" + std::to_string(o), this->sim_spectra[o].size(), "");
-        newTable->column("Order_" + std::to_string(o)).write(this->sim_spectra[o], 1, 2);
+        newTable->addColumn(CCfits::Tdouble, "Order_" + std::to_string(o), this->sim_flux[o].size(), "");
+        newTable->column("Order_" + std::to_string(o)).write(this->sim_flux[o], 1, 2);
         newTable->column("Order_" + std::to_string(o)).write(this->sim_wavelength[o], 1, 1);
     }
 

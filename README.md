@@ -3,7 +3,7 @@
 
 Echelle++, a fast generic spectrum simulator.
 [![Build Status](https://travis-ci.org/Stuermer/EchelleSimulator.svg?branch=master)](https://travis-ci.org/Stuermer/EchelleSimulator)
-[![Doc Status](https://readthedocs.org/projects/echellesimulator/badge/?version=latest)](https://readthedocs.org/projects/echellesimulator/badge/?version=latest)
+[![Doc Status](https://readthedocs.org/projects/echellesimulator/badge/?version=latest)](https://echellesimulator.readthedocs.io/en/latest/)
 
 Echelle++ is a simulation tool, to generate realistic 2D spectra, in particular cross-dispersed echelle spectra.
 It allows to simulate arbitrary spectra for any fiber-fed or slit spectrograph, where a model file
@@ -53,7 +53,7 @@ interpolation at intermediate wavelength.
 **Both, the matrices and the PSFs have to be extracted from ZEMAX only once. It is therefore possible to simulate 
 spectra without access to ZEMAX**
 
-For more information see [here](https://stuermer.github.io/EchelleSimulator).
+For more information see [here](https://echellesimulator.readthedocs.io/en/latest/).
 
 ### How to use Echelle++
 There are two ways of using Echelle++: Building from source, or using the [docker](https://www.docker.com/) image.
@@ -85,10 +85,10 @@ docker run -v /path/to/output_directory:/home/simulations stuermer/echellesimula
 ```
  will start the simulation as shown above and save the output *mdwarf.fit* on your local folder */path/to/output_directory*
  
-See [here](https://stuermer.github.io/EchelleSimulator/installation.html) for platform dependent considerations.
+See [here](https://echellesimulator.readthedocs.io/en/latest/installation.html) for platform dependent considerations.
  
 ### Documentation
-The package documentation can be found [here](https://stuermer.github.io/EchelleSimulator).
+The package documentation can be found [here](https://echellesimulator.readthedocs.io/en/latest/index.html).
 
 The documentation is automatically produced by **doxygen**, using [this](https://github.com/Velron/doxygen-bootstrapped) template.
 

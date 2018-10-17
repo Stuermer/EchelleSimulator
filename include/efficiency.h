@@ -50,19 +50,31 @@ private:
     double eff;
 };
 
+/**
+ * \class GratingEfficiency
+ * \brief implements the efficiency curve of a echelle grating based on theory
+ *
+ */
 class GratingEfficiency : public Efficiency {
 public:
-    GratingEfficiency(double scaling_factor, double alpha, double blaze, double gpmm);
+    /**
+     * Constructor.
+     * @param peak_efficiency peak efficiency of the grating
+     * @param alpha alpha angle
+     * @param blaze blaze angle
+     * @param gpmm grooves per mm
+     */
+    GratingEfficiency(double peak_efficiency, double alpha, double blaze, double gpmm);
 
     std::vector<double> get_efficiency(int order, std::vector<double> &wavelength);
 
     std::vector<double> get_efficiency(int order, std::vector<double> &wavelength, int N);
 
 private:
-    double scalingfactor = 0.8;
-    double alpha = 76.;
-    double blaze = 76.;
-    double gpmm = 31.6;
+    double peak_efficiency;
+    double alpha;
+    double blaze;
+    double gpmm;
 
     double calc_eff(double scalingfactor, int order, double alpha, double blaze, double wl, double n);
 

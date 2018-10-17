@@ -8,16 +8,17 @@
 #include "stdlib.h"
 #include <random>
 #include <algorithm>
+#include <type_traits>
 
-#ifdef USE_CUDA
-#include <curand.h>
-// Utilities and system includes
-#include <helper_functions.h>  // helper for shared functions common to CUDA Samples
-#include <helper_cuda.h>       // helper for CUDA Error handling
+template <class T>
+class RandomGenerator{
+public:
+    virtual T draw()=0;
+    virtual std::vector<T> draw(size_t n)=0;
+    virtual T operator()()=0;
+};
 
-#endif
-
-template <class T> class RG_uniform_real{
+template <class T> class RG_uniform_real: RandomGenerator<T>{
 public:
     RG_uniform_real()
     {
@@ -55,7 +56,7 @@ private:
     std::default_random_engine generator;
 };
 
-template <class T> class RG_uniform_int{
+template <class T> class RG_uniform_int: RandomGenerator<T>{
 public:
     RG_uniform_int(){
         this->distribution = std::uniform_int_distribution<T>();
@@ -90,54 +91,61 @@ private:
     std::default_random_engine generator;
 };
 
-#ifdef USE_CUDA
-#define DEFAULT_SEED 7;
-class RG_uniform_float{
+
+template<class FloatType = double,
+        class Generator = std::mt19937> class piecewise_linear_RNG : public RandomGenerator<FloatType>{
 public:
-    RG_uniform_float(int devID){
-//        printf("DEVICE: %i", devID);
-//        printf("Allocating data for %i samples...\n", size);
-        int seed = DEFAULT_SEED;
-//        curandGenerator_t prngGPU;
-        checkCudaErrors(curandCreateGenerator(&prngGPU, CURAND_RNG_PSEUDO_MTGP32));
-        checkCudaErrors(curandSetPseudoRandomGeneratorSeed(prngGPU, seed));
+    typedef FloatType result_type;
+    typedef Generator generator_type;
+    typedef std::piecewise_constant_distribution<FloatType> distribution_type;
+    // default constructor
+    explicit piecewise_linear_RNG(std::vector<FloatType> values, std::vector<FloatType> weights,
+            Generator&& _eng = Generator{std::random_device{}()}) : eng(std::move(_eng)), dist(values.begin(), values.end(), weights.begin()) {}
+    // construct from existing pre-defined engine
+    explicit piecewise_linear_RNG(std::vector<FloatType> values, std::vector<FloatType> weights, const Generator& _eng)
+            : eng(_eng), dist(values.begin(), values.end(), weights.begin())  {}
+    // generate next random value in distribution (equivalent to next() in above code)
+    result_type draw() {return dist(eng);}
 
-//        printf("Seeding with %i ...\n", seed);
+    std::vector<result_type> draw(size_t n){
+        std::vector<result_type> data(n);
+        std::generate(data.begin(), data.end(), [this]() { return dist(eng); });
+        return data;
     }
 
-    ~RG_uniform_float(){
-        checkCudaErrors(curandDestroyGenerator(this->prngGPU));
-        checkCudaErrors(cudaFree(this->d_Rand));
-        free(this->h_RandGPU);
-    }
-
-    void alloc_mem(size_t size)
-    {
-        checkCudaErrors(cudaMalloc((void **)&d_Rand, size * sizeof(float)));
-        h_RandGPU  = (float *)malloc(size * sizeof(float));
-    }
-
-    std::vector<float> draw(size_t size){
-
-//        printf("Generating random numbers on GPU...\n\n");
-        checkCudaErrors(curandGenerateUniform(prngGPU, (float *) d_Rand, size));
-
-//        printf("\nReading back the results...\n");
-        checkCudaErrors(cudaMemcpy(h_RandGPU, d_Rand, size * sizeof(float), cudaMemcpyDeviceToHost));
-
-        std::vector<float> res;
-        res.assign(h_RandGPU,h_RandGPU+size);
-        return res;
-    }
+    result_type operator()() { return dist(eng); }
 
 private:
-    size_t size;
-    curandGenerator_t prngGPU;
-    float *d_Rand;
-    float *h_RandGPU;
-
+    generator_type eng;
+    distribution_type dist;
 };
 
-#endif
+template<class FloatType = double,
+        class Generator = std::mt19937> class discrete_RNG : public RandomGenerator<FloatType>{
+public:
+    typedef FloatType result_type;
+    typedef Generator generator_type;
+    typedef std::discrete_distribution<int> distribution_type;
+    // default constructor
+    explicit discrete_RNG(std::vector<FloatType> _values, std::vector<FloatType> _weights,
+                                  Generator&& _eng = Generator{std::random_device{}()}) : eng(std::move(_eng)), values(_values), dist(_weights.begin(), _weights.end()) {}
+    // construct from existing pre-defined engine
+    explicit discrete_RNG(std::vector<FloatType> _values, std::vector<FloatType> _weights, const Generator& _eng)
+            : eng(_eng), values(_values), dist(_weights.begin(), _weights.end()) {}
+    // generate next random value in distribution (equivalent to next() in above code)
+    result_type draw() {return values[dist(eng)];}
 
+    std::vector<result_type> draw(size_t n){
+        std::vector<result_type> data(n);
+        std::generate(data.begin(), data.end(), [this]() { return values[dist(eng)]; });
+        return data;
+    }
+
+    result_type operator()() { return values[dist(eng)]; }
+
+private:
+    generator_type eng;
+    std::vector<result_type> values;
+    distribution_type dist;
+};
 #endif //ECHELLESIMULATOR_RANDOM_GENERATOR_H

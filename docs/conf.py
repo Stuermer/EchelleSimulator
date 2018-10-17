@@ -204,3 +204,7 @@ primary_domain = 'cpp'
 
 # Tell sphinx what the pygments highlight language should be.
 highlight_language = 'cpp'
+
+
+def setup(app):
+    app.add_stylesheet('custom.css')

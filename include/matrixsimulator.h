@@ -203,10 +203,10 @@ private:
 //    void set_psfs(PSF *psfs);
 
     /**
-     * Prepares sources to be used for simulation.
-     * @param sources
+     * Prepares source to be used for simulation.
+     * @param source
      */
-    void prepare_sources(std::vector<Source *> sources);
+    void prepare_source(Source *source);
 
     /**
      * Prepares PSF models to be used for simulations: pre-calculates N PSF models per order that will be used in a lookup
@@ -240,7 +240,7 @@ private:
     /// vectors describing the spectrograph efficiencies
     std::vector<Efficiency *> efficiencies;
     /// vector containing the sources used in the simulation
-    std::vector<Source *> sources;
+    Source * source;
     /// Telescope used in the simulation (only used for stellar-type sources when visual magnitude is provided)
     Telescope telescope;
     /// CCD object used in simulation
@@ -255,11 +255,11 @@ private:
     /// Efficiencies used for spectrograph, interpolated on wavelength grid sim_wavelength
     std::vector<std::vector<double>> sim_efficiencies;
     /// Source spectra interpolated on wavelength grid sim_wavelength
-    std::vector<std::vector<float>> sim_spectra;
+    std::vector<std::vector<double>> sim_flux;
     /// Source spectrum times efficiency model on wavelength grid sim_wavelength
-    std::vector<std::vector<float>> sim_spectra_times_efficiency;
+    std::vector<std::vector<double>> flux_times_efficiency;
     /// 'total' efficiency per order. Used for calculating number of photons per order.
-    std::vector<float> sim_total_efficiency_per_order;
+    std::vector<double> sim_total_efficiency_per_order;
     /// Pre-calculated PSFs, interpolated on sim_psfs_wavelength
     std::vector<std::vector<Matrix>> sim_psfs;
     /// Wavelength of PSFs at which they are interpolated
