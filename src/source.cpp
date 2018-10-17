@@ -103,7 +103,7 @@ std::vector<double> Source::get_interpolated_spectral_density(std::vector<double
 
 std::vector<double> Source::get_photon_flux(std::vector<double> wavelength) {
     if (!this->list_like) {
-        // convert microwatt / micrometer to photons / s
+        // convert microwatts / micrometer to photons / s
         double ch_factor = 5.03E12;
         std::vector<double> flux;
         std::vector<double> diff;
@@ -382,3 +382,33 @@ void StellarSource::calc_flux_scale() {
 
     s_val = pow(10, mag / (-2.5)) * v_zp / total_flux * telescope_area;
 }
+
+
+
+IdealEtalon::IdealEtalon(double d, double n, double theta, double R, double I) : d(d / 1000.), n(n), theta(theta),
+                                                                                 R(R), I(I) {
+    this->cF = this->coefficient_of_finesse(R);
+    this->integration_steps = 10;
+    this->list_like=false;
+}
+
+double IdealEtalon::coefficient_of_finesse(double R) {
+    return 4. * R / ((1. - R) * (1. - R));
+}
+
+double IdealEtalon::T(double wl, double theta, double d, double n, double cF) {
+    //delta = (2. * math.pi / wl) * 2. * n * math.cos(theta) * d
+    //return 1. / (1. + cF * np.sin(0.5 * delta) ** 2)
+
+    double delta = (2. * M_PI * n * cos(theta) * d) / wl;
+    double sind = sin(delta);
+    return 1. / (1. + cF * sind * sind);
+}
+
+double IdealEtalon::get_local_efficiency(double wavelength) {
+    return this->T(wavelength / 1E6, theta, d, n, cF);
+}
+
+double IdealEtalon::get_spectral_density(double wavelength) {
+    return I * get_local_efficiency(wavelength);
+    }

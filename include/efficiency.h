@@ -80,42 +80,6 @@ private:
 
 };
 
-class EtalonEfficiency : public Efficiency {
-public:
-    /*!
- * Constructor.
- *
- * @param d mirror distance in mm
- * @param n refractive index of the medium between mirrors
- * @param theta angle of incidence
- * @param R reflectivity of the mirrors
- */
-    EtalonEfficiency(double d, double n, double theta, double R);
-
-    ~EtalonEfficiency();
-
-    std::vector<double> get_efficiency(int order, std::vector<double> &wavelength);
-
-    std::vector<double> get_efficiency(int order, std::vector<double> &wavelength, int N);
-
-
-private:
-    double coefficient_of_finesse(double R);
-
-    double get_local_efficiency(double wavelength);
-
-    double integral_s(double a, double b, int n);
-
-    double T(double wl, double theta, double d, double n, double cF);
-
-    int integration_steps;
-    double d;
-    double n;
-    double theta;
-    double R;
-    double cF;
-
-};
 
 class CSVEfficiency : public Efficiency {
 public:

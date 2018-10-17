@@ -5,6 +5,8 @@
 #include "argagg.hpp"
 #include "helper.h"
 #include "matrixsimulator.h"
+#define FMT_HEADER_ONLY
+#include <fmt/format.h>
 
 using argagg::parser_results;
 using argagg::parser;
@@ -160,6 +162,17 @@ int main(int argc, char *argv[]) {
                                      "OPTIONAL: if set, the simulation will not scale the efficiency with the grating blaze function that was calculated analytically from the spectrograph optical parameters.", 0
 
                              },
+                             {
+
+                                     "etalon", {"--etalon"},
+                                     "OPTIONAL: ideal fabry-perot etalon light source"
+                                     "general usage: --etalon <d>,<n>,<theta>,<R>,<I>"
+                                     "where <d> is the mirror distance in mm, <n> the refractive index between the mirrors"
+                                     "<theta> the angle of incidence, <R> the reflectivity of the mirrors, and <I> the constant"
+                                     "flux density in [microwatts]/[micrometer] of the light source"
+                                     "example usage: --etalon 10,1.,0.,0.94,0.001", 1
+
+                             },
                      }};
 
 
@@ -211,7 +224,7 @@ int main(int argc, char *argv[]) {
     if (args["blackbody"]) {
         auto v = args["blackbody"].as<std::string>();
         std::vector<std::string> vv = split_to_vector(v, ',');
-        std::cout << "Simulating a blackbody with T = " << stod(vv[0]) << " and magnitude K = " << stod(vv[1]) << std::endl;
+        std::cout << fmt::format("Simulating a blockbody with T={:} and V-band magnitude {:}", stod(vv[0]), stod(vv[1])) << std::endl ;
 
         cs = new Blackbody(stod(vv[0]), stod(vv[1]), telescope.get_area());
         source = "blackbody";
@@ -239,7 +252,7 @@ int main(int argc, char *argv[]) {
 
         auto v = args["coehlo"].as<std::string>();
         std::vector<std::string> vv = split_to_vector(v, ',');
-        std::cout << "Simulating coehlo spectra with magnitude = " << stod(vv[1]) << std::endl;
+        std::cout << "Simulating coehlo spectra with magnitude " << stod(vv[1]) << std::endl;
 
         cs = new CoehloSpectrum(vv[0], stod(vv[1]), telescope.get_area());
         source = "choehlo";
@@ -247,7 +260,7 @@ int main(int argc, char *argv[]) {
 
         auto v = args["custom1"].as<std::string>();
         std::vector<std::string> vv = split_to_vector(v, ',');
-        std::cout << "Simulating coehlo spectra with magnitude = " << stod(vv[3]) << std::endl;
+        std::cout << "Simulating custom spectra with magnitude " << stod(vv[3]) << std::endl;
 
         cs = new CustomSpectrum(stod(vv[3]), telescope.get_area(), vv[1], vv[2]);
 
@@ -255,7 +268,7 @@ int main(int argc, char *argv[]) {
 
         auto v = args["custom2"].as<std::string>();
         std::vector<std::string> vv = split_to_vector(v, ',');
-        std::cout << "Simulating coehlo spectra with magnitude = " << stod(vv[2]) << std::endl;
+        std::cout << "Simulating custom spectra with magnitude = " << stod(vv[2]) << std::endl;
 
         cs = new CustomSpectrum(std::stod(vv[3]), telescope.get_area(), vv[0], vv[1]);
 
@@ -275,12 +288,19 @@ int main(int argc, char *argv[]) {
 
         cs = new Constant(c_val);
         source = "constant";
-    } else {
+    } else if (args["etalon"]) {
+        auto v = args["etalon"].as<std::string>();
+        std::vector<std::string> vv = split_to_vector(v, ',');
+        std::cout << fmt::format("Simulating ideal etalon with distance d={:}",stod(vv[0])) << std::endl;
+        cs = new IdealEtalon(stod(vv[0]), stod(vv[1]), stod(vv[2]), stod(vv[3]), stod(vv[4]));
+        source = "IdealEtalon";
+    }
+    else {
 
-        std::cout << "Simulating constant source with spectral density = 0.01 [micro watt] / [micro meter]"
-             << std::endl;
-        cs = new Constant(0.01);
-        source = "constant";
+            std::cout << "Simulating constant source with spectral density = 0.01 [micro watt] / [micro meter]"
+            << std::endl;
+            cs = new Constant(0.01);
+            source = "constant";
     }
 
     auto rv = args["radial_velocity"].as<double>(0.);

@@ -187,8 +187,9 @@ public:
      * @param n refractive index of the medium between mirrors
      * @param theta angle of incidence
      * @param R reflectivity of the mirrors
+     * @param I flux density [microWatts]/[micrometer] of the underlying light source
      */
-    IdealEtalon(double d, double n, double theta, double R);
+    IdealEtalon(double d, double n, double theta, double R, double I);
     /**
      * Calculates the coefficient of Finesse.
      *
@@ -202,10 +203,6 @@ public:
      * @return coefficienct of finesse
      */
     static double coefficient_of_finesse(double R);
-
-    double FSR();
-
-    double F();
 
     /**
      * Transmission function of an ideal etalon.
@@ -225,19 +222,25 @@ public:
      * @return transmission at given wavelength
      */
     static double T(double wl, double theta, double d, double n, double cF);
+
     /**
      * Spectral density at given wavelegnth.
      *
      * @param wavelength wavelength [micron]
      * @return Spectral density at given wavelength
      */
+
+protected:
     double get_spectral_density(double wavelength);
+
 private:
+    double get_local_efficiency(double wavelength);
     double d;
     double n;
     double theta;
     double R;
     double cF;
+    double I;
 };
 
 /**

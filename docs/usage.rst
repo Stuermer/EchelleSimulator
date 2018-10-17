@@ -55,13 +55,14 @@ Example 3: A stellar source + RV shift
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 When simulating stellar sources, a visual magnitude of the source has to be provided. Also, a telescope size should be provided, otherwise, a default telescope of 1m diameter is used to calculate the photon flux.
 Here, we specify a telescope of 8.1m diameter and 128.12m focal length, a integration time of 60s. Our source is a simulated M-dwarf spectrum using the `PHOENIX simulations <https://www.aanda.org/articles/aa/abs/2013/05/aa19058-12/aa19058-12.html>`_ with an effective temperature of 3500 K, Z=-1.0, alpha=0. and surface gravity of log_g=5.5.
+The V-band magnitude was specified to be 14.
 We also set the radial velocity to 50 m/s.
 
 .. code-block:: none
 
-    ./echellesimulator --spectrograph MaroonX --telescope 8.1,128.12 --phoenix 3500,-1.,0.,5.5,6 -t 60 -r 50
-    ./echellesimulator --spectrograph MaroonX --telescope 8.1,128.12 --phoenix 3500,-1.,0.,5.5,6 -t 60 -r 50 -k 1 -f 2
-    ./echellesimulator --spectrograph MaroonX --telescope 8.1,128.12 --phoenix 3500,-1.,0.,5.5,6 -t 60 -r 50 -k 1 -f 3
+    ./echellesimulator --spectrograph MaroonX --telescope 8.1,128.12 --phoenix 3500,-1.,0.,5.5,14 -t 60 -r 50
+    ./echellesimulator --spectrograph MaroonX --telescope 8.1,128.12 --phoenix 3500,-1.,0.,5.5,14 -t 60 -r 50 -k 1 -f 2
+    ./echellesimulator --spectrograph MaroonX --telescope 8.1,128.12 --phoenix 3500,-1.,0.,5.5,14 -t 60 -r 50 -k 1 -f 3
 
 .. image:: plots/example3.jpg
 
@@ -115,3 +116,24 @@ Intermediate values will be linearly interpolated.
     ./echellesimulator --spectrograph MaroonX --constant 0.001 --efficiency efficiency.csv
 
 .. image:: plots/example5.jpg
+
+
+Example 6: simultaneous calibration:
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+In the last example, we combine previous examples to generate a m-dwarf spectrum with an etalon as a simultaneous calibration source.
+
+We add a radial velocity shift to both, the source and a different one to the calibration source.
+
+We also add readout noise and a bias count.
+
+..note:: Only specify readout noise and bias once when simulating multiple fibers, since the signals get added otherwise.
+
+.. code-block:: none
+    ./echellesimulator --spectrograph MaroonX --telescope 8.1,128.12 --phoenix 3500,-1.,0.,5.5,14 -f 2 -t 10 -r 50 -o example6.fit
+    ./echellesimulator --spectrograph MaroonX --telescope 8.1,128.12 --phoenix 3500,-1.,0.,5.5,14 -f 3 -k 1 -t 10 -r 50 -o example6.fit
+    ./echellesimulator --spectrograph MaroonX --telescope 8.1,128.12 --phoenix 3500,-1.,0.,5.5,14 -f 4 -k 1 -t 10 -r 50 -o example6.fit
+    ./echellesimulator --spectrograph MaroonX --etalon 10,1.,0.,0.92,0.001 -f 5 -k 1 -t 10 -r -10.5 --readnoise 5 --bias 1000 -o example6.fit
+
+.. image:: plots/example6.jpg
+
+Have fun !
