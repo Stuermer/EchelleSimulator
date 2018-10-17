@@ -90,8 +90,6 @@ See [here](https://echellesimulator.readthedocs.io/en/latest/installation.html) 
 ### Documentation
 The package documentation can be found [here](https://echellesimulator.readthedocs.io/en/latest/index.html).
 
-The documentation is automatically produced by **doxygen**, using [this](https://github.com/Velron/doxygen-bootstrapped) template.
-
 ### Contribution
 Contributions are welcome! You can help by 
 * report bugs
