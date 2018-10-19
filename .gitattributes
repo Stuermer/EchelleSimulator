@@ -3,3 +3,4 @@ data/spectrographs/MaroonX.hdf filter=lfs diff=lfs merge=lfs -text
 data/spectrographs/MaroonXredShifted.hdf filter=lfs diff=lfs merge=lfs -text
 data/spectrographs/model_spectrograph.hdf filter=lfs diff=lfs merge=lfs -text
 data/spectrographs/NEID.hdf filter=lfs diff=lfs merge=lfs -text
+*.hdf filter=lfs diff=lfs merge=lfs -text

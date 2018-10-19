@@ -3,7 +3,6 @@ doc/latex/
 *.dat
 build/
 release/
-*.hdf
 simulations/
 *.xml
 .idea/*
