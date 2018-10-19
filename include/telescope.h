@@ -24,7 +24,7 @@ public:
      */
     ~Telescope() {};
 
-     ///@return effective light collecting area [m^2]
+    ///@return effective light collecting area [m^2]
     double get_area();
 
     /// @return mirror diameter

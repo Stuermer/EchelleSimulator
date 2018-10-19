@@ -1,7 +1,3 @@
-//
-// Created by julian on 21.09.16.
-//
-
 #ifndef ECHELLESIMULATOR_CCD_H
 #define ECHELLESIMULATOR_CCD_H
 
@@ -33,6 +29,7 @@ public:
      * @param overwrite set true to overwrite existing file
      */
     void save_to_hdf(std::string filename, bool bleed = true, bool overwrite = false);
+
     /**
      * Saves simulated data to FITS file
      * @param filename file path
@@ -44,7 +41,7 @@ public:
      * Returns pixel of the CCD detector size in microns.
      * @return Pixel size [microns]
      */
-    double * get_pixelsize();
+    double *get_pixelsize();
 
     //overload + operator
 //    static void do_bleed(cv::Mat &input, double limit);

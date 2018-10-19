@@ -1,8 +1,10 @@
 #ifndef SLIT_H
 #define SLIT_H
+
 #include "PSF.h"
+
 #ifdef USE_GPU
-    #include "opencv2/gpu/gpu.hpp"
+#include "opencv2/gpu/gpu.hpp"
 #endif
 
 /**
@@ -19,8 +21,7 @@
  * As the input slit is represented by an image, it could in principle also be used to simulate intensity variations
  * within the slit to mimic incomplete fiber scrambling.
  */
-class Slit
-{
+class Slit {
 public:
     /**
      * Default constructor
@@ -43,11 +44,6 @@ public:
      */
     void set_slit(double w, double h, int slit_sampling);
 
-    /**
-     * Plots the slit.
-     */
-    void show();
-
 //private:
     double w;
     double h;
@@ -57,13 +53,8 @@ public:
 
     int slit_sampling;
 
-    #ifdef USE_GPU
-        cv::gpu::GpuMat slit_image;
-        bool use_gpu = true;
-    #else
-        Matrix slit_image;
-        bool use_gpu = false;
-    #endif
+    Matrix slit_image;
+
 };
 
 #endif // SLIT_H

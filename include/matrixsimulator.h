@@ -31,8 +31,8 @@ struct raw_transformation {
  * Used only for calculating the blaze efficiency curve.
  */
 struct spectrograph_information {
-    /// blaze angle
-    double blaze;
+    /// alpha angle
+    double alpha;
     /// grooves per mm
     double gpmm;
 };
@@ -113,7 +113,7 @@ public:
      * Returns blaze angle in degrees
      * @return blaze angle
      */
-    double get_blaze();
+    double get_alpha();
 
     /**
      * Returns grove lines per mm
@@ -240,7 +240,7 @@ private:
     /// vectors describing the spectrograph efficiencies
     std::vector<Efficiency *> efficiencies;
     /// vector containing the sources used in the simulation
-    Source * source;
+    Source *source;
     /// Telescope used in the simulation (only used for stellar-type sources when visual magnitude is provided)
     Telescope telescope;
     /// CCD object used in simulation

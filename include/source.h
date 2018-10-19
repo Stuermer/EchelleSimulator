@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <map>
+
 /**
  * \class Source
  * \brief Base class of all spectral sources.
@@ -10,8 +11,7 @@
  * This class is the base class of all spectral sources. Its purpose is to provide a common interface for all sources.
  * For implementing a new spectral source, inherit from this class and implement the Source::get_spectral_density function.
  */
-class Source
-{
+class Source {
 public:
     /* Constructor */
     Source();
@@ -45,19 +45,21 @@ public:
 
     virtual std::vector<double> get_wavelength() {};
 
-    bool is_list_like() { return list_like;};
-    bool is_stellar_source() {return stellar_source; };
-    std::string get_source_name() {return name;};
+    bool is_list_like() { return list_like; };
+
+    bool is_stellar_source() { return stellar_source; };
+
+    std::string get_source_name() { return name; };
 
 protected:
-        /**
-     * \fn virtual double get_spectral_density(double wavelength)
-     * This function returns the spectral density at a given wavelength. It is the essential function for all subclasses.
-     *
-     * \see Source::get_spectrum() will use this function to integrate over it to retrieve a spectrum for a given wavelength vector.
-     * @param wavelength wavelength
-     * @return spectral density
-     */
+    /**
+ * \fn virtual double get_spectral_density(double wavelength)
+ * This function returns the spectral density at a given wavelength. It is the essential function for all subclasses.
+ *
+ * \see Source::get_spectrum() will use this function to integrate over it to retrieve a spectrum for a given wavelength vector.
+ * @param wavelength wavelength
+ * @return spectral density
+ */
     virtual double get_spectral_density(double wavelength) {};
 
     /// whether the source is list-like or not
@@ -69,7 +71,7 @@ protected:
     /// current doppler shift
     double shift;
     /// Scaling factor used in Source::scale_spectral_density() for normalization of source spectral_density against Source::v_zp
-    double s_val  = 1.0;
+    double s_val = 1.0;
 
     /**
      * Integrates the \see{Source::spectral_density()} function between limits a and b.
@@ -93,12 +95,12 @@ protected:
     int integration_steps;
 };
 
-class CalibrationSource : public Source{
+class CalibrationSource : public Source {
 public:
     CalibrationSource();
 };
 
-class StellarSource : public Source{
+class StellarSource : public Source {
 public:
     StellarSource(double magnitude, double telescope_area);
 
@@ -141,15 +143,17 @@ protected:
  * s(\lambda) = const.
  * \f]
  */
-class Constant : public CalibrationSource{
+class Constant : public CalibrationSource {
 public:
     /* Default Constructor */
     Constant();
+
     /**
      * Constructor with a wavelength range of 0 to 1 meter
      * @param value constant spectral density value
      */
     Constant(double value);
+
     /**
      * Returns constant spectral density.
      *
@@ -157,6 +161,7 @@ public:
      * @return constant spectral density value
      */
     double get_spectral_density(double wavelength);
+
 private:
     /* Constant spectral density value */
     double value;
@@ -178,7 +183,7 @@ private:
  * \todo implement FSR(), F() and other static functions.
  *
  */
-class IdealEtalon : public CalibrationSource{
+class IdealEtalon : public CalibrationSource {
 public:
     /**
      * Constructor.
@@ -190,6 +195,7 @@ public:
      * @param I flux density [microWatts]/[micrometer] of the underlying light source
      */
     IdealEtalon(double d, double n, double theta, double R, double I);
+
     /**
      * Calculates the coefficient of Finesse.
      *
@@ -235,6 +241,7 @@ protected:
 
 private:
     double get_local_efficiency(double wavelength);
+
     double d;
     double n;
     double theta;
@@ -262,7 +269,7 @@ private:
  *  \f]
  *
  */
-class Blackbody : public StellarSource{
+class Blackbody : public StellarSource {
 public:
     /**
      * Constructor
@@ -271,13 +278,15 @@ public:
      * @param telescope_area telescope light collecting area [m^2]
      */
     Blackbody(double T, double magnitude, double telescope_area);
+
     /**
      * Planck function for spectral density of a blackbody with Temperature T
      * @param T Temperature [K]
      * @param wavelength wavelength [m]
      * @return spectral density
      */
-    double planck(const double& T, const double& wavelength);
+    double planck(const double &T, const double &wavelength);
+
     /**
      * spectral density of a blackbody
      * \f[
@@ -298,7 +307,7 @@ private:
  * \brief Implements using data from the Phoenix data repository. \see also helper.csv::download_phoenix()
  *
  */
-class PhoenixSpectrum : public StellarSource{
+class PhoenixSpectrum : public StellarSource {
 public:
     /**
      * Constructor. Reads in spectrum and wavelength files and scales it for given visual magnitude.
@@ -311,6 +320,7 @@ public:
                     double telescope_area);
 
     double get_spectral_density(double wavelength);
+
 private:
     /**
      * read in the spectrum from file between min_wavelength and max_wavelength
@@ -318,14 +328,17 @@ private:
      * @param wavelength_file file path of wavelength
      */
     void read_spectrum(std::string spectrum_file, std::string wavelength_file);
+
     // contains wavelength, spectrum data
     std::map<double, double> data;
 };
 
-class CoehloSpectrum : public StellarSource{
+class CoehloSpectrum : public StellarSource {
 public:
     CoehloSpectrum(std::string spectrum_file, double magnitude, double telescope_area);
+
     void read_spectrum(std::string spectrum_file);
+
     double get_spectral_density(double wavelength);
 
 private:
@@ -334,10 +347,10 @@ private:
 
 };
 
-class CustomSpectrum : public StellarSource{
+class CustomSpectrum : public StellarSource {
 public:
     CustomSpectrum(double magnitude, double telescope_area, const std::string spectrum_file,
-                       std::string wave_file);
+                   std::string wave_file);
 
     void read_spectrum(const std::string spectrum_file, std::string wave_file);
 
@@ -354,12 +367,16 @@ private:
  * \brief Implements line list spectrum
  *
  */
-class LineList : public CalibrationSource{
+class LineList : public CalibrationSource {
 public:
     LineList(const std::string linelist_file);
+
     void read_spectrum(std::string linelist_file);
+
     double get_spectral_density(double wavelength);
+
     std::vector<double> get_interpolated_spectral_density(std::vector<double> wavelength);
+
     std::vector<double> get_wavelength();
 
     std::vector<double> event;
@@ -369,4 +386,5 @@ public:
 private:
     std::map<double, double> data;
 };
+
 #endif // SOURCE_H

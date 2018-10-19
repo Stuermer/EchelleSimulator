@@ -5,7 +5,9 @@
 #include "argagg.hpp"
 #include "helper.h"
 #include "matrixsimulator.h"
+
 #define FMT_HEADER_ONLY
+
 #include <fmt/format.h>
 
 using argagg::parser_results;
@@ -103,10 +105,10 @@ int main(int argc, char *argv[]) {
 
                              },
                              {
-                                 "telescope", {"--telescope"},
-                                 "OPTIONAL: uses a telescope with diameter <diam> [meter] and a focal length of <fl> [meter] for calculating the photon flux"
-                                 "generale usage: telescope <diam>, <fl>"
-                                 "example usage: telescope 8.1,128.12 ", 1
+                                     "telescope", {"--telescope"},
+                                     "OPTIONAL: uses a telescope with diameter <diam> [meter] and a focal length of <fl> [meter] for calculating the photon flux"
+                                     "generale usage: telescope <diam>, <fl>"
+                                     "example usage: telescope 8.1,128.12 ", 1
                              },
 
                              {
@@ -153,14 +155,20 @@ int main(int argc, char *argv[]) {
                              {
 
                                      "efficiency", {"--efficiency"},
-                                     "OPTIONAL: .csv file with wavelength dependent efficiency values for correct signal scaling. File format is wl;efficiency", 1
+                                     "OPTIONAL: .csv file(s) with wavelength dependent efficiency values for correct signal scaling. File format is wl[microns];efficiency[fractional]"
+                                     "multiple efficiency files can be specified (efficiencies will be multiplied), separate them with ','"
+                                     "Make sure, efficiencies cover the full wavelength range of the spectrograph", 1
 
                              },
                              {
 
                                      "noblaze", {"--noblaze"},
-                                     "OPTIONAL: if set, the simulation will not scale the efficiency with the grating blaze function that was calculated analytically from the spectrograph optical parameters.", 0
+                                     "OPTIONAL: if set, the simulation will not scale the efficiency with the grating alpha function that was calculated analytically from the spectrograph optical parameters.", 0
 
+                             },
+                             {
+                                     "blaze", {"--blaze"},
+                                     "OPTIONAL: alpha angle in degree. ", 1
                              },
                              {
 
@@ -176,7 +184,6 @@ int main(int argc, char *argv[]) {
                      }};
 
 
-    // Define our usage text. (Really poor quality)
     std::ostringstream usage;
     usage
             << argv[0] << " 1.0" << std::endl
@@ -184,8 +191,6 @@ int main(int argc, char *argv[]) {
             << "Usage: " << argv[0] << " [OPTIONS]... [FILES]..." << std::endl
             << std::endl;
 
-    // Use our argument parser to... parse the command line arguments. If there
-    // are any problems then just spit out the usage and help text and exit.
     argagg::parser_results args;
 
     try {
@@ -198,8 +203,6 @@ int main(int argc, char *argv[]) {
         return EXIT_FAILURE;
     }
 
-    // If the help flag was specified then spit out the usage and help text and
-    // exit.
     if (args["help"]) {
         argagg::fmt_ostream fmt(std::cerr);
         fmt << usage.str() << argparser;
@@ -224,7 +227,8 @@ int main(int argc, char *argv[]) {
     if (args["blackbody"]) {
         auto v = args["blackbody"].as<std::string>();
         std::vector<std::string> vv = split_to_vector(v, ',');
-        std::cout << fmt::format("Simulating a blockbody with T={:} and V-band magnitude {:}", stod(vv[0]), stod(vv[1])) << std::endl ;
+        std::cout << fmt::format("Simulating a blockbody with T={:} and V-band magnitude {:}", stod(vv[0]), stod(vv[1]))
+                  << std::endl;
 
         cs = new Blackbody(stod(vv[0]), stod(vv[1]), telescope.get_area());
         source = "blackbody";
@@ -232,7 +236,8 @@ int main(int argc, char *argv[]) {
         auto v = args["phoenix"].as<std::string>();
         std::vector<std::string> vv = split_to_vector(v, ',');
         std::cout << "Simulating phoenix spectra with magnitude = " << stod(vv[4]) << std::endl;
-        if (download_phoenix(std::stoi(vv[0]), std::stod(vv[3]), std::stod(vv[1]), std::stod(vv[2]), "../data/phoenix_spectra/spectrum.fits") == 0) {
+        if (download_phoenix(std::stoi(vv[0]), std::stod(vv[3]), std::stod(vv[1]), std::stod(vv[2]),
+                             "../data/phoenix_spectra/spectrum.fits") == 0) {
 
             const std::string &w_file = "../data/phoenix_spectra/WAVE_PHOENIX-ACES-AGSS-COND-2011.fits";
 
@@ -240,7 +245,8 @@ int main(int argc, char *argv[]) {
                 download_wave_grid("../data/phoenix_spectra/WAVE_PHOENIX-ACES-AGSS-COND-2011.fits");
             }
             cs = new PhoenixSpectrum("../data/phoenix_spectra/spectrum.fits",
-                                     "../data/phoenix_spectra/WAVE_PHOENIX-ACES-AGSS-COND-2011.fits", stod(vv[4]), telescope.get_area());
+                                     "../data/phoenix_spectra/WAVE_PHOENIX-ACES-AGSS-COND-2011.fits", stod(vv[4]),
+                                     telescope.get_area());
 
         } else {
             argagg::fmt_ostream fmt(std::cerr);
@@ -284,47 +290,50 @@ int main(int argc, char *argv[]) {
     } else if (args["constant"]) {
         auto c_val = args["constant"].as<double>(0.01);
         std::cout << "Simulating constant source with spectral density = " << c_val
-             << " [micro watt] / [micro meter] " << std::endl;
+                  << " [micro watt] / [micro meter] " << std::endl;
 
         cs = new Constant(c_val);
         source = "constant";
     } else if (args["etalon"]) {
         auto v = args["etalon"].as<std::string>();
         std::vector<std::string> vv = split_to_vector(v, ',');
-        std::cout << fmt::format("Simulating ideal etalon with distance d={:}",stod(vv[0])) << std::endl;
+        std::cout << fmt::format("Simulating ideal etalon with distance d={:}", stod(vv[0])) << std::endl;
         cs = new IdealEtalon(stod(vv[0]), stod(vv[1]), stod(vv[2]), stod(vv[3]), stod(vv[4]));
         source = "IdealEtalon";
-    }
-    else {
+    } else {
 
-            std::cout << "Simulating constant source with spectral density = 0.01 [micro watt] / [micro meter]"
-            << std::endl;
-            cs = new Constant(0.01);
-            source = "constant";
+        std::cout << "Simulating constant source with spectral density = 0.01 [micro watt] / [micro meter]"
+                  << std::endl;
+        cs = new Constant(0.01);
+        source = "constant";
     }
 
     auto rv = args["radial_velocity"].as<double>(0.);
 
     std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
 
-    auto * global_eff = new Efficiency();
-    if (args["noblaze"]){
+    auto *global_eff = new Efficiency();
+    if (args["noblaze"]) {
         global_eff = new ConstantEfficiency(1.);
-    }else {
-        global_eff = new GratingEfficiency(1., simulator.get_blaze(), simulator.get_blaze(),
-                                                 simulator.get_gpmm());
+    } else {
+        auto blaze = args["blaze"].as<double>(simulator.get_alpha());
+        global_eff = new GratingEfficiency(1., simulator.get_alpha(), blaze, simulator.get_gpmm());
     }
     simulator.add_efficiency(global_eff);
 
     auto custom_eff = args["efficiency"].as<std::string>("");
 
-    auto *eff = new Efficiency();;
-    if (!(custom_eff.empty())) {
-        std::cout << "Loading efficiency curve from " << custom_eff << std::endl;
-        eff = new CSVEfficiency(custom_eff);
-        simulator.add_efficiency(eff);
-    }
+    std::vector<Efficiency *> efficienies;
 
+    if (!(custom_eff.empty())) {
+        auto v = args["efficiency"].as<std::string>();
+        std::vector<std::string> eff_csv_files = split_to_vector(v, ',');
+        for (auto ef: eff_csv_files) {
+            std::cout << "Loading efficiency curve from " << custom_eff << std::endl;
+            efficienies.push_back(new CSVEfficiency(ef));
+            simulator.add_efficiency(efficienies.back());
+        }
+    }
 
     simulator.set_telescope(&telescope);
 

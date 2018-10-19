@@ -1,7 +1,3 @@
-//
-// Created by julian on 09.10.16.
-//
-
 #ifndef ECHELLESIMULATOR_CSV_READER_H
 #define ECHELLESIMULATOR_CSV_READER_H
 
@@ -9,69 +5,78 @@
 #include <sstream>
 #include <vector>
 
-class CSVRow
-{
+class CSVRow {
 public:
-    std::string const& operator[](std::size_t index) const
-    {
+    std::string const &operator[](std::size_t index) const {
         return m_data[index];
     }
-    std::size_t size() const
-    {
+
+    std::size_t size() const {
         return m_data.size();
     }
-    void readNextRow(std::istream& str)
-    {
-        std::string         line;
+
+    void readNextRow(std::istream &str) {
+        std::string line;
         std::getline(str, line);
 
-        std::stringstream   lineStream(line);
-        std::string         cell;
+        std::stringstream lineStream(line);
+        std::string cell;
 
         m_data.clear();
-        while(std::getline(lineStream, cell, ';'))
-        {
+        while (std::getline(lineStream, cell, ';')) {
             m_data.push_back(cell);
         }
     }
 
 private:
-    std::vector<std::string>    m_data;
+    std::vector<std::string> m_data;
 };
 
-inline std::istream& operator>>(std::istream& str, CSVRow& data)
-{
+inline std::istream &operator>>(std::istream &str, CSVRow &data) {
     data.readNextRow(str);
     return str;
 }
 
 
-class CSVIterator
-{
+class CSVIterator {
 public:
-    typedef std::input_iterator_tag     iterator_category;
-    typedef CSVRow                      value_type;
-    typedef std::size_t                 difference_type;
-    typedef CSVRow*                     pointer;
-    typedef CSVRow&                     reference;
+    typedef std::input_iterator_tag iterator_category;
+    typedef CSVRow value_type;
+    typedef std::size_t difference_type;
+    typedef CSVRow *pointer;
+    typedef CSVRow &reference;
 
-    CSVIterator(std::istream& str)  :m_str(str.good()?&str:NULL) { ++(*this); }
-    CSVIterator()                   :m_str(NULL) {}
+    CSVIterator(std::istream &str) : m_str(str.good() ? &str : NULL) { ++(*this); }
+
+    CSVIterator() : m_str(NULL) {}
 
     // Pre Increment
-    CSVIterator& operator++()               {if (m_str) { if (!((*m_str) >> m_row)){m_str = NULL;}}return *this;}
-    // Post increment
-    CSVIterator operator++(int)             {CSVIterator    tmp(*this);++(*this);return tmp;}
-    CSVRow const& operator*()   const       {return m_row;}
-    CSVRow const* operator->()  const       {return &m_row;}
+    CSVIterator &operator++() {
+        if (m_str) { if (!((*m_str) >> m_row)) { m_str = NULL; }}
+        return *this;
+    }
 
-    bool operator==(CSVIterator const& rhs) {return ((this == &rhs) || ((this->m_str == NULL) && (rhs.m_str == NULL)));}
-    bool operator!=(CSVIterator const& rhs) {return !((*this) == rhs);}
+    // Post increment
+    CSVIterator operator++(int) {
+        CSVIterator tmp(*this);
+        ++(*this);
+        return tmp;
+    }
+
+    CSVRow const &operator*() const { return m_row; }
+
+    CSVRow const *operator->() const { return &m_row; }
+
+    bool operator==(CSVIterator const &rhs) {
+        return ((this == &rhs) || ((this->m_str == NULL) && (rhs.m_str == NULL)));
+    }
+
+    bool operator!=(CSVIterator const &rhs) { return !((*this) == rhs); }
 
 
 private:
-    std::istream*       m_str;
-    CSVRow              m_row;
+    std::istream *m_str;
+    CSVRow m_row;
 };
 
 

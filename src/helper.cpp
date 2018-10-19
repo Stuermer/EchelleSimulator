@@ -17,6 +17,7 @@
 #include <string>
 /// mark fmt as header only
 #define FMT_HEADER_ONLY
+
 #include <fmt/format.h>
 
 void vector_to_file(std::vector<double> const &vec, std::string const &filename) {
@@ -193,7 +194,7 @@ int download_phoenix(int t_eff, double log_g, double z, double alpha, const std:
     CURL *curl;
     FILE *fp;
     CURLcode res;
-    res=CURLE_OK;
+    res = CURLE_OK;
 
     remove(path.c_str());
 
@@ -220,7 +221,7 @@ int download_wave_grid(std::string path) {
     CURL *curl;
     FILE *fp;
     CURLcode res;
-    res=CURLE_OK;
+    res = CURLE_OK;
 
     curl = curl_easy_init();
     if (curl) {

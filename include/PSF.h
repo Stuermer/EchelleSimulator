@@ -1,7 +1,3 @@
-//
-// Created by julian on 13.09.16.
-//
-
 #ifndef ECHELLESIMULATOR_PSF_H
 #define ECHELLESIMULATOR_PSF_H
 
@@ -9,19 +5,19 @@
 #include <map>
 #include <vector>
 
-class Matrix{
+class Matrix {
 public:
     Matrix(size_t rows, size_t cols) {
-        this->cols=cols;
-        this->rows=rows;
-        data = std::vector<std::vector<float>>(rows, std::vector<float> (cols, 0.));
+        this->cols = cols;
+        this->rows = rows;
+        data = std::vector<std::vector<float>>(rows, std::vector<float>(cols, 0.));
     }
 
 
     Matrix(std::vector<std::vector<float>> mat) {
-        cols=mat[0].size();
-        rows=mat.size();
-        data=mat;
+        cols = mat[0].size();
+        rows = mat.size();
+        data = mat;
     }
 
     Matrix() {
@@ -34,32 +30,31 @@ public:
     size_t cols{};
     size_t rows{};
 
-    float sum(){
-        float total=0;
-        for(int i=0; i<data.size(); ++i){
-            for(int j=0; j<data[i].size(); ++j){
+    float sum() {
+        float total = 0;
+        for (int i = 0; i < data.size(); ++i) {
+            for (int j = 0; j < data[i].size(); ++j) {
                 total += data[i][j];
             }
         }
         return total;
     }
 
-    void delete_n_rows_symmetrically(int n){
+    void delete_n_rows_symmetrically(int n) {
         rows -= n;
-        data.erase(data.begin(), data.begin()+n);
-        data.erase(data.end()-n, data.end());
+        data.erase(data.begin(), data.begin() + n);
+        data.erase(data.end() - n, data.end());
     }
 
-    void delete_n_cols_symmetrically(int n){
+    void delete_n_cols_symmetrically(int n) {
         cols -= n;
-        for (unsigned i=0; i<rows; ++i)
-        {
-            data[i].erase(data[i].begin(), data[i].begin()+n-1);
-            data[i].erase(data[i].end()-n+1, data[i].end());
+        for (unsigned i = 0; i < rows; ++i) {
+            data[i].erase(data[i].begin(), data[i].begin() + n - 1);
+            data[i].erase(data[i].end() - n + 1, data[i].end());
         }
     }
 
-    Matrix& operator=(const Matrix &M){
+    Matrix &operator=(const Matrix &M) {
         this->cols = M.cols;
         this->rows = M.rows;
         this->data = M.data;
@@ -67,17 +62,15 @@ public:
 
 };
 
-struct PSFdata
-{
+struct PSFdata {
     double wavelength;
     Matrix psf;
 
     PSFdata(double w, Matrix p) : wavelength(w) {
-        psf=Matrix(p);
+        psf = Matrix(p);
     };
 
-    bool operator < (const PSFdata& str) const
-    {
+    bool operator<(const PSFdata &str) const {
         return (wavelength < str.wavelength);
     }
 };
@@ -98,9 +91,13 @@ struct PSFdata
 class PSF {
 public:
     PSF();
+
     virtual ~PSF();
+
     virtual Matrix get_PSF(int order, double wavelength) = 0;
+
     virtual Matrix get_PSF_nocut(int order, double wavelength) = 0;
+
     double pixelsampling;
 };
 
@@ -110,16 +107,19 @@ public:
  *
  * Zemax returns a 2D array with a calculated Huygens PSF. It is usually saved in the spectrograph model.
  */
-class PSF_ZEMAX : public PSF{
+class PSF_ZEMAX : public PSF {
 public:
     /**
-     * Creator
+     * Constructor
      * @param filename filename of the spectrograph model
      * @param fiber_number fiber number for the PSF model
      */
     PSF_ZEMAX(std::string filename, int fiber_number);
+
     Matrix get_PSF(int order, double wavelength) override;
+
     Matrix get_PSF_nocut(int order, double wavelength) override;
+
 private:
     /**
      * Interpolates between neighboring PSFs as a simple linear sum
@@ -131,8 +131,10 @@ private:
      * @return
      */
     Matrix interpolate_PSF(Matrix psf1, Matrix psf2, double w1, double w2, double w);
+
     Matrix interpolate_PSF_nocut(Matrix psf1, Matrix psf2, double w1, double w2, double w);
-    std::map< int, std::vector<PSFdata> > psfs;
+
+    std::map<int, std::vector<PSFdata> > psfs;
 
 };
 
@@ -142,14 +144,14 @@ private:
  *
  * This class handels gaussian like PSF functions.
  */
-class PSF_gaussian : public PSF{
+class PSF_gaussian : public PSF {
 public:
     /**
      * Creator
      * @param sigma Sigma of the gaussian in (oversampled) pixel
      * @param aperture size of the gaussian kernel (in number of oversampled pixels)
      */
-    PSF_gaussian(double sigma, double aperture=3.);
+    PSF_gaussian(double sigma, double aperture = 3.);
 
     /**
      * Returns gaussian PSF, independently of order and wavelength

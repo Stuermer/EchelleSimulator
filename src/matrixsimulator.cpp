@@ -59,10 +59,10 @@ void MatrixSimulator::load_spectrograph_model(const std::string path, int fiber_
     H5::Group *spec = new H5::Group(h5file->openGroup("Spectrograph"));
     H5::Attribute *attr = new H5::Attribute(spec->openAttribute("blaze"));
     H5::DataType *type = new H5::DataType(attr->getDataType());
-    double blaze, gpmm = 0;
-    attr->read(*type, &blaze);
+    double alpha, gpmm = 0;
+    attr->read(*type, &alpha);
     spec->openAttribute("gpmm").read(*type, &gpmm);
-    this->spec_info.blaze = blaze;
+    this->spec_info.alpha = alpha;
     this->spec_info.gpmm = gpmm;
 
     // read in field information and transformations and PSFs
@@ -179,8 +179,8 @@ double MatrixSimulator::get_minimum_wavelength() {
     return this->wavelength_limit_min;
 }
 
-double MatrixSimulator::get_blaze() {
-    return this->spec_info.blaze;
+double MatrixSimulator::get_alpha() {
+    return this->spec_info.alpha;
 }
 
 double MatrixSimulator::get_gpmm() {
@@ -323,9 +323,11 @@ void MatrixSimulator::simulate(double t, unsigned long seed) {
     long int N_tot = 0;
     for (int o = 0; o < this->orders.size(); ++o) {
         if (!sim_wavelength[o].empty()) {
-            double avr = std::accumulate(sim_efficiencies[o].begin(), sim_efficiencies[o].end(), 0.0)/sim_efficiencies[o].size();
-            double total_photons = std::accumulate(flux_times_efficiency[o].begin(), flux_times_efficiency[o].end(), 0.) * t;
-            if (total_photons>UINT_MAX)
+            double avr = std::accumulate(sim_efficiencies[o].begin(), sim_efficiencies[o].end(), 0.0) /
+                         sim_efficiencies[o].size();
+            double total_photons =
+                    std::accumulate(flux_times_efficiency[o].begin(), flux_times_efficiency[o].end(), 0.) * t;
+            if (total_photons > UINT_MAX)
                 throw (std::invalid_argument(
                         "Number of photons is too big. Please check integration time and units in given source spectrum."));
             N_photons[o] = (unsigned int) nearbyint(total_photons);
@@ -344,9 +346,9 @@ void MatrixSimulator::simulate(double t, unsigned long seed) {
 
     for (int o = 0; o < this->orders.size(); ++o) {
         std::cout << fmt::format("Simulating Order {:3d}/{:3d}", o + this->min_order, this->max_order) << std::endl;
-        #pragma omp parallel
+#pragma omp parallel
         {
-            std::uniform_real_distribution<float> rgx( (float) 0., (float) 1.);
+            std::uniform_real_distribution<float> rgx((float) 0., (float) 1.);
             std::uniform_real_distribution<float> rgy((float) 0., (float) 1.);
             std::vector<double> a(sim_wavelength[o].begin(), sim_wavelength[o].end()); //units are um
             std::vector<double> b(flux_times_efficiency[o].begin(),
@@ -357,12 +359,12 @@ void MatrixSimulator::simulate(double t, unsigned long seed) {
                 std::random_device rd;
                 gen.seed(rd());
             } else {
-                #if defined(_OPENMP)
+#if defined(_OPENMP)
                 //TODO: better handling of seeds for parallel execution.. (i.e. use random seed sequence)
                 gen.seed(seed + omp_get_thread_num());
-                #else
+#else
                 gen.seed(seed);
-                #endif
+#endif
             }
 
             if (this->source->is_list_like())
@@ -370,7 +372,7 @@ void MatrixSimulator::simulate(double t, unsigned long seed) {
             else
                 wl_s[o] = new piecewise_linear_RNG<double, std::default_random_engine>(a, b, gen);
 
-            #pragma omp for reduction(vec_int_plus : local_data)
+#pragma omp for reduction(vec_int_plus : local_data)
             for (int i = 0; i < N_photons[o]; ++i) {
                 double wl = wl_s[o]->draw();
 
@@ -552,13 +554,13 @@ void MatrixSimulator::prepare_source(Source *source) {
 
 #pragma omp parallel for
     for (int o = 0; o < this->orders.size(); ++o) {
-            std::vector<double> flux = source->get_photon_flux(this->sim_wavelength[o]);
-            this->sim_flux[o] = flux;
-            double total_flux = 0.;
-            for (int i = 0; i < flux.size(); ++i) {
-                this->flux_times_efficiency[o][i] = this->sim_flux[o][i] * this->sim_efficiencies[o][i];
-                total_flux += this->sim_flux[o][i] * this->sim_efficiencies[o][i];
-            }
+        std::vector<double> flux = source->get_photon_flux(this->sim_wavelength[o]);
+        this->sim_flux[o] = flux;
+        double total_flux = 0.;
+        for (int i = 0; i < flux.size(); ++i) {
+            this->flux_times_efficiency[o][i] = this->sim_flux[o][i] * this->sim_efficiencies[o][i];
+            total_flux += this->sim_flux[o][i] * this->sim_efficiencies[o][i];
+        }
     }
     std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::microseconds>(t2 - t1).count() / 1000000.;

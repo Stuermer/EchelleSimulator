@@ -67,8 +67,8 @@ We also set the radial velocity to 50 m/s.
 .. image:: plots/example3.jpg
 
 
-Example 4: A line catalogue and readout noise:
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Example 4: A line catalogue and readout noise
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 We can simulate line lists by providing a .csv file with the following column structure: "<wavelength>[micron];<intensity>[photons per second]"
 Consider the following excerpt of a Thorium line list
 
@@ -92,8 +92,8 @@ Consider the following excerpt of a Thorium line list
 .. image:: plots/example4.jpg
 
 
-Example 5: instrument efficiency:
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Example 5: instrument efficiency
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 We can specify a wavelength dependent efficiency curve by providing a .csv file with the following column structure: "<wavelength>[micron];<efficiency>[fractional]".
 
 The following file will specify a 80% efficiency with a small section of 10% efficiency.
@@ -118,9 +118,9 @@ Intermediate values will be linearly interpolated.
 .. image:: plots/example5.jpg
 
 
-Example 6: simultaneous calibration:
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-In the last example, we combine previous examples to generate a m-dwarf spectrum with an etalon as a simultaneous calibration source.
+Example 6: simultaneous calibration
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+In the next example, we combine previous examples to generate a m-dwarf spectrum with an etalon as a simultaneous calibration source.
 
 We add a radial velocity shift to both, the source and a different one to the calibration source.
 
@@ -136,5 +136,39 @@ We also add readout noise and a bias count.
     ./echellesimulator --spectrograph MaroonX --etalon 10,1.,0.,0.92,0.001 -f 5 -k 1 -t 10 -r -10.5 --readnoise 5 --bias 1000 -o example6.fit
 
 .. image:: plots/example6.jpg
+
+Example 7: telluric contamination
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+In the last example, we include telluric contamination.
+
+For now, we have to provide a .csv file containing the atmospheric transmission with the following column structure: <wavelength>[micrometer];<transmission>[fractional]
+
+E.g.
+
+.. code-block:: none
+
+    $tail LBLRTM_2009_12_01_03_LasCampanas_AM1.5_transmission.csv
+    1.0999989798;0.9785330023
+    1.0999990798;0.9785817472
+    1.0999991798;0.9786300428
+    1.0999992798;0.9786779455
+    1.0999993798;0.9787258996
+    1.0999994798;0.9787731210
+    1.0999995798;0.9788205029
+    1.0999996798;0.9788674287
+    1.0999997798;0.9789135205
+
+shows the last entries of a high-resolution atmospheric transmission spectrum.
+
+Simulating a blackbody spectrum and providing the atmospheric model as an efficiency:
+
+.. code-block:: none
+
+    ./echellesimulator -s MaroonXred --blackbody 4500,13 --telescope 8.1,128.15 --efficiency LBLRTM_2009_12_01_03_LasCampanas_AM1.5_transmission.csv
+
+gives
+
+.. image:: plots/example7.jpg
+
 
 Have fun !
