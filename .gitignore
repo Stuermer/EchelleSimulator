@@ -3,7 +3,8 @@ doc/latex/
 *.dat
 build/
 release/
-simulations/
+simulations/*.fit
+simulations/*.fits
 *.xml
 .idea/*
 *.log

@@ -21,7 +21,7 @@ Installation on ubuntu 16.04 (or similar)
 
 Install required libraries::
     
-    sudo apt-get install libhdf5-dev libccfits-dev libcurl4-openssl-dev
+    sudo apt-get install libhdf5-dev libccfits-dev libcurl4-openssl-dev git git-lfs
 
 Build Echelle++:
 
@@ -29,6 +29,7 @@ Build Echelle++:
     
     git clone https://github.com/Stuermer/EchelleSimulator.git
     cd EchelleSimulator
+    git-lfs pull
     mkdir build
     cd build
     cmake ../
