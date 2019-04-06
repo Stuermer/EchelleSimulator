@@ -4,6 +4,9 @@
 Echelle++, a fast generic spectrum simulator.
 [![Build Status](https://travis-ci.org/Stuermer/EchelleSimulator.svg?branch=master)](https://travis-ci.org/Stuermer/EchelleSimulator)
 [![Doc Status](https://readthedocs.org/projects/echellesimulator/badge/?version=latest)](https://echellesimulator.readthedocs.io/en/latest/)
+[![DOI](https://zenodo.org/badge/68249504.svg)](https://zenodo.org/badge/latestdoi/68249504)
+
+
 
 Echelle++ is a simulation tool, to generate realistic 2D spectra, in particular cross-dispersed echelle spectra.
 It allows to simulate arbitrary spectra for any fiber-fed or slit spectrograph, where a model file
