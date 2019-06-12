@@ -266,6 +266,9 @@ private:
     std::vector<std::vector<double>> sim_psfs_wavelength;
     /// Distance of consecutive elements of sim_psfs_wavelength
     std::vector<double> sim_psfs_dwavelength;
+    /// 1d spectrum as simulated
+    std::vector<std::vector<int>> sim_1d;
+
 
     /// interpolated values for p, q, r, phi, tx and ty
     std::vector<std::vector<double>> sim_p;
@@ -283,6 +286,8 @@ private:
 
     /// wavelength of lookup table for matrix elements
     std::vector<std::vector<double>> sim_matrix_wavelength;
+    /// wavelength difference of wavelength vector sim_wavelength
+    double d_wavelength;
     /// Distance of consecutive elements of sim_matrix_wavelength
     std::vector<double> sim_matrix_dwavelength;
 

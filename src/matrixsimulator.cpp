@@ -51,6 +51,7 @@ void MatrixSimulator::load_spectrograph_model(const std::string path, int fiber_
     this->sim_wavelength.clear();
     this->sim_flux.clear();
     this->sim_efficiencies.clear();
+    this->sim_1d.clear();
 
     // open file readonly
     auto *h5file = new H5::H5File(filename, H5F_ACC_RDONLY);
@@ -247,8 +248,10 @@ void MatrixSimulator::calc_splines() {
 
 void MatrixSimulator::set_wavelength(int N) {
     this->sim_wavelength.clear();
-    for (int o = 0; o < this->orders.size(); ++o)
+    for (int o = 0; o < this->orders.size(); ++o) {
         this->sim_wavelength.push_back(std::vector<double>(N));
+        this->sim_1d.push_back(std::vector<int>(N, 0));
+    }
 
 #pragma omp parallel for
     for (int o = 0; o < this->orders.size(); ++o) {
@@ -259,6 +262,7 @@ void MatrixSimulator::set_wavelength(int N) {
             this->sim_wavelength[o][i] = min_wl + dl * i;
         }
     }
+    this->d_wavelength = abs(this->sim_wavelength[0][1] - this->sim_wavelength[0][0]);
 }
 
 void MatrixSimulator::set_wavelength(std::vector<double> wavelength) {
@@ -379,6 +383,14 @@ void MatrixSimulator::simulate(double t, unsigned long seed) {
                 // index for transformation matrix in lookup table
                 int idx_matrix = static_cast<int> (floor(
                         (wl - this->sim_wavelength[o].front()) / this->sim_matrix_dwavelength[o]));
+
+                if (!this->source->is_list_like()) {
+                    // index for wavelength bin in sim_1d vector
+                    int idx_1d = static_cast<int> (floor(
+                            (wl - this->sim_wavelength[o].front()) / d_wavelength));
+
+                    this->sim_1d[o][idx_1d]++;
+                }
 
                 float x = rgx(gen);
                 float y = rgy(gen);
@@ -598,16 +610,22 @@ void MatrixSimulator::save_to_fits(const std::string filename, bool bleed, bool 
 
 void MatrixSimulator::save_1d_to_fits(const std::string filename) {
     CCfits::FITS infile(filename.c_str(), CCfits::Write);
-    string hduName("1Dspectrum_Fiber_" + std::to_string(this->fiber_number));
+    string hduName("Fiber_" + std::to_string(this->fiber_number));
+    for (unsigned int o = 0; o < this->orders.size(); ++o) {
+        CCfits::Table *newTable = infile.addTable(hduName + "order_" + std::to_string(this->orders[o]),
+                                                  this->sim_wavelength[o].size());
+        newTable->addColumn(CCfits::Tfloat, "wavelength", 1, "nm");
+        newTable->addColumn(CCfits::Tfloat, "model", 1, "nm");
+        newTable->addColumn(CCfits::Tfloat, "efficiency", 1, "nm");
+        newTable->addColumn(CCfits::Tfloat, "flux", 1, "nm");
 
-    CCfits::Table *newTable = infile.addTable(hduName, 2);
-
-    for (auto const &o: this->orders) {
-        newTable->addColumn(CCfits::Tdouble, "Order_" + std::to_string(o), this->sim_flux[o].size(), "");
-        newTable->column("Order_" + std::to_string(o)).write(this->sim_flux[o], 1, 2);
-        newTable->column("Order_" + std::to_string(o)).write(this->sim_wavelength[o], 1, 1);
+        newTable->column("wavelength").write(this->sim_wavelength[o], 1);
+        newTable->column("model").write(this->sim_flux[o], 1);
+        newTable->column("efficiency").write(this->sim_efficiencies[o], 1);
+        if (!this->source->is_list_like())
+            newTable->column("flux").write(this->sim_1d[o], 1);
     }
-
+    infile.flush();
 }
 
 void MatrixSimulator::add_background(double bias, double noise, unsigned long seed) {

@@ -181,6 +181,15 @@ int main(int argc, char *argv[]) {
                                      "example usage: --etalon 10,1.,0.,0.94,0.001", 1
 
                              },
+                             {
+
+                                     "number-wavelength", {"--number-wavelength"},
+                                     "OPTIONAL: Number of wavelength per order, the source spectrum is interpolated on."
+                                     "The spectrum will only be interpolated, if it is a continuous spectrum and not a list like spectrum."
+                                     "It also determines the wavelength bins used in the saved 1D spectrum. (default:10000)", 1
+
+                             },
+
                      }};
 
 
@@ -212,6 +221,7 @@ int main(int argc, char *argv[]) {
     std::string source;
     auto keep = args["keep"].as<bool>(false);
     auto fiber = args["fiber"].as<int>(1);
+
 
     auto spectrograph = args["spectrograph"].as<std::string>("MaroonX");
     spectrograph = "../data/spectrographs/" + spectrograph + ".hdf";
@@ -340,9 +350,10 @@ int main(int argc, char *argv[]) {
     cs->set_doppler_shift(rv);
     simulator.set_source(cs);
 
-    // in case of 'normal' continuous spectrum
+    // in case of continuous spectrum
+    auto N_wavelength = args["number-wavelength"].as<int>(10000);
     if (!cs->is_list_like()) {
-        simulator.set_wavelength(10000);
+        simulator.set_wavelength(N_wavelength);
     } else {
         simulator.set_wavelength(cs->get_wavelength());
         std::cout << "Running LineList Test" << std::endl;
@@ -364,22 +375,31 @@ int main(int argc, char *argv[]) {
     if (path.find('/') == std::string::npos) {
         simulator.save_to_fits("../simulations/" + path, false, !keep);
         std::string filename = "../simulations/" + path;
+        std::cout << "Save to: " << filename << std::endl;
         std::unique_ptr<CCfits::FITS> pFits;
         pFits.reset(new CCfits::FITS(filename, CCfits::Write));
 
         try {
             pFits->pHDU().addKey("EXPTIME", t, "exposure time");
             pFits->pHDU().addKey("Spectrograph", spectrograph, "Used spectrograph model");
+
+            pFits->pHDU().addKey("RV", rv, "radial velocity [m/s]");
         }
         catch (...) {
-
             std::cout << "keys already exists - skipping";
         };
-        pFits->pHDU().addKey("Fiber_" + std::to_string(fiber), source, "Source for Fiber " + std::to_string(fiber));
+
+        if (args["phoenix"]) {
+            pFits->pHDU().addKey("Fiber_" + std::to_string(fiber), args["phoenix"].as<std::string>(),
+                                 "PHOENIX <T>,<Z>,<alpha>,<log g>,<mag>");
+        } else
+            pFits->pHDU().addKey("Fiber_" + std::to_string(fiber), source, "Source for Fiber " + std::to_string(fiber));
+        simulator.save_1d_to_fits(filename);
 
     } else {
         simulator.save_to_fits(path, false, !keep);
     }
+
 
     return 0;
 }
