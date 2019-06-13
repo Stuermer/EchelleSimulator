@@ -286,8 +286,6 @@ private:
 
     /// wavelength of lookup table for matrix elements
     std::vector<std::vector<double>> sim_matrix_wavelength;
-    /// wavelength difference of wavelength vector sim_wavelength
-    double d_wavelength;
     /// Distance of consecutive elements of sim_matrix_wavelength
     std::vector<double> sim_matrix_dwavelength;
 

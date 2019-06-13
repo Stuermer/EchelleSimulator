@@ -262,7 +262,6 @@ void MatrixSimulator::set_wavelength(int N) {
             this->sim_wavelength[o][i] = min_wl + dl * i;
         }
     }
-    this->d_wavelength = abs(this->sim_wavelength[0][1] - this->sim_wavelength[0][0]);
 }
 
 void MatrixSimulator::set_wavelength(std::vector<double> wavelength) {
@@ -352,6 +351,10 @@ void MatrixSimulator::simulate(double t, unsigned long seed) {
         std::cout << fmt::format("Simulating Order {:3d}/{:3d}", o + this->min_order, this->max_order) << std::endl;
 #pragma omp parallel
         {
+            double min_wl = this->raw_transformations[o + this->min_order].front().wavelength;
+            double max_wl = this->raw_transformations[o + this->min_order].back().wavelength;
+            double dl = (max_wl - min_wl) / this->sim_wavelength[o].size();
+
             std::uniform_real_distribution<float> rgx((float) 0., (float) 1.);
             std::uniform_real_distribution<float> rgy((float) 0., (float) 1.);
             std::vector<double> a(sim_wavelength[o].begin(), sim_wavelength[o].end()); //units are um
@@ -387,7 +390,7 @@ void MatrixSimulator::simulate(double t, unsigned long seed) {
                 if (!this->source->is_list_like()) {
                     // index for wavelength bin in sim_1d vector
                     int idx_1d = static_cast<int> (floor(
-                            (wl - this->sim_wavelength[o].front()) / d_wavelength));
+                            (wl - this->sim_wavelength[o].front()) / dl));
 
                     this->sim_1d[o][idx_1d]++;
                 }
