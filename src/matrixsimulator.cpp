@@ -392,6 +392,7 @@ void MatrixSimulator::simulate(double t, unsigned long seed) {
                     int idx_1d = static_cast<int> (floor(
                             (wl - this->sim_wavelength[o].front()) / dl));
 
+#pragma omp atomic
                     this->sim_1d[o][idx_1d]++;
                 }
 
