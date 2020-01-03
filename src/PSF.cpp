@@ -193,8 +193,8 @@ Matrix PSF_ZEMAX::interpolate_PSF(Matrix psf1, Matrix psf2, double w1, double w2
     int cenY = psf1.rows / 2;
 
 
-    int size_x = ((cenX - minX) > (maxX - cenX)) ? cenX - minX : maxX - cenX;
-    int size_y = ((cenY - minY) > (maxY - cenY)) ? cenY - minY : maxY - cenY;
+    int size_x = abs(((cenX - minX) > (maxX - cenX)) ? cenX - minX : maxX - cenX);
+    int size_y = abs(((cenY - minY) > (maxY - cenY)) ? cenY - minY : maxY - cenY);
     Matrix result(size_y * 2, size_x * 2);
 
 //    comb_psf.delete_n_rows_symmetrically(comb_psf.rows-size_y*2);
