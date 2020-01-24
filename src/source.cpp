@@ -87,7 +87,7 @@ std::vector<double> Source::get_interpolated_spectral_density(std::vector<double
 
 std::vector<double> Source::get_photon_flux(std::vector<double> wavelength) {
     if (!this->list_like) {
-        // convert microwatts / micrometer to photons / s
+        // convert microwatts / micrometer to photons / s per wavelength intervall
         double ch_factor = 5.03E12;
         std::vector<double> flux;
         std::vector<double> diff;
