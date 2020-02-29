@@ -3,7 +3,7 @@ FROM ubuntu
 RUN apt-get update && apt-get install -y \
 #libhdf5-serial-dev \
 #g++ \
-#libcurl4 \
+libcurl4 \
 #libcurl4-openssl-dev \
 #mercurial \
 #cmake \
@@ -15,6 +15,9 @@ libgomp1
 
 # include the code
 WORKDIR /home
+RUN mkdir simulations
+RUN mkdir data
+RUN mkdir data/phoenix_spectra
 COPY build/echellesimulator build/echellesimulator
 COPY CMakeLists.txt CMakeLists.txt
 #COPY src src
