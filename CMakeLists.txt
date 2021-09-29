@@ -1,5 +1,6 @@
 project(echellesimulator)
 cmake_minimum_required(VERSION 3.0)
+set(CMAKE_CXX_STANDARD 11)
 include(ExternalProject)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/src/CMakeModules/")
@@ -79,6 +80,7 @@ target_link_libraries(echellelib ${LINK_LIBS})
 
 add_executable(echellesimulator src/main.cpp)
 add_dependencies(echellesimulator fmt)
+add_dependencies(echellesimulator argagg)
 target_include_directories(echellesimulator PRIVATE ${FMT_INCLUDE_DIR})
 target_link_libraries(echellesimulator ${LINK_LIBS} echellelib)
 

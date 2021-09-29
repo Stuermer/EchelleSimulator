@@ -247,6 +247,7 @@ double CoehloSpectrum::get_spectral_density(double wavelength) {
 
 CustomSpectrum::CustomSpectrum(double magnitude, double telescope_area, const std::string spectrum_file,
                                std::string wave_file) : StellarSource(magnitude, telescope_area) {
+    list_like = false;
     name = fmt::format("custom : {0}, mag: {1}, telescope: {2}", spectrum_file, magnitude, telescope_area);
     read_spectrum(spectrum_file, wave_file);
     calc_flux_scale();

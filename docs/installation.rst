@@ -16,12 +16,12 @@ Echelle++ requires some 3rd party packages listed in below. Please install them 
  * `Curl <https://curl.haxx.se/libcurl/>`_
 
 
-Installation on ubuntu 16.04 (or similar)
+Installation on ubuntu 18.04 (or similar)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Install required libraries::
     
-    sudo apt-get install libhdf5-dev libccfits-dev libcurl4-openssl-dev git git-lfs
+    sudo apt-get install libhdf5-dev libccfits-dev libcurl4-openssl-dev git git-lfs cmake build-essential
 
 Build Echelle++:
 
@@ -35,6 +35,13 @@ Build Echelle++:
     cmake ../
     make
 
+This will compile the **Debug** built of Echelle++. This is good for developing / testing. But if you want full speed and multiprocessing change the 2nd last line to:
+
+.. code-block:: bash
+
+    cmake ../ -DCMAKE_BUILD_TYPE=Release
+
+Other available build types are *RelNoParallel* and *RelWithDebInfo*. See *CMakeList.txt* for further infos.
 
 After Echelle++ is successfully built, use the *echellesimulator* executable and start simulating spectra !
 
