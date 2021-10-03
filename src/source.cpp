@@ -57,9 +57,9 @@ std::vector<double> Source::get_interpolated_spectral_density(std::vector<double
         std::vector<double> spectrum;
         std::vector<double> diff;
 
-        for (int i = 0; i < wavelength.size() - 2; i++) {
+        diff.reserve(wavelength.size());
+        for (int i = 0; i < wavelength.size() - 2; i++)
             diff.push_back(this->shift * (wavelength[i + 1] - wavelength[i]));
-        }
         diff.push_back(diff.back());
         diff.push_back(diff.back());
 
@@ -77,8 +77,9 @@ std::vector<double> Source::get_interpolated_spectral_density(std::vector<double
     } else {
         std::vector<double> spectrum;
 
-        for (int i = 0; i < wavelength.size(); i++) {
-            spectrum.push_back(get_spectral_density(wavelength[i]));
+        spectrum.reserve(wavelength.size());
+        for (double wl : wavelength) {
+            spectrum.push_back(get_spectral_density(wl));
         }
 
         return spectrum;

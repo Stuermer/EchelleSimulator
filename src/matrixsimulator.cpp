@@ -57,9 +57,9 @@ void MatrixSimulator::load_spectrograph_model(const std::string path, int fiber_
     auto *h5file = new H5::H5File(filename, H5F_ACC_RDONLY);
 
     // read in spectrograph information
-    H5::Group *spec = new H5::Group(h5file->openGroup("Spectrograph"));
-    H5::Attribute *attr = new H5::Attribute(spec->openAttribute("blaze"));
-    H5::DataType *type = new H5::DataType(attr->getDataType());
+    auto *spec = new H5::Group(h5file->openGroup("Spectrograph"));
+    auto *attr = new H5::Attribute(spec->openAttribute("blaze"));
+    auto *type = new H5::DataType(attr->getDataType());
     double alpha, gpmm = 0;
     attr->read(*type, &alpha);
     spec->openAttribute("gpmm").read(*type, &gpmm);
@@ -67,7 +67,7 @@ void MatrixSimulator::load_spectrograph_model(const std::string path, int fiber_
     this->spec_info.gpmm = gpmm;
 
     // read in field information and transformations and PSFs
-    H5::Group *fiber = new H5::Group(h5file->openGroup("fiber_" + std::to_string(fiber_number)));
+    auto *fiber = new H5::Group(h5file->openGroup("fiber_" + std::to_string(fiber_number)));
     this->fiber_number = fiber_number;
     attr = new H5::Attribute(fiber->openAttribute("field_height"));
     type = new H5::DataType(attr->getDataType());
@@ -81,8 +81,6 @@ void MatrixSimulator::load_spectrograph_model(const std::string path, int fiber_
     type = new H5::DataType(attr->getDataType());
     fiber->openAttribute("sampling_input_x").read(*type, &sampling_input_x);
     fiber->openAttribute("MatricesPerOrder").read(*type, &number_of_points);
-
-    this->slit = new Slit(field_width, field_height, sampling_input_x);
 
     std::vector<std::string> group_names;
     herr_t idx = H5Literate(fiber->getId(), H5_INDEX_NAME, H5_ITER_INC, nullptr, file_info, &group_names);
@@ -249,11 +247,11 @@ void MatrixSimulator::calc_splines() {
 void MatrixSimulator::set_wavelength(int N) {
     this->sim_wavelength.clear();
     for (int o = 0; o < this->orders.size(); ++o) {
-        this->sim_wavelength.push_back(std::vector<double>(N));
-        this->sim_1d.push_back(std::vector<int>(N, 0));
+        this->sim_wavelength.emplace_back(N);
+        this->sim_1d.emplace_back(N, 0);
     }
 
-#pragma omp parallel for
+#pragma omp parallel for default(none) shared(N)
     for (int o = 0; o < this->orders.size(); ++o) {
         double min_wl = this->raw_transformations[o + this->min_order].front().wavelength;
         double max_wl = this->raw_transformations[o + this->min_order].back().wavelength;
@@ -326,8 +324,6 @@ void MatrixSimulator::simulate(double t, unsigned long seed) {
     long int N_tot = 0;
     for (int o = 0; o < this->orders.size(); ++o) {
         if (!sim_wavelength[o].empty()) {
-            double avr = std::accumulate(sim_efficiencies[o].begin(), sim_efficiencies[o].end(), 0.0) /
-                         sim_efficiencies[o].size();
             double total_photons =
                     std::accumulate(flux_times_efficiency[o].begin(), flux_times_efficiency[o].end(), 0.) * t;
             if (total_photons > UINT_MAX)
@@ -349,7 +345,7 @@ void MatrixSimulator::simulate(double t, unsigned long seed) {
 
     for (int o = 0; o < this->orders.size(); ++o) {
         std::cout << fmt::format("Simulating Order {:3d}/{:3d}", o + this->min_order, this->max_order) << std::endl;
-#pragma omp parallel
+#pragma omp parallel default(none) shared(seed, local_data,wl_s, o, N_photons, psf_scaling)
         {
             double min_wl = this->raw_transformations[o + this->min_order].front().wavelength;
             double max_wl = this->raw_transformations[o + this->min_order].back().wavelength;
@@ -445,7 +441,7 @@ void MatrixSimulator::set_efficiencies(std::vector<Efficiency *> &efficiencies) 
         this->sim_total_efficiency_per_order.push_back(0.);
     }
 
-#pragma omp parallel for
+#pragma omp parallel for default(none) shared(efficiencies)
     for (int o = 0; o < this->orders.size(); ++o) {
         for (auto &e : efficiencies) {
             std::vector<double> sim_eff = e->get_efficiency(o + this->min_order, this->sim_wavelength[o]);
@@ -471,7 +467,7 @@ void MatrixSimulator::prepare_psfs(int N) {
         this->sim_psfs_dwavelength.push_back(0.);
     }
 
-#pragma omp parallel for
+#pragma omp parallel for default(none) shared(N)
     for (int o = 0; o < this->orders.size(); ++o) {
         double min_wl = this->raw_transformations[o + this->min_order].front().wavelength;
         double max_wl = this->raw_transformations[o + this->min_order].back().wavelength;
@@ -564,11 +560,11 @@ void MatrixSimulator::prepare_source(Source *source) {
     this->sim_flux.clear();
     // allocate memory so we can use omp parallel for filling
     for (int o = 0; o < this->orders.size(); ++o) {
-        this->sim_flux.push_back(std::vector<double>(this->sim_wavelength[o].size()));
-        this->flux_times_efficiency.push_back(std::vector<double>(this->sim_wavelength[o].size()));
+        this->sim_flux.emplace_back(this->sim_wavelength[o].size());
+        this->flux_times_efficiency.emplace_back(this->sim_wavelength[o].size());
     }
 
-#pragma omp parallel for
+#pragma omp parallel for default(none), shared(source)
     for (int o = 0; o < this->orders.size(); ++o) {
         std::vector<double> flux = source->get_photon_flux(this->sim_wavelength[o]);
         this->sim_flux[o] = flux;

@@ -12,7 +12,11 @@ public:
         this->rows = rows;
         data = std::vector<std::vector<float>>(rows, std::vector<float>(cols, 0.));
     }
-
+    Matrix(const Matrix& m){
+        this->cols = m.cols;
+        this->rows = m.rows;
+        this->data = m.data;
+    }
 
     Matrix(std::vector<std::vector<float>> mat) {
         cols = mat[0].size();
@@ -58,16 +62,17 @@ public:
         this->cols = M.cols;
         this->rows = M.rows;
         this->data = M.data;
+        return *this;
     }
 
 };
 
 struct PSFdata {
     double wavelength;
-    Matrix psf;
+    Matrix * psf;
 
-    PSFdata(double w, Matrix p) : wavelength(w) {
-        psf = Matrix(p);
+    PSFdata(double w, const Matrix& p) : wavelength(w) {
+        psf = new Matrix(p);
     };
 
     bool operator<(const PSFdata &str) const {
@@ -98,7 +103,7 @@ public:
 
     virtual Matrix get_PSF_nocut(int order, double wavelength) = 0;
 
-    double pixelsampling;
+    double pixelsampling{};
 };
 
 /**
@@ -114,7 +119,7 @@ public:
      * @param filename filename of the spectrograph model
      * @param fiber_number fiber number for the PSF model
      */
-    PSF_ZEMAX(std::string filename, int fiber_number);
+    PSF_ZEMAX(const std::string& filename, int fiber_number);
 
     Matrix get_PSF(int order, double wavelength) override;
 
@@ -130,9 +135,9 @@ private:
      * @param w wavelength to use for calculating PSF
      * @return
      */
-    Matrix interpolate_PSF(Matrix psf1, Matrix psf2, double w1, double w2, double w);
+    Matrix interpolate_PSF(Matrix * psf1, Matrix * psf2, double w1, double w2, double w);
 
-    Matrix interpolate_PSF_nocut(Matrix psf1, Matrix psf2, double w1, double w2, double w);
+    Matrix interpolate_PSF_nocut(Matrix * psf1, Matrix * psf2, double w1, double w2, double w);
 
     std::map<int, std::vector<PSFdata> > psfs;
 

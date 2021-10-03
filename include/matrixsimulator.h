@@ -8,7 +8,6 @@
 #include "source.h"
 #include "PSF.h"
 #include "CCD.h"
-#include "Slit.h"
 #include "telescope.h"
 #include <array>
 
@@ -247,8 +246,6 @@ private:
     CCD *ccd;
     /// PSF model used in simulation
     PSF *psfs;
-    /// Slit model used in simulation
-    Slit *slit;
 
     /// Wavelength grid used for interpolation of source spectra
     std::vector<std::vector<double>> sim_wavelength;
