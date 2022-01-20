@@ -12,6 +12,12 @@ Echelle++ is a simulation tool, to generate realistic 2D spectra, in particular 
 It allows to simulate arbitrary spectra for any fiber-fed or slit spectrograph, where a model file
 is available. Optical aberrations are treated accurately, the simulated spectra include photon and read-out noise.  
 
+:stop_sign: --------------------------------------------------- :stop_sign: ---------------------------------------------------  :stop_sign:
+## ECHELLE++ is no longer actively developed. Please check out [PyEchelle](https://gitlab.com/Stuermer/pyechelle)  instead.
+Even though I might implement bug fixes, I moved the project over to python (with more features such as CUDA support) for easier deployment. 
+
+:stop_sign: --------------------------------------------------- :stop_sign: ---------------------------------------------------  :stop_sign:
+
 ### Example usage
 ```bash
 ./echellesimulator --spectrograph MaroonX --phoenix 3500,-1.,0.,5.5,1 -r 100 -o mdwarf.fits
