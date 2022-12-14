@@ -774,12 +774,12 @@ class Echelle():
         dst = np.vstack((dst_x, dst_y))
         dst /= ((self.CCD.pixelSize) / 1000.)
         dst += self.CCD.Nx / 2
-        dst = dst.reshape(2, len(dst[0]) / len(norm_field), len(norm_field)).transpose((1, 2, 0))
+        dst = dst.reshape(2, -1, len(norm_field)).transpose((1, 2, 0))
         orders = np.array(orders)
         wavelength = np.array(wavelength)
 
-        orders = orders.reshape((len(orders) / len(norm_field), len(norm_field)))
-        wavelength = wavelength.reshape((len(wavelength) / len(norm_field), len(norm_field)))
+        orders = orders.reshape(-1, len(norm_field))
+        wavelength = wavelength.reshape(-1, len(norm_field))
 
         affine_matrices = {}
         transformations = {}
