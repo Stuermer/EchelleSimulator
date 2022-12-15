@@ -786,7 +786,7 @@ class Echelle():
 
         for order, wavel, p in zip(orders, wavelength, dst):
             params = tf.estimate_transform('affine', src, p)
-            if affine_matrices.has_key(order[0]):
+            if order[0] in affine_matrices:
                 affine_matrices[order[0]].update({wavel[0]: np.array(
                     [params.rotation, params.scale[0], params.scale[1], params.shear, params.translation[0],
                      params.translation[1]])})
