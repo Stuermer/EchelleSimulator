@@ -63,11 +63,11 @@ def save_transformation_to_hdf(path, res, fiber_number=1):
     gr._v_attrs.field_with = res['field_width']
     gr._v_attrs.field_height = res['field_height']
 
-    for order, r in res['matrices'].iteritems():
+    for order, r in res['matrices'].items():
         tab = h5file.create_table("/fiber_" + str(fiber_number), 'order' + str(abs(order)), Transformation,
                                   "Affine Transformation", expectedrows=len(r), chunkshape=True)
         transf = tab.row
-        for wl, pars in r.iteritems():
+        for wl, pars in r.items():
             transf['wavelength'] = wl
             transf['rotation'] = pars[0]
             transf['scale_x'] = pars[1]
