@@ -63,11 +63,11 @@ def save_transformation_to_hdf(path, res, fiber_number=1):
     gr._v_attrs.field_with = res['field_width']
     gr._v_attrs.field_height = res['field_height']
 
-    for order, r in res['matrices'].iteritems():
+    for order, r in res['matrices'].items():
         tab = h5file.create_table("/fiber_" + str(fiber_number), 'order' + str(abs(order)), Transformation,
                                   "Affine Transformation", expectedrows=len(r), chunkshape=True)
         transf = tab.row
-        for wl, pars in r.iteritems():
+        for wl, pars in r.items():
             transf['wavelength'] = wl
             transf['rotation'] = pars[0]
             transf['scale_x'] = pars[1]
@@ -774,19 +774,19 @@ class Echelle():
         dst = np.vstack((dst_x, dst_y))
         dst /= ((self.CCD.pixelSize) / 1000.)
         dst += self.CCD.Nx / 2
-        dst = dst.reshape(2, len(dst[0]) / len(norm_field), len(norm_field)).transpose((1, 2, 0))
+        dst = dst.reshape(2, -1, len(norm_field)).transpose((1, 2, 0))
         orders = np.array(orders)
         wavelength = np.array(wavelength)
 
-        orders = orders.reshape((len(orders) / len(norm_field), len(norm_field)))
-        wavelength = wavelength.reshape((len(wavelength) / len(norm_field), len(norm_field)))
+        orders = orders.reshape(-1, len(norm_field))
+        wavelength = wavelength.reshape(-1, len(norm_field))
 
         affine_matrices = {}
         transformations = {}
 
         for order, wavel, p in zip(orders, wavelength, dst):
             params = tf.estimate_transform('affine', src, p)
-            if affine_matrices.has_key(order[0]):
+            if order[0] in affine_matrices:
                 affine_matrices[order[0]].update({wavel[0]: np.array(
                     [params.rotation, params.scale[0], params.scale[1], params.shear, params.translation[0],
                      params.translation[1]])})
